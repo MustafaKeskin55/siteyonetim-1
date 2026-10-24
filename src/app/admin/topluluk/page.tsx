@@ -89,11 +89,8 @@ export default function AdminCommunityPage() {
   const showAlert = useAlert();
   const showConfirm = useConfirm();
 
-  // Active Main Tab: Instagram Social Feed vs Chat Channels
-  const [activeMainTab, setActiveMainTab] = React.useState<"instagram" | "kanallar">("instagram");
-
   // ══════════════════════════════════════════════════════════
-  // INSTAGRAM MODULE (STORIES & SOCIAL FEED) STATE
+  // KOMŞULUK SOSYAL AKIŞ & HİKAYELER STATE
   // ══════════════════════════════════════════════════════════
   const [stories, setStories] = React.useState<StoryItem[]>([
     {
@@ -359,7 +356,7 @@ export default function AdminCommunityPage() {
   };
 
   // ══════════════════════════════════════════════════════════
-  // INSTAGRAM FEED ACTIONS
+  // KOMŞULUK AKIŞI ACTIONS
   // ══════════════════════════════════════════════════════════
   const handleLikePost = (postId: string) => {
     setPosts((prev) =>
@@ -463,42 +460,34 @@ export default function AdminCommunityPage() {
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-sky-300 border border-blue-200 dark:border-blue-800 text-xs font-bold mb-2">
             <Camera className="h-3.5 w-3.5 text-blue-600 dark:text-sky-400" />
-            <span>SOSYAL KOMŞULUK AĞI &amp; YÖNETİCİ MODERASYONU</span>
+            <span>SOSYAL KOMŞULUK AĞI &amp; CANLI İLETİŞİM</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            Komşuluk Akışı &amp; Sosyal Topluluk
+            Komşuluk Sosyal Ağı &amp; Sohbet Kanalları
           </h1>
           <p className="text-slate-600 dark:text-slate-300 text-sm mt-1">
-            24 saatlik görsel hikayeler, fotoğraflı komşuluk akışı, beğeniler, yorumlar ve tematik bina kanalları.
+            24 saatlik anlık komşuluk hikayeleri, fotoğraflı komşu paylaşımları ve canlı tematik bina sohbet kanalları.
           </p>
         </div>
 
-        {/* View Switcher Tabs */}
-        <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-slate-200/80 dark:bg-slate-900 border border-slate-300 dark:border-slate-800">
+        {/* Action Buttons */}
+        <div className="flex items-center gap-2.5 shrink-0">
           <button
             type="button"
-            onClick={() => setActiveMainTab("instagram")}
-            className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-              activeMainTab === "instagram"
-                ? "bg-white dark:bg-blue-600 text-slate-900 dark:text-white shadow-xs"
-                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-            }`}
+            onClick={() => setShowNewStoryModal(true)}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-sm cursor-pointer"
           >
-            <Camera className="h-4 w-4 text-blue-600 dark:text-sky-300" />
-            <span>Instagram Modülü (Akış &amp; Hikayeler)</span>
+            <Plus className="h-4 w-4" />
+            <span>+ Hikaye Paylaş</span>
           </button>
 
           <button
             type="button"
-            onClick={() => setActiveMainTab("kanallar")}
-            className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-              activeMainTab === "kanallar"
-                ? "bg-white dark:bg-blue-600 text-slate-900 dark:text-white shadow-xs"
-                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-            }`}
+            onClick={() => setShowNewChannelModal(true)}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-[#0d1424] border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-bold transition-all shadow-xs cursor-pointer"
           >
-            <MessagesSquare className="h-4 w-4 text-indigo-600 dark:text-sky-300" />
-            <span>Sohbet Kanalları ({channels.length})</span>
+            <MessagesSquare className="h-4 w-4 text-indigo-600 dark:text-sky-400" />
+            <span>+ Yeni Kanal Ekle</span>
           </button>
         </div>
       </div>
@@ -517,63 +506,62 @@ export default function AdminCommunityPage() {
       </div>
 
       {/* ══════════════════════════════════════════════════════════
-          TAB 1: INSTAGRAM MODÜLÜ (GÖRSEL AKIŞ & HİKAYELER)
+          1. 24 SAATLİK KOMŞULUK HİKAYELERİ (STORIES CAROUSEL)
       ══════════════════════════════════════════════════════════ */}
-      {activeMainTab === "instagram" && (
-        <div className="space-y-6">
-          {/* 1. INSTAGRAM STORIES CAROUSEL */}
-          <div className="bg-white dark:bg-[#0d1424] rounded-3xl p-5 border-2 border-slate-300 dark:border-slate-800 shadow-sm transition-colors">
-            <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-200 dark:border-slate-800 text-xs">
-              <div className="flex items-center gap-2 font-bold text-slate-800 dark:text-slate-200">
-                <Camera className="h-4 w-4 text-blue-600 dark:text-sky-400" />
-                <span>24 Saatlik Komşuluk Hikayeleri (Instagram Modülü)</span>
+      <div className="bg-white dark:bg-[#0d1424] rounded-3xl p-5 border border-slate-200/80 dark:border-slate-800 shadow-xs transition-colors">
+        <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100 dark:border-slate-800 text-xs">
+          <div className="flex items-center gap-2 font-bold text-slate-800 dark:text-slate-200">
+            <Camera className="h-4 w-4 text-blue-600 dark:text-sky-400" />
+            <span>24 Saatlik Komşuluk Hikayeleri</span>
+          </div>
+          <span className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">
+            Bina sakinlerine açık anlık durumlar
+          </span>
+        </div>
+
+        <div className="flex items-center gap-5 overflow-x-auto scrollbar-none py-1">
+          {stories.map((st) => (
+            <div
+              key={st.id}
+              onClick={() => {
+                if (st.isUser) {
+                  setShowNewStoryModal(true);
+                } else {
+                  setActiveStory(st);
+                }
+              }}
+              className="flex flex-col items-center gap-2 shrink-0 cursor-pointer group select-none"
+            >
+              <div
+                className={`h-16 w-16 rounded-full p-[2.5px] transition-transform duration-200 group-hover:scale-105 ${
+                  st.isUser
+                    ? "border-2 border-dashed border-blue-500 bg-slate-50 dark:bg-slate-900 flex items-center justify-center"
+                    : `bg-gradient-to-tr ${st.color}`
+                }`}
+              >
+                <div className="h-full w-full rounded-full bg-white dark:bg-[#0d1424] flex items-center justify-center font-bold text-xs text-slate-800 dark:text-white">
+                  {st.isUser ? (
+                    <Plus className="h-6 w-6 text-blue-600 dark:text-sky-400" />
+                  ) : (
+                    <span>{st.apt}</span>
+                  )}
+                </div>
               </div>
-              <span className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">
-                Bina sakinlerine açık anlık durumlar
+              <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-sky-400 text-center max-w-[75px] truncate">
+                {st.label}
               </span>
             </div>
+          ))}
+        </div>
+      </div>
 
-            <div className="flex items-center gap-5 overflow-x-auto scrollbar-none py-1">
-              {stories.map((st) => (
-                <div
-                  key={st.id}
-                  onClick={() => {
-                    if (st.isUser) {
-                      setShowNewStoryModal(true);
-                    } else {
-                      setActiveStory(st);
-                    }
-                  }}
-                  className="flex flex-col items-center gap-2 shrink-0 cursor-pointer group select-none"
-                >
-                  <div
-                    className={`h-16 w-16 rounded-full p-[2.5px] transition-transform duration-200 group-hover:scale-105 ${
-                      st.isUser
-                        ? "border-2 border-dashed border-blue-500 bg-slate-50 dark:bg-slate-900 flex items-center justify-center"
-                        : `bg-gradient-to-tr ${st.color}`
-                    }`}
-                  >
-                    <div className="h-full w-full rounded-full bg-white dark:bg-[#0d1424] flex items-center justify-center font-bold text-xs text-slate-800 dark:text-white">
-                      {st.isUser ? (
-                        <Plus className="h-6 w-6 text-blue-600 dark:text-sky-400" />
-                      ) : (
-                        <span>{st.apt}</span>
-                      )}
-                    </div>
-                  </div>
-                  <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-sky-400 text-center max-w-[75px] truncate">
-                    {st.label}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* 2. FEED & POST CREATOR */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            
-            {/* Left 8 Cols: Feed Posts */}
-            <div className="lg:col-span-8 space-y-5">
+      {/* ══════════════════════════════════════════════════════════
+          2. UNIFIED DUAL SECTION: SOSYAL AKIŞ & CANLI SOHBET
+      ══════════════════════════════════════════════════════════ */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        {/* Sol Kolon (7 Cols): Feed Posts */}
+        <div className="lg:col-span-7 space-y-5">
               
               {/* Quick Post Box for Management */}
               <div className="bg-white dark:bg-[#0d1424] rounded-3xl p-5 border-2 border-slate-300 dark:border-slate-800 shadow-sm transition-colors">
@@ -772,70 +760,35 @@ export default function AdminCommunityPage() {
               </div>
             </div>
 
-            {/* Right 4 Cols: Social Community Rules & Info */}
-            <div className="lg:col-span-4 space-y-4">
-              <div className="bg-white dark:bg-[#0d1424] p-5 rounded-3xl border-2 border-slate-300 dark:border-slate-800 shadow-sm space-y-3">
-                <div className="flex items-center gap-2 font-bold text-slate-900 dark:text-white text-sm">
-                  <Sparkles className="h-4 w-4 text-amber-500" />
-                  <span>Komşuluk Duvarı İlkeleri</span>
-                </div>
-                <ul className="space-y-2.5 text-xs text-slate-600 dark:text-slate-300">
-                  <li className="flex items-start gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
-                    <span>Sakinler fotoğraf paylaşabilir, ödünç eşya isteyebilir.</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
-                    <span>Yönetici olarak uygunsuz içerikleri tek tıkla silebilirsiniz.</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
-                    <span>Hikayeler 24 saat sonra otomatik olarak arşivlenir.</span>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="bg-gradient-to-br from-blue-600 to-indigo-700 text-white p-5 rounded-3xl shadow-md space-y-3">
-                <h3 className="font-bold text-sm">24 Saatlik Resmi Hikaye</h3>
-                <p className="text-xs text-blue-100 leading-relaxed">
-                  Apartman toplantısı, su kesintisi veya bahçe ilaçlaması gibi güncel duyuruları görsel hikaye olarak yayınlayın.
+        {/* SAĞ KOLON (5 COLS): TEMATİK KOMŞU SOHBET KANALLARI & CANLI İLETİŞİM */}
+        <div className="lg:col-span-5 space-y-5">
+          {/* Sohbet Kanalları & Canlı Mesajlaşma Kartı */}
+          <div className="bg-white dark:bg-[#0d1424] rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden transition-colors">
+            {/* Header */}
+            <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <MessagesSquare className="h-4 w-4 text-blue-600 dark:text-sky-400" />
+                  <span>Komşu Sohbet Kanalları</span>
+                </h3>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                  Bina içi tematik sohbet grupları ve canlı mesaj akışı
                 </p>
-                <button
-                  type="button"
-                  onClick={() => setShowNewStoryModal(true)}
-                  className="w-full py-2.5 rounded-xl bg-white text-blue-700 text-xs font-bold hover:bg-blue-50 transition-colors shadow-sm cursor-pointer"
-                >
-                  + Yeni Hikaye Yayınla
-                </button>
               </div>
-            </div>
 
-          </div>
-        </div>
-      )}
-
-      {/* ══════════════════════════════════════════════════════════
-          TAB 2: TEMATİK SOHBET KANALLARI (KANALLAR)
-      ══════════════════════════════════════════════════════════ */}
-      {activeMainTab === "kanallar" && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* Sol Kolon: Kanal Listesi */}
-          <div className="lg:col-span-4 bg-white dark:bg-[#0d1424] rounded-3xl p-5 border-2 border-slate-300 dark:border-slate-800 shadow-sm space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-              <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                Aktif Kanallar ({channels.length})
-              </span>
               <button
                 type="button"
                 onClick={() => setShowNewChannelModal(true)}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold cursor-pointer transition-colors"
+                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/80 text-blue-700 dark:text-sky-300 border border-blue-200 dark:border-blue-800 text-xs font-bold hover:bg-blue-100 dark:hover:bg-blue-900/60 cursor-pointer"
+                title="Yeni Kanal Ekle"
               >
                 <Plus className="h-3.5 w-3.5" />
-                <span>Yeni Kanal</span>
+                <span>Kanal</span>
               </button>
             </div>
 
-            <div className="space-y-2">
+            {/* Kanal Seçim Çipleri */}
+            <div className="p-3 bg-slate-50/80 dark:bg-slate-900/60 border-b border-slate-100 dark:border-slate-800 flex items-center gap-1.5 overflow-x-auto scrollbar-none">
               {channels.map((ch) => {
                 const isSelected = selectedChannelId === ch.id;
                 return (
@@ -843,60 +796,42 @@ export default function AdminCommunityPage() {
                     key={ch.id}
                     type="button"
                     onClick={() => setSelectedChannelId(ch.id)}
-                    className={`w-full text-left p-3.5 rounded-2xl border transition-all cursor-pointer ${
+                    className={`shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
                       isSelected
-                        ? "bg-blue-50 dark:bg-blue-950/60 border-blue-300 dark:border-blue-800"
-                        : "bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
+                        ? "bg-blue-600 text-white shadow-xs"
+                        : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700 hover:border-slate-300"
                     }`}
                   >
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                        <span>#</span>
-                        <span>{ch.name}</span>
-                      </span>
-                      {ch.isAnnouncementOnly && (
-                        <span title="Sadece Yönetici Yazar">
-                          <Lock className="h-3 w-3 text-amber-500" />
-                        </span>
-                      )}
-                    </div>
-                    {ch.description && (
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 truncate">
-                        {ch.description}
-                      </p>
-                    )}
+                    <span>#</span>
+                    <span>{ch.name}</span>
+                    {ch.isAnnouncementOnly && <Lock className="h-2.5 w-2.5 opacity-70" />}
                   </button>
                 );
               })}
             </div>
-          </div>
 
-          {/* Sağ Kolon: Mesaj Akışı ve Moderasyon */}
-          <div className="lg:col-span-8 bg-white dark:bg-[#0d1424] rounded-3xl border-2 border-slate-300 dark:border-slate-800 shadow-sm flex flex-col min-h-[480px]">
-            {/* Header */}
-            <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-              <div>
-                <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  <span>#</span>
-                  <span>{channels.find((c) => c.id === selectedChannelId)?.name || "Kanal Seçin"}</span>
-                </h3>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-                  {channels.find((c) => c.id === selectedChannelId)?.description || "Komşuluk sohbeti ve paylaşımlar"}
-                </p>
-              </div>
-
+            {/* Seçili Kanal Başlığı */}
+            <div className="px-4 py-2.5 bg-slate-50/40 dark:bg-slate-900/30 border-b border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs">
+              <span className="font-bold text-slate-800 dark:text-slate-200 truncate">
+                #{channels.find((c) => c.id === selectedChannelId)?.name || "Kanal"}
+                {channels.find((c) => c.id === selectedChannelId)?.isAnnouncementOnly && (
+                  <span className="ml-2 text-[10px] font-mono bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-400 px-1.5 py-0.5 rounded">
+                    Yalnızca Yönetim
+                  </span>
+                )}
+              </span>
               <button
                 type="button"
                 onClick={() => fetchMessages(selectedChannelId)}
-                className="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 cursor-pointer"
                 title="Yenile"
               >
-                <RefreshCw className={`h-4 w-4 ${loadingMessages ? "animate-spin" : ""}`} />
+                <RefreshCw className={`h-3.5 w-3.5 ${loadingMessages ? "animate-spin" : ""}`} />
               </button>
             </div>
 
-            {/* Message Stream */}
-            <div className="flex-1 p-5 space-y-3 overflow-y-auto max-h-[380px]">
+            {/* Mesaj Akışı */}
+            <div className="p-4 space-y-2.5 overflow-y-auto max-h-[380px] min-h-[280px]">
               {loadingMessages ? (
                 <div className="text-center py-12 text-xs text-slate-400">Mesajlar yükleniyor...</div>
               ) : messages.length === 0 ? (
@@ -905,10 +840,10 @@ export default function AdminCommunityPage() {
                 messages.map((msg) => (
                   <div
                     key={msg.id}
-                    className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-start justify-between gap-3 group"
+                    className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800 flex items-start justify-between gap-2.5 group"
                   >
-                    <div className="min-w-0 space-y-1">
-                      <div className="flex items-center gap-2">
+                    <div className="min-w-0 space-y-0.5">
+                      <div className="flex items-center gap-1.5">
                         <span className="text-xs font-bold text-slate-900 dark:text-white">
                           {msg.author?.name || "Sakin"}
                         </span>
@@ -927,10 +862,10 @@ export default function AdminCommunityPage() {
                     <button
                       type="button"
                       onClick={() => handleDeleteMessage(msg.id)}
-                      className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-all cursor-pointer"
+                      className="opacity-0 group-hover:opacity-100 p-1 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-all cursor-pointer shrink-0"
                       title="Mesajı Sil (Moderasyon)"
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="h-3.5 w-3.5" />
                     </button>
                   </div>
                 ))
@@ -938,25 +873,48 @@ export default function AdminCommunityPage() {
             </div>
 
             {/* Input Bar */}
-            <form onSubmit={handleSendChannelMessage} className="p-4 border-t border-slate-100 dark:border-slate-800 flex items-center gap-2">
+            <form onSubmit={handleSendChannelMessage} className="p-3 border-t border-slate-100 dark:border-slate-800 flex items-center gap-2">
               <input
                 type="text"
                 placeholder="Yönetici olarak mesaj yazın..."
                 value={channelMessageText}
                 onChange={(e) => setChannelMessageText(e.target.value)}
-                className="flex-1 px-4 py-2.5 rounded-xl text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="flex-1 px-3.5 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
               <button
                 type="submit"
                 disabled={!channelMessageText.trim()}
-                className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold disabled:opacity-40 cursor-pointer"
+                className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold disabled:opacity-40 cursor-pointer shrink-0"
               >
                 Gönder
               </button>
             </form>
           </div>
+
+          {/* Komşuluk İlkeleri Kartı */}
+          <div className="bg-white dark:bg-[#0d1424] p-5 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-3 transition-colors">
+            <div className="flex items-center gap-2 font-bold text-slate-900 dark:text-white text-sm">
+              <Sparkles className="h-4 w-4 text-amber-500" />
+              <span>Komşuluk İlkeleri &amp; Moderasyon</span>
+            </div>
+            <ul className="space-y-2.5 text-xs text-slate-600 dark:text-slate-300">
+              <li className="flex items-start gap-2">
+                <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+                <span>Sakinler fotoğraf paylaşabilir, ödünç eşya isteyebilir ve sohbet edebilir.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+                <span>Yönetici olarak uygunsuz içerikleri ve mesajları tek tıkla silebilirsiniz.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+                <span>Hikayeler 24 saat sonra otomatik olarak arşivlenir.</span>
+              </li>
+            </ul>
+          </div>
         </div>
-      )}
+
+      </div>
 
       {/* ══════════ MODAL: STORY VIEWER ══════════ */}
       {activeStory && (

@@ -305,22 +305,22 @@ export default function ResidentsPage() {
 
       {/* Site Katılım Kodu & Sakin Davet Kartı */}
       {siteInfo && (
-        <div className="rounded-3xl border border-indigo-200 bg-white p-5 sm:p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="rounded-3xl border border-indigo-200 dark:border-indigo-900/60 bg-white dark:bg-[#0d1424] p-5 sm:p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 transition-colors">
           <div className="flex items-start gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+            <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
               <KeyRound className="h-6 w-6" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-full">
+                <span className="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 px-2.5 py-0.5 rounded-full border border-indigo-200 dark:border-indigo-800">
                   Sakin Katılım Kodu
                 </span>
-                <span className="text-xs text-slate-500 font-medium">({siteInfo.siteName})</span>
+                <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">({siteInfo.siteName})</span>
               </div>
-              <p className="text-lg font-black text-slate-900 font-mono tracking-wider mt-1">
+              <p className="text-lg font-black text-slate-900 dark:text-white font-mono tracking-wider mt-1">
                 {siteInfo.inviteCode}
               </p>
-              <p className="text-xs text-slate-600 mt-0.5">
+              <p className="text-xs text-slate-600 dark:text-slate-300 mt-0.5">
                 Sakinlerinize bu kodu veya doğrudan davet linkini ileterek siteye kolayca kaydolmalarını sağlayabilirsiniz.
               </p>
             </div>
@@ -330,9 +330,9 @@ export default function ResidentsPage() {
             <button
               type="button"
               onClick={copyInviteLink}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold border border-indigo-200/80 transition-all"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/80 text-indigo-700 dark:text-indigo-300 text-xs font-bold border border-indigo-200/80 dark:border-indigo-800 transition-all cursor-pointer"
             >
-              {copied ? <CheckCheck className="h-4 w-4 text-emerald-600" /> : <Copy className="h-4 w-4" />}
+              {copied ? <CheckCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400" /> : <Copy className="h-4 w-4" />}
               <span>{copied ? "Link Kopyalandı!" : "Davet Linkini Kopyala"}</span>
             </button>
 
@@ -342,7 +342,7 @@ export default function ResidentsPage() {
               )}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-all"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
             >
               <span>WhatsApp ile Sakinlere Gönder</span>
             </a>
@@ -358,14 +358,14 @@ export default function ResidentsPage() {
 
       {/* Onay Bekleyen Sakinler Bildirim Çubuğu */}
       {pendingCount > 0 && (
-        <div className="bg-amber-50 border border-amber-200 rounded-3xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xs">
+        <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/60 rounded-3xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xs">
           <div className="flex items-center gap-3.5">
             <div className="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center font-extrabold text-sm shrink-0 shadow-xs">
               {pendingCount}
             </div>
             <div>
-              <h4 className="text-sm font-bold text-amber-950">Onay Bekleyen Sakin Başvurusu Var</h4>
-              <p className="text-xs text-amber-800 mt-0.5">
+              <h4 className="text-sm font-bold text-amber-950 dark:text-amber-200">Onay Bekleyen Sakin Başvurusu Var</h4>
+              <p className="text-xs text-amber-800 dark:text-amber-300 mt-0.5">
                 Web üzerinden sitenize kayıt olmuş {pendingCount} adet sakin incelenmeyi beklemektedir.
               </p>
             </div>
@@ -373,7 +373,7 @@ export default function ResidentsPage() {
           <button
             type="button"
             onClick={() => setSelectedStatus(selectedStatus === "Onay Bekliyor" ? "Hepsi" : "Onay Bekliyor")}
-            className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shadow-xs transition-all shrink-0"
+            className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shadow-xs transition-all shrink-0 cursor-pointer"
           >
             {selectedStatus === "Onay Bekliyor" ? "Tüm Sakinleri Göster" : "Başvuruları Listele"}
           </button>
