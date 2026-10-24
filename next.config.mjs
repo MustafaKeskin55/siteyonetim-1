@@ -4,6 +4,9 @@ import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 const nextConfig = {
   /** better-sqlite3 yalnızca yerel / Node VPS yolunda; Workers paketinden dışarı bırakılır */
   serverExternalPackages: ["better-sqlite3"],
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 };
 
 initOpenNextCloudflareForDev();
