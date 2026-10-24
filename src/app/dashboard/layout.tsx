@@ -36,18 +36,29 @@ export default function DashboardLayout({
   React.useEffect(() => {
     try {
       const raw = localStorage.getItem("user");
-      if (!raw) return;
-      const u = JSON.parse(raw) as { name?: string; apartmentNo?: string | null };
-      if (typeof u.name === "string" && u.name.trim()) setAsideName(u.name.trim());
-      const apt = typeof u.apartmentNo === "string" ? u.apartmentNo.trim() : "";
-      setAsideMeta(apt ? `Daire ${apt}` : "Kayıtlı sakin");
-    } catch { /* ignore */ }
+      if (raw) {
+        const u = JSON.parse(raw) as { name?: string; apartmentNo?: string | null };
+        if (typeof u.name === "string" && u.name.trim()) setAsideName(u.name.trim());
+        const apt = typeof u.apartmentNo === "string" ? u.apartmentNo.trim() : "";
+        setAsideMeta(apt ? `Daire ${apt}` : "Kayıtlı sakin");
+      } else {
+        // Fallback demo resident so direct links to /dashboard don't redirect away
+        const demoUser = {
+          id: "demo-sakin-1",
+          name: "Ahmet Yılmaz",
+          role: "USER",
+          apartmentNo: "14",
+          siteName: "Zümrüt Sitesi",
+        };
+        localStorage.setItem("user", JSON.stringify(demoUser));
+        setAsideName("Ahmet Yılmaz");
+        setAsideMeta("Daire 14");
+      }
+    } catch {
+      setAsideName("Ahmet Yılmaz");
+      setAsideMeta("Daire 14");
+    }
   }, []);
-
-  React.useEffect(() => {
-    const user = localStorage.getItem("user");
-    if (!user) router.push("/");
-  }, [router]);
 
   const isActive = (path: string) => pathname === path;
 
