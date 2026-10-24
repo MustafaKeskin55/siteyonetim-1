@@ -11,7 +11,7 @@
     "ci:cloudflare": "npm run build:cf && wrangler deploy",
     "build:next": "next build",
     "start": "next start",
-    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "preview": "opennextjs-cloudflare build --dangerouslyUseUnsupportedNextVersion && opennextjs-cloudflare preview",
     "deploy": "npm run build && wrangler deploy",
     "mobile:setup": "node scripts/setup-mobile.mjs",
     "mobile:sync": "npx cap sync --config capacitor.config.ts",

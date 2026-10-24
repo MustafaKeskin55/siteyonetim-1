@@ -1,7 +1,7 @@
 /** Yerel veya CI: OpenNext derlemesi (iç `npm run build` yalnızca Next çalıştırır). */
 import { spawnSync } from "node:child_process";
 
-const result = spawnSync("npx", ["opennextjs-cloudflare", "build"], {
+const result = spawnSync("npx", ["opennextjs-cloudflare", "build", "--dangerouslyUseUnsupportedNextVersion"], {
   stdio: "inherit",
   shell: true,
   env: { ...process.env, SITEYONETIM_NEXT_ONLY: "1" },

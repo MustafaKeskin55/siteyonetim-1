@@ -20,6 +20,6 @@ const isNextOnly = process.env.SITEYONETIM_NEXT_ONLY === "1";
 if (isNextOnly) {
   run("npx", ["next", "build"]);
 } else {
-  console.log("[siteyonetim] Cloudflare OpenNext tek seferlik hızlı derleme başlatılıyor...");
-  run("npx", ["opennextjs-cloudflare", "build"], { SITEYONETIM_NEXT_ONLY: "1" });
+  console.log("[siteyonetim] Cloudflare OpenNext derlemesi başlatılıyor...");
+  run("npx", ["opennextjs-cloudflare", "build", "--dangerouslyUseUnsupportedNextVersion"], { SITEYONETIM_NEXT_ONLY: "1" });
 }
