@@ -7,6 +7,7 @@ import { NotificationBell } from "@/components/NotificationBell";
 import { SITE_BRAND_NAME } from "@/lib/brand";
 import { Home, CreditCard, Megaphone, Wrench, LogOut, MessagesSquare, User, Bell } from "lucide-react";
 import { SiteFrozenBarrier } from "@/components/SiteFrozenBarrier";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function DashboardLayout({
   children,
@@ -74,44 +75,45 @@ export default function DashboardLayout({
             <NotificationBell role="USER" align="left" />
           </div>
           <div className="flex items-center gap-2 px-1">
-            <div className="h-8 w-8 rounded-full bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center border border-indigo-100 dark:border-indigo-900/30 text-xs font-bold shrink-0">
+            <div className="h-8 w-8 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-sky-400 flex items-center justify-center border border-blue-200 dark:border-blue-900/40 text-xs font-bold shrink-0">
               {asideName.charAt(0).toUpperCase()}
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-bold text-zinc-800 dark:text-zinc-200 truncate">{asideName}</p>
-              <p className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 truncate">{asideMeta}</p>
+              <p className="text-sm font-bold text-slate-900 dark:text-slate-100 truncate">{asideName}</p>
+              <p className="text-xs font-semibold text-blue-600 dark:text-sky-400 truncate">{asideMeta}</p>
             </div>
           </div>
         </div>
 
-        <nav className="flex-1 space-y-1.5 overflow-y-auto">
+        <nav className="flex-1 space-y-1 overflow-y-auto">
           {menuItems.map((item) => {
             const active = isActive(item.href);
             return (
               <a
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-2xl transition-all duration-200 font-medium text-sm ${
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-150 font-medium text-sm ${
                   active
-                    ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/10 font-bold"
-                    : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                    ? "bg-blue-600 text-white shadow-xs font-bold"
+                    : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
                 }`}
               >
-                <item.icon className="h-5 w-5" />
+                <item.icon className="h-4.5 w-4.5 shrink-0" />
                 <span>{item.name}</span>
               </a>
             );
           })}
         </nav>
 
-        <div className="mt-auto border-t border-zinc-100 dark:border-zinc-800/80 pt-4 flex justify-between items-center px-2">
+        <div className="mt-auto border-t border-slate-200 dark:border-slate-800 pt-4 flex justify-between items-center px-1">
+          <ThemeToggle />
           <button
             onClick={async () => {
               try { await fetch("/api/auth/logout", { method: "POST", credentials: "include" }); } catch {}
               localStorage.removeItem("user");
               router.push("/");
             }}
-            className="flex items-center gap-1.5 text-sm text-red-500 dark:text-red-400 hover:text-red-600 font-semibold cursor-pointer"
+            className="flex items-center gap-1.5 text-xs text-rose-600 dark:text-rose-400 hover:underline font-semibold cursor-pointer"
           >
             <LogOut className="h-4 w-4" />
             Çıkış Yap
@@ -120,12 +122,13 @@ export default function DashboardLayout({
       </aside>
 
       {/* ══════ MOBILE HEADER ══════ */}
-      <header className="sm:hidden flex items-center justify-between px-4 h-14 border-b border-zinc-200/60 dark:border-zinc-800/80 bg-white dark:bg-zinc-900 shrink-0">
+      <header className="sm:hidden flex items-center justify-between px-4 h-14 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0b101d] shrink-0">
         <div className="flex items-center gap-2.5 min-w-0">
           <SiteLogo width={28} height={28} alt="" />
-          <span className="text-sm font-bold text-zinc-950 dark:text-zinc-50 truncate">Sakin Paneli</span>
+          <span className="text-sm font-bold text-slate-900 dark:text-white truncate">Sakin Paneli</span>
         </div>
-        <div className="flex items-center gap-1 shrink-0">
+        <div className="flex items-center gap-2 shrink-0">
+          <ThemeToggle />
           <NotificationBell role="USER" align="right" />
           <button
             onClick={async () => {
@@ -133,7 +136,7 @@ export default function DashboardLayout({
               localStorage.removeItem("user");
               router.push("/");
             }}
-            className="p-2 rounded-xl text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors cursor-pointer"
+            className="p-1.5 rounded-xl text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer"
             title="Çıkış Yap"
           >
             <LogOut className="h-4.5 w-4.5" />

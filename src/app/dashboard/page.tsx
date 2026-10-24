@@ -18,355 +18,844 @@ import {
   ChevronRight,
   Send,
   Building2,
+  Camera,
+  Heart,
+  MessageCircle,
+  Share2,
+  PlusCircle,
+  Image as ImageIcon,
+  ShieldCheck,
+  User,
+  Coffee,
+  Gift,
+  HelpCircle,
+  Check,
+  X,
+  Phone,
+  Bookmark,
 } from "lucide-react";
 
-interface Announcement {
-  id: string;
-  title: string;
-  date: string;
-  content: string;
-  category?: string;
-  isNew?: boolean;
-}
-
-interface PaymentRow {
-  id: string;
-  period: string;
-  amount: number;
-  date: string;
-  status: string;
-  type: string;
-}
-
-interface RequestItem {
-  id: string;
-  title: string;
-  category: string;
-  description: string;
-  date: string;
-  status: "Bekliyor" | "İşlemde" | "Çözüldü";
-}
-
-interface CommunityChannel {
+interface Story {
   id: string;
   name: string;
-  slug: string;
-  description: string | null;
-  icon: string;
+  label: string;
+  apt: string;
+  color: string;
+  isUser?: boolean;
+  content: string;
+  time: string;
+  image?: string;
 }
 
-const STATUS_STYLES: Record<string, string> = {
-  Bekliyor: "bg-amber-100 text-amber-800 border-amber-200",
-  İşlemde: "bg-blue-100 text-blue-800 border-blue-200",
-  Çözüldü: "bg-emerald-100 text-emerald-800 border-emerald-200",
-};
+interface FeedPost {
+  id: string;
+  authorName: string;
+  authorApt: string;
+  authorRole?: string;
+  timeAgo: string;
+  content: string;
+  tags?: string[];
+  isPinned?: boolean;
+  image?: string;
+  likes: number;
+  liked: boolean;
+  comments: { author: string; apt: string; text: string; time: string }[];
+  poll?: {
+    question: string;
+    totalVotes: number;
+    userVote?: number;
+    options: { text: string; votes: number }[];
+  };
+}
 
 export default function DashboardPage() {
-  const [loading, setLoading] = React.useState(true);
+  const [residentName, setResidentName] = React.useState("Komşu");
+  const [apartmentNo, setApartmentNo] = React.useState("14");
+  const [siteName, setSiteName] = React.useState("Zümrüt Sitesi");
   const [balance, setBalance] = React.useState(0);
-  const [residentName, setResidentName] = React.useState("");
-  const [apartmentNo, setApartmentNo] = React.useState("");
-  const [announcements, setAnnouncements] = React.useState<Announcement[]>([]);
-  const [activeRequests, setActiveRequests] = React.useState<RequestItem[]>([]);
-  const [channels, setChannels] = React.useState<CommunityChannel[]>([]);
-  const [paidCount, setPaidCount] = React.useState(0);
-  const [totalCount, setTotalCount] = React.useState(0);
+  const [activeStory, setActiveStory] = React.useState<Story | null>(null);
+  const [newPostText, setNewPostText] = React.useState("");
+  const [selectedTag, setSelectedTag] = React.useState<string | null>(null);
 
+  // Initial rich social feed data
+  const [posts, setPosts] = React.useState<FeedPost[]>([
+    {
+      id: "post-announcement",
+      authorName: "Site Yönetim Kurulu",
+      authorApt: "Yönetim Ofisi",
+      authorRole: "YÖNETİCİ RESMİ DUYURUSU",
+      isPinned: true,
+      timeAgo: "2 saat önce",
+      content:
+        "Değerli sakinlerimiz, perşembe günü 10:00 - 13:00 saatleri arasında merkezi asansör ve hidrofor sistemlerinin periyodik güvenlik denetimi yapılacaktır. Kısa süreli su basıncı düşüşü yaşanabilir. Anlayışınız için teşekkür ederiz.",
+      tags: ["#ResmiDuyuru", "#BakımOnarım"],
+      likes: 34,
+      liked: false,
+      comments: [
+        {
+          author: "Murat Bey",
+          apt: "D.8",
+          text: "Bilgilendirme için teşekkürler yönetim.",
+          time: "1 saat önce",
+        },
+      ],
+    },
+    {
+      id: "post-social-1",
+      authorName: "Zeynep & Ali Bey",
+      authorApt: "Daire 6",
+      timeAgo: "45 dk önce",
+      content:
+        "Merhabalar komşular! ☕️🍪 Havalar güzelleşmişken bahçedeki kamelyada komşuluk çayı ve ev yapımı kurabiye ikramı hazırladık. Müsait olan tüm komşularımızı ve çocukları bekleriz!",
+      tags: ["#KomşulukÇayı", "#BahçeBuluşması"],
+      likes: 28,
+      liked: true,
+      comments: [
+        {
+          author: "Kemal Bey",
+          apt: "D.12",
+          text: "15 dakikaya çay bardağımı alıp iniyorum!",
+          time: "30 dk önce",
+        },
+        {
+          author: "Ayşe Hanım",
+          apt: "D.3",
+          text: "Ellerinize sağlık, börek de ben getiriyorum 🥐",
+          time: "12 dk önce",
+        },
+      ],
+    },
+    {
+      id: "post-poll-1",
+      authorName: "Ortak Yaşam Komitesi",
+      authorApt: "D.11 & Yönetim",
+      timeAgo: "3 saat önce",
+      content:
+        "Bina sakinlerimizin ortak kararıyla: Bahçe peyzajında kullanılmayan atıl çim alanına çocuklar için güvenli kauçuk zeminli mini oyun parkı yapılsın mı?",
+      tags: ["#DemokratikOylama", "#BinaGelişimi"],
+      likes: 42,
+      liked: false,
+      comments: [],
+      poll: {
+        question: "Çocuk oyun parkı alanı genişletilsin mi?",
+        totalVotes: 25,
+        userVote: 0,
+        options: [
+          { text: "Evet, kauçuk zeminli çocuk parkı yapılsın", votes: 19 },
+          { text: "Hayır, mevcut yeşil çim alan korunsun", votes: 6 },
+        ],
+      },
+    },
+    {
+      id: "post-borrow-1",
+      authorName: "Ahmet Yılmaz",
+      authorApt: "Daire 9",
+      timeAgo: "5 saat önce",
+      content:
+        "Komşular selam, salona avize takmak için 2 saatliğine yüksek merdiveni olan komşum var mıdır? İşim biter bitmez teslim ederim.",
+      tags: ["#ÖdünçEşya", "#Yardımlaşma"],
+      likes: 12,
+      liked: false,
+      comments: [
+        {
+          author: "Selin Kaya",
+          apt: "D.4",
+          text: "Ahmet Bey bizde 5 basamaklı alüminyum merdiven var, kapıdayım alabilirsiniz.",
+          time: "4 saat önce",
+        },
+        {
+          author: "Ahmet Yılmaz",
+          apt: "D.9",
+          text: "Harikasınız Selin Hanım, 5 dakikaya çalıyorum zilinizi!",
+          time: "4 saat önce",
+        },
+      ],
+    },
+  ]);
+
+  const stories: Story[] = [
+    {
+      id: "s0",
+      name: `Siz (D.${apartmentNo})`,
+      label: "Hikaye Ekle",
+      apt: `D.${apartmentNo}`,
+      color: "border-dashed border-2 border-slate-300 dark:border-slate-700",
+      isUser: true,
+      content: "Komşularınızla anlık fotoğraf veya not paylaşın.",
+      time: "Şimdi",
+    },
+    {
+      id: "s1",
+      name: "Yönetim",
+      label: "Duyuru 📌",
+      apt: "Yönetim",
+      color: "bg-gradient-to-tr from-blue-600 to-indigo-600",
+      content: "Asansör periyodik güvenlik denetimi perşembe günü yapılacaktır.",
+      time: "2 saat önce",
+    },
+    {
+      id: "s2",
+      name: "Daire 6",
+      label: "Çay Saati ☕️",
+      apt: "D.6",
+      color: "bg-gradient-to-tr from-cyan-500 to-blue-600",
+      content: "Kamelyada komşuluk çayı başladı, çayınızı alıp gelin!",
+      time: "45 dk önce",
+    },
+    {
+      id: "s3",
+      name: "Daire 9",
+      label: "Kedi Bulundu 🐱",
+      apt: "D.9",
+      color: "bg-gradient-to-tr from-amber-500 to-orange-500",
+      content: "Bina girişinde tasmali gri bir tekir kedi bulundu. Sahibini arıyoruz.",
+      time: "3 saat önce",
+    },
+    {
+      id: "s4",
+      name: "Daire 12",
+      label: "Matkap Lazım 🔧",
+      apt: "D.12",
+      color: "bg-gradient-to-tr from-emerald-500 to-teal-600",
+      content: "Darbeli matkabı olan var mı? 1 delik delip iade edeceğim.",
+      time: "4 saat önce",
+    },
+    {
+      id: "s5",
+      name: "Daire 18",
+      label: "Temiz Masa 🎁",
+      apt: "D.18",
+      color: "bg-gradient-to-tr from-blue-500 to-sky-400",
+      content: "İhtiyacı olan komşumuza az kullanılmış beyaz çalışma masasını hediye ediyoruz.",
+      time: "5 saat önce",
+    },
+  ];
+
+  // User info fetch from localStorage
   React.useEffect(() => {
     try {
       const raw = localStorage.getItem("user");
       if (raw) {
         const u = JSON.parse(raw);
-        if (u?.name) setResidentName(u.name);
-        if (u?.apartmentNo) setApartmentNo(u.apartmentNo);
+        if (u.name) setResidentName(u.name);
+        if (u.apartmentNo) setApartmentNo(u.apartmentNo);
+        if (u.siteName) setSiteName(u.siteName);
       }
     } catch {}
 
-    let cancelled = false;
-    (async () => {
-      const opts = { credentials: "include" as const };
-      try {
-        const [annRes, reqRes, payRes, chanRes] = await Promise.all([
-          fetch("/api/announcements", opts),
-          fetch("/api/requests", opts),
-          fetch("/api/payments", opts),
-          fetch("/api/community/channels", opts),
-        ]);
-
-        if (!cancelled && annRes.ok) {
-          const j = await annRes.json();
-          setAnnouncements(Array.isArray(j) ? j.slice(0, 2) : []);
+    // Mock aidat bakiye check
+    fetch("/api/payments")
+      .then((res) => (res.ok ? res.json() : []))
+      .then((list) => {
+        if (Array.isArray(list)) {
+          const unpaid = list
+            .filter((p: any) => p.status === "Bekliyor")
+            .reduce((sum: number, p: any) => sum + Number(p.amount || 0), 0);
+          setBalance(unpaid);
         }
-
-        if (!cancelled && reqRes.ok) {
-          const j = await reqRes.json();
-          const allReq = Array.isArray(j) ? (j as RequestItem[]) : [];
-          setActiveRequests(allReq.filter((r) => r.status !== "Çözüldü"));
-        }
-
-        if (!cancelled && payRes.ok) {
-          const plist = await payRes.json();
-          if (Array.isArray(plist)) {
-            const unpaid = plist
-              .filter((p) => p.status === "Bekliyor")
-              .reduce((a, p) => a + Number(p.amount), 0);
-            const paid = plist.filter((p) => p.status !== "Bekliyor").length;
-            setBalance(Number.isFinite(unpaid) ? Math.round(unpaid * 100) / 100 : 0);
-            setPaidCount(paid);
-            setTotalCount(plist.length);
-          }
-        }
-
-        if (!cancelled && chanRes.ok) {
-          const c = await chanRes.json();
-          if (Array.isArray(c)) setChannels(c.slice(0, 4));
-        }
-      } catch {
-        /* ignore */
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
+      })
+      .catch(() => {});
   }, []);
 
-  const hour = new Date().getHours();
-  const greeting = hour < 12 ? "Günaydın" : hour < 18 ? "İyi günler" : "İyi akşamlar";
-
-  if (loading) {
-    return (
-      <div className="p-4 sm:p-8 space-y-6 max-w-5xl mx-auto pb-16">
-        <div className="h-8 w-64 bg-slate-200 rounded-2xl animate-pulse" />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="h-48 bg-slate-100 rounded-3xl animate-pulse" />
-          <div className="h-48 bg-slate-100 rounded-3xl animate-pulse" />
-        </div>
-      </div>
+  const handleLike = (postId: string) => {
+    setPosts((prev) =>
+      prev.map((p) => {
+        if (p.id !== postId) return p;
+        return {
+          ...p,
+          liked: !p.liked,
+          likes: p.liked ? p.likes - 1 : p.likes + 1,
+        };
+      })
     );
-  }
+  };
+
+  const handleVote = (postId: string, optionIndex: number) => {
+    setPosts((prev) =>
+      prev.map((p) => {
+        if (p.id !== postId || !p.poll) return p;
+        const currentVote = p.poll.userVote;
+        if (currentVote === optionIndex) return p;
+
+        const newOptions = p.poll.options.map((opt, idx) => {
+          if (idx === optionIndex) return { ...opt, votes: opt.votes + 1 };
+          if (currentVote !== undefined && idx === currentVote) return { ...opt, votes: Math.max(0, opt.votes - 1) };
+          return opt;
+        });
+
+        const newTotal = currentVote === undefined ? p.poll.totalVotes + 1 : p.poll.totalVotes;
+
+        return {
+          ...p,
+          poll: {
+            ...p.poll,
+            userVote: optionIndex,
+            totalVotes: newTotal,
+            options: newOptions,
+          },
+        };
+      })
+    );
+  };
+
+  const handleCreatePost = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newPostText.trim()) return;
+
+    const newPost: FeedPost = {
+      id: `post-${Date.now()}`,
+      authorName: residentName,
+      authorApt: `Daire ${apartmentNo}`,
+      timeAgo: "Az önce",
+      content: newPostText.trim(),
+      tags: selectedTag ? [selectedTag] : ["#Komşuluk"],
+      likes: 1,
+      liked: true,
+      comments: [],
+    };
+
+    setPosts([newPost, ...posts]);
+    setNewPostText("");
+    setSelectedTag(null);
+  };
 
   return (
-    <div className="p-4 sm:p-8 space-y-8 max-w-5xl mx-auto pb-16">
-      {/* ══════ HERO WELCOME ══════ */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
-            {greeting}{residentName ? `, ${residentName}` : ""} 👋
-          </h2>
-          <p className="text-slate-500 mt-1 text-xs sm:text-sm">
-            {apartmentNo ? `Daire ${apartmentNo} • ` : ""}Apartman dijital yaşam portalınıza hoş geldiniz.
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-200">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            Canlı Komşuluk Ağı
-          </div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold">
-            <Shield className="h-3.5 w-3.5 text-indigo-600" /> KVKK Korumalı
-          </div>
-        </div>
-      </div>
-
-      {/* ══════ KILLER FEATURE: KOMŞULUK AĞI & SOHBET VİTRİNİ ══════ */}
-      <div className="rounded-3xl bg-gradient-to-br from-indigo-900 via-slate-900 to-indigo-950 text-white p-6 sm:p-8 shadow-xl relative overflow-hidden">
-        <div className="absolute right-0 bottom-0 translate-y-6 translate-x-6 opacity-10" aria-hidden>
-          <MessagesSquare className="h-64 w-64" />
-        </div>
-
-        <div className="relative z-10 max-w-2xl space-y-4">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/30 border border-indigo-400/30 text-indigo-200 text-xs font-bold">
-            <Sparkles className="h-3.5 w-3.5 text-indigo-300" />
-            Numaranız Gizli • Güvenli Komşuluk Sohbeti
-          </div>
-
-          <h3 className="text-xl sm:text-2xl font-black text-white leading-tight">
-            Komşularınızla İletişime Geçin, Yardımlaşın ve Bina Kararlarına Katılın
-          </h3>
-
-          <p className="text-xs sm:text-sm text-indigo-200/90 leading-relaxed">
-            WhatsApp karmaşasına ve telefon numarası ifşasına gerek kalmadan; duyuruları takip edin,
-            merdiven/matkap ödünç isteyin, ikinci el eşya paylaşın ve bina anketlerinde oy kullanın.
-          </p>
-
-          <div className="pt-2 flex flex-wrap items-center gap-3">
-            <Link
-              href="/dashboard/topluluk"
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 transition-all"
-            >
-              <MessagesSquare className="h-4 w-4" /> Komşu Sohbetine Katıl
-            </Link>
-
-            <Link
-              href="/dashboard/topluluk"
-              className="inline-flex items-center gap-2 px-4 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs border border-white/15 transition-all"
-            >
-              <Vote className="h-4 w-4 text-amber-300" /> Aktif Oylamaları Gör
-            </Link>
-          </div>
-        </div>
-
-        {/* Hızlı Kanal Butonları */}
-        {channels.length > 0 && (
-          <div className="mt-6 pt-6 border-t border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-2.5 relative z-10">
-            {channels.map((ch) => (
-              <Link
-                key={ch.id}
-                href="/dashboard/topluluk"
-                className="p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all flex items-center gap-2.5 text-xs font-semibold text-slate-200 hover:text-white"
-              >
-                <span className="truncate">{ch.name}</span>
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* ══════ İKİNCİ SIRADA: AİDAT VE TALEPLER ══════ */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Aidat Kartı */}
-        <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200/80 shadow-xs flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                Aidat & Ortak Gider
-              </span>
-              <span className="p-2 rounded-xl bg-slate-100 text-slate-600">
-                <CreditCard className="h-4 w-4" />
-              </span>
+    <div className="min-h-screen bg-slate-100 dark:bg-[#070b14] text-slate-900 dark:text-slate-100 transition-colors">
+      
+      {/* ══════════════════════════════════════════════════════════
+          TOP GREETING & BUILDING IDENTITY BAR
+      ══════════════════════════════════════════════════════════ */}
+      <div className="border-b-2 border-slate-300 dark:border-slate-800 bg-white dark:bg-[#0b101d] sticky top-0 z-30 shadow-xs">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-2xl bg-blue-600 text-white flex items-center justify-center font-black text-sm shadow-sm shrink-0">
+              D.{apartmentNo}
             </div>
-
-            <div className="mb-6">
-              <span className="text-4xl font-black text-slate-900 tabular-nums">
-                ₺{balance.toLocaleString("tr-TR")}
-              </span>
-              <p className="text-xs text-slate-500 mt-2">
-                {balance > 0
-                  ? "Ödenmemiş aidat bakiyeniz bulunmaktadır."
-                  : "Ödenmemiş aidat borcunuz bulunmuyor."}
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white">
+                  {residentName}
+                </h1>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/80 text-blue-700 dark:text-sky-400 border border-blue-200 dark:border-blue-800">
+                  Daire {apartmentNo}
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-0.5">
+                <Building2 className="h-3 w-3 text-slate-400" />
+                <span>{siteName}</span>
+                <span>•</span>
+                <span className="text-emerald-700 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                  <ShieldCheck className="h-3 w-3" /> Telefonunuz Saklı (KVKK Korumalı)
+                </span>
               </p>
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Link
-              href="/dashboard/payment"
-              className="flex items-center justify-center gap-2 w-full py-3.5 px-4 bg-indigo-600 text-white rounded-2xl font-bold text-xs hover:bg-indigo-700 shadow-xs transition-colors"
-            >
-              <Building2 className="h-4 w-4" /> Banka IBAN Bilgisi & Havale Rehberi
-            </Link>
-
-            <Link
-              href="/dashboard/payments"
-              className="flex items-center justify-center gap-1.5 w-full py-2.5 text-slate-600 hover:text-indigo-600 font-semibold text-xs"
-            >
-              Geçmiş Ödemeleri Görüntüle <ChevronRight className="h-3.5 w-3.5" />
-            </Link>
-          </div>
-        </div>
-
-        {/* Aktif Talepler Kartı */}
-        <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200/80 shadow-xs flex flex-col justify-between">
-          <div>
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-bold text-base text-slate-900 flex items-center gap-2">
-                <Wrench className="h-4.5 w-4.5 text-amber-500" /> Arıza & Taleplerim
-              </h3>
-              <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200">
-                {activeRequests.length} açık
-              </span>
+          {/* Quick Badges */}
+          <div className="flex items-center gap-2 text-xs">
+            <div className={`px-3 py-1.5 rounded-xl border font-bold flex items-center gap-1.5 ${
+              balance > 0 
+                ? "bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-700" 
+                : "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700"
+            }`}>
+              <CreditCard className="h-3.5 w-3.5" />
+              <span>{balance > 0 ? `₺${balance.toLocaleString("tr-TR")} Aidat Borcu` : "Aidat Borcu Yok"}</span>
             </div>
 
-            {activeRequests.length === 0 ? (
-              <div className="p-6 text-center text-xs text-slate-500 bg-slate-50 border border-dashed border-slate-200 rounded-2xl">
-                <CheckCircle2 className="h-6 w-6 mx-auto mb-2 text-emerald-500" />
-                Devam eden arıza veya talebiniz bulunmuyor.
-              </div>
-            ) : (
-              <div className="space-y-2.5">
-                {activeRequests.slice(0, 2).map((req) => (
-                  <div
-                    key={req.id}
-                    className={`flex items-start gap-2.5 p-3 rounded-2xl border text-xs ${
-                      STATUS_STYLES[req.status] ?? STATUS_STYLES["Bekliyor"]
-                    }`}
-                  >
-                    <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold truncate">{req.title}</span>
-                        <span className="text-[10px] px-1.5 py-0.2 bg-white/80 rounded font-semibold">
-                          {req.status}
-                        </span>
-                      </div>
-                      <p className="text-[11px] opacity-80 line-clamp-1 mt-0.5">{req.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+            <Link
+              href="/dashboard/topluluk"
+              className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition-all shadow-xs flex items-center gap-1.5"
+            >
+              <MessagesSquare className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Komşu Sohbeti</span>
+            </Link>
           </div>
 
-          <Link
-            href="/dashboard/requests"
-            className="mt-4 w-full py-3.5 px-4 text-center bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-2xl font-bold text-xs transition-colors flex items-center justify-center gap-2"
-          >
-            <Plus className="h-4 w-4" /> Yeni Arıza Bildirimi Yap
-          </Link>
         </div>
       </div>
 
-      {/* ══════ RESMİ DUYURULAR ══════ */}
-      <div>
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-            <Megaphone className="h-5 w-5 text-indigo-600" /> Yönetimden Duyurular
-          </h3>
-          <Link
-            href="/dashboard/announcements"
-            className="text-xs font-bold text-indigo-600 hover:underline flex items-center gap-1"
-          >
-            Tümünü Gör <ArrowRight className="h-3 w-3" />
-          </Link>
-        </div>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-6 pb-20">
 
-        <div className="space-y-3">
-          {announcements.length === 0 ? (
-            <div className="p-8 text-center text-xs text-slate-500 bg-white border border-slate-200 rounded-3xl">
-              <Megaphone className="h-6 w-6 mx-auto mb-2 text-slate-300" />
-              Yayınlanmış resmi duyuru bulunmuyor.
+        {/* ══════════════════════════════════════════════════════════
+            1. LIVE STORIES CAROUSEL (SOSYAL HİKAYELER)
+        ══════════════════════════════════════════════════════════ */}
+        <div className="bg-white dark:bg-[#0d1424] rounded-3xl p-4 sm:p-5 border-2 border-slate-300 dark:border-slate-800 shadow-sm transition-colors">
+          <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-200 dark:border-slate-800 text-xs">
+            <div className="flex items-center gap-2 font-bold text-slate-800 dark:text-slate-200">
+              <Camera className="h-4 w-4 text-blue-600 dark:text-sky-400" />
+              <span>Komşuluk Hikayeleri (24 Saatlik)</span>
             </div>
-          ) : (
-            announcements.map((ann) => (
-              <Link
-                href="/dashboard/announcements"
-                key={ann.id}
-                className="p-5 rounded-3xl bg-white border border-slate-200/80 hover:border-indigo-400 hover:shadow-xs transition-all flex justify-between items-start gap-4 block"
+            <span className="text-[11px] text-slate-500 dark:text-slate-400">
+              Yalnızca bina sakinlerine açık
+            </span>
+          </div>
+
+          <div className="flex items-center gap-4 overflow-x-auto scrollbar-none pb-1">
+            {stories.map((st) => (
+              <div
+                key={st.id}
+                onClick={() => !st.isUser && setActiveStory(st)}
+                className="flex flex-col items-center gap-1.5 shrink-0 cursor-pointer group select-none"
               >
-                <div className="space-y-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <h4 className="font-bold text-xs sm:text-sm text-slate-900 truncate">
-                      {ann.title}
-                    </h4>
-                    {ann.isNew && (
-                      <span className="px-2 py-0.5 text-[9px] font-extrabold bg-rose-100 text-rose-700 rounded-full">
-                        YENİ
-                      </span>
+                <div
+                  className={`h-16 w-16 rounded-full p-[2px] transition-transform duration-200 group-hover:scale-105 ${
+                    st.isUser
+                      ? "border-2 border-dashed border-blue-400 dark:border-blue-500 bg-slate-50 dark:bg-slate-900 flex items-center justify-center"
+                      : st.color
+                  }`}
+                >
+                  <div className="h-full w-full rounded-full bg-white dark:bg-[#0d1424] flex items-center justify-center font-bold text-xs text-slate-800 dark:text-white">
+                    {st.isUser ? (
+                      <Plus className="h-6 w-6 text-blue-600 dark:text-sky-400" />
+                    ) : (
+                      <span>{st.apt}</span>
                     )}
                   </div>
-                  <p className="text-xs text-slate-500 line-clamp-1">{ann.content}</p>
                 </div>
-                <span className="text-[11px] text-slate-400 whitespace-nowrap flex items-center gap-1 shrink-0">
-                  <Clock className="h-3 w-3" /> {ann.date}
+                <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-sky-300 text-center max-w-[70px] truncate">
+                  {st.label}
                 </span>
-              </Link>
-            ))
-          )}
+              </div>
+            ))}
+          </div>
         </div>
+
+        {/* ══════════════════════════════════════════════════════════
+            MAIN GRID: SOCIAL FEED (70%) & WIDGETS (30%)
+        ══════════════════════════════════════════════════════════ */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          
+          {/* ════════════════════════════════════════════════
+              LEFT COLUMN: SOCIAL COMMUNITY FEED (8 COLUMNS)
+          ════════════════════════════════════════════════ */}
+          <div className="lg:col-span-8 space-y-5">
+            
+            {/* Quick Post Box */}
+            <div className="bg-white dark:bg-[#0d1424] rounded-3xl p-5 border-2 border-slate-300 dark:border-slate-800 shadow-sm transition-colors">
+              <form onSubmit={handleCreatePost} className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <div className="h-9 w-9 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold shrink-0">
+                    D.{apartmentNo}
+                  </div>
+                  <textarea
+                    rows={2}
+                    value={newPostText}
+                    onChange={(e) => setNewPostText(e.target.value)}
+                    placeholder={`Komşularınızla ne paylaşmak istersiniz, ${residentName.split(" ")[0]}?`}
+                    className="w-full text-xs sm:text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-2xl p-3 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 resize-none transition-all"
+                  />
+                </div>
+
+                {/* Quick Tags */}
+                <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                  <span className="text-[10px] text-slate-400 font-semibold mr-1">Etiket:</span>
+                  {["#Yardımlaşma", "#ÖdünçEşya", "#İkinciEl", "#Duyuru", "#BahçeÇayı"].map((tag) => (
+                    <button
+                      key={tag}
+                      type="button"
+                      onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
+                      className={`text-[10px] px-2.5 py-1 rounded-full font-mono font-semibold transition-colors cursor-pointer ${
+                        selectedTag === tag
+                          ? "bg-blue-600 text-white"
+                          : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
+                      }`}
+                    >
+                      {tag}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Actions & Submit */}
+                <div className="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-slate-800">
+                  <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
+                    <button
+                      type="button"
+                      className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-blue-600 transition-colors cursor-pointer"
+                      title="Fotoğraf Ekle"
+                    >
+                      <ImageIcon className="h-4 w-4" />
+                    </button>
+                    <Link
+                      href="/dashboard/topluluk"
+                      className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-blue-600 transition-colors cursor-pointer"
+                      title="Anket Başlat"
+                    >
+                      <Vote className="h-4 w-4" />
+                    </Link>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={!newPostText.trim()}
+                    className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold text-xs shadow-xs transition-all flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <span>Gönder</span>
+                    <Send className="h-3 w-3" />
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            {/* Post Feed Items */}
+            <div className="space-y-4">
+              {posts.map((post) => {
+                const isAnnouncement = post.isPinned || post.authorRole;
+                return (
+                  <article
+                    key={post.id}
+                    className={`rounded-3xl p-5 sm:p-6 border-2 transition-colors ${
+                      isAnnouncement
+                        ? "bg-blue-50/60 dark:bg-[#0c162d] border-blue-300 dark:border-blue-800 shadow-sm"
+                        : "bg-white dark:bg-[#0d1424] border-slate-300 dark:border-slate-800 shadow-sm"
+                    }`}
+                  >
+                    {/* Post Top Header */}
+                    <div className="flex items-start justify-between gap-3 pb-3 border-b border-slate-200/90 dark:border-slate-800/80">
+                      <div className="flex items-center gap-3">
+                        <div className={`h-10 w-10 rounded-full flex items-center justify-center font-bold text-xs shrink-0 ${
+                          isAnnouncement
+                            ? "bg-blue-600 text-white"
+                            : "bg-slate-100 dark:bg-slate-800 text-blue-700 dark:text-sky-300 border border-slate-200 dark:border-slate-700"
+                        }`}>
+                          {post.authorApt.startsWith("D.") ? post.authorApt : post.authorApt.slice(0, 3)}
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <h3 className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white">
+                              {post.authorName}
+                            </h3>
+                            {post.authorRole && (
+                              <span className="text-[9px] font-black tracking-wider uppercase px-2 py-0.5 rounded-full bg-blue-600 text-white">
+                                {post.authorRole}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                            {post.authorApt} &bull; {post.timeAgo}
+                          </p>
+                        </div>
+                      </div>
+
+                      <span className="text-[10px] font-mono font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-500/30 shrink-0">
+                        🔒 Numara Gizli
+                      </span>
+                    </div>
+
+                    {/* Post Content */}
+                    <div className="py-4 space-y-3">
+                      <p className="text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed whitespace-pre-line">
+                        {post.content}
+                      </p>
+
+                      {/* Embedded Poll Card */}
+                      {post.poll && (
+                        <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 space-y-3 my-2">
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="font-bold text-slate-800 dark:text-white flex items-center gap-1.5">
+                              <Vote className="h-4 w-4 text-blue-600 dark:text-sky-400" />
+                              Bina İçi Canlı Oylama
+                            </span>
+                            <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                              {post.poll.totalVotes} daire oy kullandı
+                            </span>
+                          </div>
+
+                          <div className="space-y-2">
+                            {post.poll.options.map((opt, oi) => {
+                              const isVoted = post.poll?.userVote === oi;
+                              const percent = post.poll?.totalVotes 
+                                ? Math.round((opt.votes / post.poll.totalVotes) * 100) 
+                                : 0;
+                              return (
+                                <button
+                                  key={oi}
+                                  type="button"
+                                  onClick={() => handleVote(post.id, oi)}
+                                  className={`w-full text-left p-3 rounded-xl border text-xs font-semibold relative overflow-hidden transition-all cursor-pointer ${
+                                    isVoted
+                                      ? "border-blue-600 bg-blue-50/60 dark:bg-blue-950/60 text-slate-900 dark:text-white ring-1 ring-blue-500"
+                                      : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-300"
+                                  }`}
+                                >
+                                  {/* Progress bar fill */}
+                                  <div
+                                    className="absolute inset-y-0 left-0 bg-blue-500/15 dark:bg-blue-500/20 pointer-events-none transition-all duration-500"
+                                    style={{ width: `${percent}%` }}
+                                  />
+                                  <div className="relative z-10 flex items-center justify-between gap-2">
+                                    <div className="flex items-center gap-2">
+                                      <span className={`h-4 w-4 rounded-full border flex items-center justify-center shrink-0 ${
+                                        isVoted ? "border-blue-600 bg-blue-600 text-white" : "border-slate-300 dark:border-slate-600"
+                                      }`}>
+                                        {isVoted && <Check className="h-2.5 w-2.5" />}
+                                      </span>
+                                      <span>{opt.text}</span>
+                                    </div>
+                                    <span className="font-mono font-bold text-slate-900 dark:text-white shrink-0">
+                                      %{percent} ({opt.votes})
+                                    </span>
+                                  </div>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Tags */}
+                      {post.tags && post.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 pt-1">
+                          {post.tags.map((t) => (
+                            <span
+                              key={t}
+                              className="text-[10px] font-mono text-blue-700 dark:text-sky-300 bg-blue-50 dark:bg-blue-950/60 px-2.5 py-0.5 rounded-full border border-blue-200 dark:border-blue-800/60"
+                            >
+                              {t}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Post Bottom Action Bar */}
+                    <div className="flex items-center justify-between pt-3 border-t border-slate-200/90 dark:border-slate-800/80 text-xs">
+                      <div className="flex items-center gap-4">
+                        <button
+                          type="button"
+                          onClick={() => handleLike(post.id)}
+                          className={`flex items-center gap-1.5 font-bold transition-colors cursor-pointer ${
+                            post.liked
+                              ? "text-blue-600 dark:text-sky-400"
+                              : "text-slate-600 dark:text-slate-400 hover:text-blue-600"
+                          }`}
+                        >
+                          <Heart className={`h-4 w-4 ${post.liked ? "fill-blue-600 dark:fill-sky-400" : ""}`} />
+                          <span>{post.likes}</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          className="flex items-center gap-1.5 font-semibold text-slate-600 dark:text-slate-400 hover:text-blue-600 transition-colors cursor-pointer"
+                        >
+                          <MessageCircle className="h-4 w-4" />
+                          <span>{post.comments.length} Yorum</span>
+                        </button>
+                      </div>
+
+                      <Link
+                        href="/dashboard/topluluk"
+                        className="text-[11px] text-blue-600 dark:text-sky-400 font-bold hover:underline flex items-center gap-1"
+                      >
+                        <span>Sohbete Katıl</span>
+                        <ArrowRight className="h-3 w-3" />
+                      </Link>
+                    </div>
+
+                    {/* Comments preview */}
+                    {post.comments.length > 0 && (
+                      <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2">
+                        {post.comments.map((cm, ci) => (
+                          <div key={ci} className="text-xs bg-slate-50 dark:bg-slate-900/70 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 flex items-start gap-2">
+                            <span className="font-bold text-blue-700 dark:text-sky-300 shrink-0">
+                              {cm.apt} &bull; {cm.author}:
+                            </span>
+                            <span className="text-slate-700 dark:text-slate-300">{cm.text}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </article>
+                );
+              })}
+            </div>
+
+          </div>
+
+          {/* ════════════════════════════════════════════════
+              RIGHT COLUMN: BUILDING STATUS & ACTIONS (4 COLUMNS)
+          ════════════════════════════════════════════════ */}
+          <div className="lg:col-span-4 space-y-5">
+            
+            {/* 1. Aidat & Kasa Durumu Kartı */}
+            <div className="bg-white dark:bg-[#0d1424] rounded-3xl p-5 sm:p-6 border-2 border-slate-300 dark:border-slate-800 shadow-sm transition-colors space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                  Aidat &amp; Bakiye
+                </span>
+                <span className="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-sky-400">
+                  <CreditCard className="h-4 w-4" />
+                </span>
+              </div>
+
+              <div>
+                <span className="text-3xl font-black text-slate-900 dark:text-white tabular-nums">
+                  ₺{balance.toLocaleString("tr-TR")}
+                </span>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  {balance > 0 ? "Ödenmemiş aidat bakiyeniz bulunmaktadır." : "Tebrikler, tüm aidatlarınız ödenmiştir."}
+                </p>
+              </div>
+
+              <div className="space-y-2 pt-1">
+                <Link
+                  href="/dashboard/payment"
+                  className="w-full py-3 px-4 rounded-xl text-center bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <Building2 className="h-3.5 w-3.5" />
+                  <span>Banka IBAN &amp; Havale Bildir</span>
+                </Link>
+
+                <Link
+                  href="/dashboard/payments"
+                  className="w-full py-2.5 px-3 rounded-xl text-center text-xs text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-sky-400 font-semibold block transition-colors"
+                >
+                  Makbuz &amp; Geçmiş Ödemeler &rarr;
+                </Link>
+              </div>
+            </div>
+
+            {/* 2. Arıza & Teknik İstek Kartı */}
+            <div className="bg-white dark:bg-[#0d1424] rounded-3xl p-5 sm:p-6 border-2 border-slate-300 dark:border-slate-800 shadow-sm transition-colors space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                <div className="flex items-center gap-2">
+                  <Wrench className="h-4 w-4 text-amber-500" />
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
+                    Arıza &amp; İstek Takibi
+                  </span>
+                </div>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/80 text-blue-700 dark:text-sky-400 border border-blue-200 dark:border-blue-800">
+                  1 İşlemde
+                </span>
+              </div>
+
+              {/* Active Ticket Item */}
+              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 space-y-1 text-xs">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-slate-900 dark:text-white truncate">
+                    3. Kat Koridor Lambası
+                  </span>
+                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-sky-300 font-bold">
+                    İşlemde
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">
+                  Elektrikçiye iş emri verildi, parça bekleniyor.
+                </p>
+              </div>
+
+              <Link
+                href="/dashboard/requests"
+                className="w-full py-3 px-4 rounded-xl text-center bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-bold text-xs transition-all flex items-center justify-center gap-2 block"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span>Fotoğraflı Yeni Arıza Bildir</span>
+              </Link>
+            </div>
+
+            {/* 3. Komşuluk Kanalları Hızlı Menü */}
+            <div className="bg-white dark:bg-[#0d1424] rounded-3xl p-5 sm:p-6 border-2 border-slate-300 dark:border-slate-800 shadow-sm transition-colors space-y-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
+                <MessagesSquare className="h-4 w-4 text-blue-600 dark:text-sky-400" />
+                <span>Tematik Komşuluk Odaları</span>
+              </h3>
+              
+              <div className="space-y-1.5">
+                {[
+                  { name: "#Genel-Sohbet", desc: "Tüm bina sakinleri" },
+                  { name: "#Yardimlasma-Odunc", desc: "Alet ve eşya ödünç alma" },
+                  { name: "#Ikinci-El-Esya", desc: "Devir ve paylaşım" },
+                  { name: "#Bahce-ve-Evcil-Hayvan", desc: "Kediler, köpekler, peyzaj" },
+                ].map((ch) => (
+                  <Link
+                    key={ch.name}
+                    href="/dashboard/topluluk"
+                    className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 hover:bg-blue-50 dark:hover:bg-blue-950/40 border border-slate-200 dark:border-slate-800 transition-all flex items-center justify-between text-xs group"
+                  >
+                    <div>
+                      <span className="font-bold text-slate-800 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-sky-400">
+                        {ch.name}
+                      </span>
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400">{ch.desc}</p>
+                    </div>
+                    <ChevronRight className="h-3.5 w-3.5 text-slate-400 group-hover:text-blue-600" />
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            {/* 4. Yöneticiye Hızlı İletişim */}
+            <div className="bg-gradient-to-br from-blue-50 to-slate-50 dark:from-[#0c162d] dark:to-[#0a0f1c] rounded-3xl p-5 border-2 border-blue-200 dark:border-blue-900/40 text-xs space-y-2">
+              <div className="flex items-center gap-2 text-blue-700 dark:text-sky-300 font-bold">
+                <ShieldCheck className="h-4 w-4" />
+                <span>Apartman Yönetimi</span>
+              </div>
+              <p className="text-slate-600 dark:text-slate-400 text-[11px] leading-relaxed">
+                Kişisel telefon numaraları kapalıdır. Sorularınızı veya resmi dilekçelerinizi doğrudan panel üzerinden yönetime iletebilirsiniz.
+              </p>
+              <Link
+                href="/dashboard/topluluk"
+                className="inline-flex items-center gap-1.5 text-blue-600 dark:text-sky-400 font-bold hover:underline pt-1"
+              >
+                <span>Yöneticiye Özel Mesaj Gönder</span>
+                <ArrowRight className="h-3 w-3" />
+              </Link>
+            </div>
+
+          </div>
+
+        </div>
+
       </div>
+
+      {/* ══════════════════════════════════════════════════════════
+          STORY VIEWER MODAL
+      ══════════════════════════════════════════════════════════ */}
+      {activeStory && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in">
+          <div className="relative w-full max-w-sm bg-slate-900 text-white rounded-3xl overflow-hidden border border-slate-700 shadow-2xl p-6 space-y-4">
+            {/* Story Top Bar */}
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs">
+                  {activeStory.apt}
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-white">{activeStory.name}</h4>
+                  <p className="text-[10px] text-slate-400">{activeStory.time}</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setActiveStory(null)}
+                className="p-1 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 cursor-pointer"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Story Body */}
+            <div className="py-6 text-center space-y-3">
+              <span className="text-3xl">☕️</span>
+              <p className="text-sm font-semibold text-slate-100 leading-relaxed">
+                {activeStory.content}
+              </p>
+            </div>
+
+            {/* Story Footer Action */}
+            <div className="pt-2 border-t border-slate-800 flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => setActiveStory(null)}
+                className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs"
+              >
+                Komşuya Cevap Ver
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
