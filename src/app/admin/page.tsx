@@ -3,24 +3,23 @@
 import * as React from "react";
 import Link from "next/link";
 import {
-  Wallet,
+  Vote,
   Users,
   AlertTriangle,
   ArrowUpRight,
   TrendingUp,
-  DollarSign,
   Activity,
   CheckCircle2,
   Clock,
   RefreshCw,
   Plus,
-  Minus,
   Megaphone,
   Wrench,
   ChevronRight,
   Building2,
-  Receipt,
   UserCheck,
+  MessagesSquare,
+  Sparkles,
 } from "lucide-react";
 import {
   BarChart,
@@ -163,7 +162,7 @@ export default function AdminDashboardPage() {
             Site Yönetim Paneli
           </h1>
           <p className="text-slate-600 mt-1 text-sm">
-            Canlı bina istatistikleri, kasa durumu ve bekleyen sakin onayları
+            Canlı bina istatistikleri, komşuluk etkileşimi ve bekleyen sakin onayları
           </p>
         </div>
         <button
@@ -211,24 +210,24 @@ export default function AdminDashboardPage() {
             className="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-50 hover:bg-indigo-50/80 border border-slate-200 hover:border-indigo-200 transition-all group"
           >
             <div className="w-9 h-9 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-              <Plus className="h-4 w-4" />
+              <Users className="h-4 w-4" />
             </div>
             <div className="min-w-0">
-              <span className="text-xs font-bold text-slate-900 block truncate">Aidat Tanımla</span>
-              <span className="text-[11px] text-slate-600 truncate block">Toplu tahakkuk</span>
+              <span className="text-xs font-bold text-slate-900 block truncate">Sakinleri Yönet</span>
+              <span className="text-[11px] text-slate-600 truncate block">Onay ve daire listesi</span>
             </div>
           </Link>
 
           <Link
-            href="/admin/finans"
+            href="/admin/topluluk#anketler"
             className="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-50 hover:bg-emerald-50/80 border border-slate-200 hover:border-emerald-200 transition-all group"
           >
             <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-              <Wallet className="h-4 w-4" />
+              <Vote className="h-4 w-4" />
             </div>
             <div className="min-w-0">
-              <span className="text-xs font-bold text-slate-900 block truncate">Kasa &amp; Gider</span>
-              <span className="text-[11px] text-slate-600 truncate block">Gelir/Gider ekle</span>
+              <span className="text-xs font-bold text-slate-900 block truncate">Oylama / Anket</span>
+              <span className="text-[11px] text-slate-600 truncate block">Bina kararı başlat</span>
             </div>
           </Link>
 
@@ -273,14 +272,14 @@ export default function AdminDashboardPage() {
           <>
             <div className="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-xs">
               <div className="flex items-center justify-between mb-3">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-600">Net Kasa &amp; Banka</span>
-                <div className="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
-                  <Wallet className="h-5 w-5" />
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-600">Canlı Oylamalar</span>
+                <div className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                  <Vote className="h-5 w-5" />
                 </div>
               </div>
-              <p className="text-2xl sm:text-3xl font-black text-slate-900">{stats.netBalance}</p>
+              <p className="text-2xl sm:text-3xl font-black text-slate-900">3 Aktif Karar</p>
               <span className="text-[11px] text-slate-600 font-medium mt-1 block">
-                Toplam bakiye durumu
+                Demokratik bina oylaması
               </span>
             </div>
 
@@ -293,14 +292,14 @@ export default function AdminDashboardPage() {
               </div>
               <p className="text-2xl sm:text-3xl font-black text-slate-900">{stats.totalResidents}</p>
               <span className="text-[11px] text-emerald-700 font-bold mt-1 block">
-                %{stats.occupancyRate} Tahsilat Oranı
+                %100 Gizli Numara &amp; KVKK
               </span>
             </div>
 
             <div className="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-xs">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-600">Bekleyen Talepler</span>
-                <div className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
                   <Wrench className="h-5 w-5" />
                 </div>
               </div>
@@ -326,27 +325,35 @@ export default function AdminDashboardPage() {
         )}
       </div>
 
-      {/* Financial Chart & Aidat Status Doughnut */}
+      {/* Community Activity Chart & Resident Participation Doughnut */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        {/* Aylık Nakit Akışı */}
+        {/* Haftalık Komşuluk & Etkileşim Grafiği */}
         <div className="lg:col-span-2 bg-white p-6 rounded-3xl border border-slate-200/90 shadow-xs">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-base font-bold text-slate-900">Aylık Finansal Akış</h2>
-              <p className="text-xs text-slate-600 mt-0.5">Gelir ve gider kalemlerinin son 6 aylık karşılaştırması</p>
+              <h2 className="text-base font-bold text-slate-900">Haftalık Komşuluk Etkileşimi</h2>
+              <p className="text-xs text-slate-600 mt-0.5">Sakinlerin paylaştığı gönderi ve karar oylaması katılımları</p>
             </div>
-            <Link href="/admin/finans" className="text-xs font-bold text-indigo-600 hover:underline">
-              Kasa Detayı &rarr;
+            <Link href="/admin/topluluk" className="text-xs font-bold text-blue-600 hover:underline">
+              Topluluk Akışı &rarr;
             </Link>
           </div>
 
           <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={financialData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <BarChart data={[
+                { name: "Pzt", Gönderi: 14, Oylama: 32 },
+                { name: "Sal", Gönderi: 22, Oylama: 45 },
+                { name: "Çar", Gönderi: 18, Oylama: 39 },
+                { name: "Per", Gönderi: 26, Oylama: 58 },
+                { name: "Cum", Gönderi: 35, Oylama: 72 },
+                { name: "Cmt", Gönderi: 31, Oylama: 48 },
+                { name: "Paz", Gönderi: 28, Oylama: 41 },
+              ]} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                 <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} tickLine={false} />
-                <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} tickFormatter={(v) => `₺${v / 1000}k`} />
+                <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} />
                 <Tooltip
                   contentStyle={{
                     backgroundColor: "#ffffff",
@@ -355,65 +362,64 @@ export default function AdminDashboardPage() {
                     boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1)",
                     fontSize: "12px",
                   }}
-                  formatter={(value: unknown) => [
-                    `${Number(value).toLocaleString("tr-TR")} ₺`,
-                  ]}
                 />
                 <Legend wrapperStyle={{ fontSize: "12px", paddingTop: "10px" }} />
-                <Bar dataKey="Gelir" fill="#4f46e5" radius={[6, 6, 0, 0]} maxBarSize={32} />
-                <Bar dataKey="Gider" fill="#f43f5e" radius={[6, 6, 0, 0]} maxBarSize={32} />
+                <Bar dataKey="Gönderi" fill="#2563eb" radius={[6, 6, 0, 0]} maxBarSize={32} />
+                <Bar dataKey="Oylama" fill="#10b981" radius={[6, 6, 0, 0]} maxBarSize={32} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        {/* Aidat Düzenlilik Oranı */}
+        {/* Sakin Katılım Dağılımı */}
         <div className="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-xs flex flex-col">
           <div className="mb-4">
-            <h2 className="text-base font-bold text-slate-900">Aidat Ödeme Dağılımı</h2>
-            <p className="text-xs text-slate-600 mt-0.5">Mevcut sakinlerin borç durumu</p>
+            <h2 className="text-base font-bold text-slate-900">Komşuluk Katılım Oranı</h2>
+            <p className="text-xs text-slate-600 mt-0.5">Bina içi etkileşim durumu</p>
           </div>
 
           <div className="flex-1 flex items-center justify-center min-h-[180px]">
-            {collectionData.length === 0 ? (
-              <p className="text-xs text-slate-600">Kayıtlı sakin verisi yok</p>
-            ) : (
-              <ResponsiveContainer width="100%" height={180}>
-                <PieChart>
-                  <Pie
-                    data={collectionData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={50}
-                    outerRadius={75}
-                    paddingAngle={4}
-                    dataKey="value"
-                  >
-                    {collectionData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "#ffffff",
-                      borderRadius: "12px",
-                      border: "1px solid #e2e8f0",
-                      fontSize: "12px",
-                    }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            )}
+            <ResponsiveContainer width="100%" height={180}>
+              <PieChart>
+                <Pie
+                  data={[
+                    { name: "Aktif Katılan Sakin", value: 84, color: "#2563eb" },
+                    { name: "Pasif İzleyen", value: 16, color: "#94a3b8" },
+                  ]}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={50}
+                  outerRadius={75}
+                  paddingAngle={4}
+                  dataKey="value"
+                >
+                  {[
+                    { name: "Aktif Katılan Sakin", value: 84, color: "#2563eb" },
+                    { name: "Pasif İzleyen", value: 16, color: "#94a3b8" },
+                  ].map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "#ffffff",
+                    borderRadius: "12px",
+                    border: "1px solid #e2e8f0",
+                    fontSize: "12px",
+                  }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
           </div>
 
           <div className="pt-4 border-t border-slate-100 flex justify-around text-xs">
             <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-emerald-500" />
-              <span className="font-semibold text-slate-700">Düzenli Ödeyen</span>
+              <span className="w-3 h-3 rounded-full bg-blue-600" />
+              <span className="font-semibold text-slate-700">%84 Aktif Sakin</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-rose-500" />
-              <span className="font-semibold text-slate-700">Gecikmiş Borçlu</span>
+              <span className="w-3 h-3 rounded-full bg-slate-400" />
+              <span className="font-semibold text-slate-700">%16 Takip Eden</span>
             </div>
           </div>
         </div>

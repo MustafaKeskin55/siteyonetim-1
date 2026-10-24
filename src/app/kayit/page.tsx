@@ -438,7 +438,7 @@ function RegisterFormInner() {
                           name: "Başlangıç",
                           badge: "1 - 50 Daire",
                           price: "₺59",
-                          bullets: ["Sakin Kaydı & Onayı", "Resmi Duyuru Panosu", "Fotoğraflı Arıza Takibi", "Aidat & Kasa Takibi"],
+                          bullets: ["Sakin Kaydı & Onayı", "Resmi Duyuru Panosu", "Fotoğraflı Arıza Takibi", "KVKK Gizli Numara Ağı"],
                         },
                         {
                           id: "professional" as const,
@@ -446,7 +446,7 @@ function RegisterFormInner() {
                           badge: "50 - 200 Daire",
                           isPopular: true,
                           price: "₺109",
-                          bullets: ["Başlangıç'a Ek Olarak:", "Gelişmiş Finans & Kasa", "Komşuluk Ağı & DM", "Bina İçi Canlı Anketler", "Mobil PWA Bildirim"],
+                          bullets: ["Başlangıç'a Ek Olarak:", "24s Komşuluk Hikayeleri", "Komşuluk Ağı & DM", "Bina İçi Canlı Anketler", "Mobil PWA Bildirim"],
                         },
                         {
                           id: "enterprise" as const,

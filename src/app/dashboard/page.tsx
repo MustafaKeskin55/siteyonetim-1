@@ -677,40 +677,44 @@ export default function DashboardPage() {
           ════════════════════════════════════════════════ */}
           <div className="lg:col-span-4 space-y-5">
             
-            {/* 1. Aidat & Kasa Durumu Kartı */}
+            {/* 1. Komşuluk İmecesi & Aktif Oylama Kartı */}
             <div className="bg-white dark:bg-[#0d1424] rounded-3xl p-5 sm:p-6 border-2 border-slate-300 dark:border-slate-800 shadow-sm transition-colors space-y-4">
               <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                  Aidat &amp; Bakiye
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                  <Vote className="h-4 w-4 text-blue-600 dark:text-sky-400" />
+                  Günün Karar Oylaması
                 </span>
-                <span className="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-sky-400">
-                  <CreditCard className="h-4 w-4" />
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                  Canlı Oylama
                 </span>
               </div>
 
               <div>
-                <span className="text-3xl font-black text-slate-900 dark:text-white tabular-nums">
-                  ₺{balance.toLocaleString("tr-TR")}
-                </span>
+                <h4 className="text-sm font-bold text-slate-900 dark:text-white leading-snug">
+                  Güneş Enerjili Çevre Aydınlatması Kurulsun mu?
+                </h4>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                  {balance > 0 ? "Ödenmemiş aidat bakiyeniz bulunmaktadır." : "Tebrikler, tüm aidatlarınız ödenmiştir."}
+                  18 komşumuz oy kullandı. Oylama perşembe 18:00&apos;de sona erecek.
                 </p>
               </div>
 
               <div className="space-y-2 pt-1">
-                <Link
-                  href="/dashboard/payment"
+                <button
+                  onClick={() => {
+                    const el = document.getElementById("post-poll");
+                    if (el) el.scrollIntoView({ behavior: "smooth" });
+                  }}
                   className="w-full py-3 px-4 rounded-xl text-center bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <Building2 className="h-3.5 w-3.5" />
-                  <span>Banka IBAN &amp; Havale Bildir</span>
-                </Link>
+                  <Vote className="h-3.5 w-3.5" />
+                  <span>Oylamaya Katıl &amp; Oy Ver</span>
+                </button>
 
                 <Link
-                  href="/dashboard/payments"
+                  href="/dashboard/topluluk"
                   className="w-full py-2.5 px-3 rounded-xl text-center text-xs text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-sky-400 font-semibold block transition-colors"
                 >
-                  Makbuz &amp; Geçmiş Ödemeler &rarr;
+                  Tüm Komşuluk Kararları &rarr;
                 </Link>
               </div>
             </div>

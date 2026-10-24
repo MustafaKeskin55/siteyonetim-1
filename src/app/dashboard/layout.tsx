@@ -63,11 +63,11 @@ export default function DashboardLayout({
   const isActive = (path: string) => pathname === path;
 
   const menuItems = [
-    { name: "Ana Sayfa", shortName: "Anasayfa", href: "/dashboard", icon: Home },
+    { name: "Komşuluk Akışı", shortName: "Akış", href: "/dashboard", icon: Home },
     { name: "Resmi Duyurular", shortName: "Duyuru", href: "/dashboard/announcements", icon: Megaphone },
     { name: "Komşu Sohbeti", shortName: "Topluluk", href: "/dashboard/topluluk", icon: MessagesSquare },
-    { name: "Aidat & IBAN", shortName: "Aidat", href: "/dashboard/payments", icon: CreditCard },
-    { name: "Taleplerim", shortName: "Talep", href: "/dashboard/requests", icon: Wrench },
+    { name: "Kararlar & Anketler", shortName: "Oylama", href: "/dashboard/topluluk#anketler", icon: MessagesSquare },
+    { name: "Arıza & Taleplerim", shortName: "Talep", href: "/dashboard/requests", icon: Wrench },
     { name: "Bildirimler", shortName: "Bildirim", href: "/dashboard/bildirimler", icon: Bell },
     { name: "Hesabım", shortName: "Hesabım", href: "/dashboard/hesabim", icon: User },
   ];
