@@ -15,6 +15,15 @@ let sqliteMemo: BetterSQLite3Database<typeof schema> | null = null;
  * Yerelde (`next dev` / Node): bağlama yoksa `better-sqlite3` dosya SQLite’a düşülür.
  */
 export async function getPlatformDb(): Promise<PlatformDatabase> {
+  // Yerel geliştirmede (next dev) her zaman data/siteyonetim.db dosya veritabanını kullan
+  if (process.env.NODE_ENV === "development" || process.env.USE_SQLITE === "true") {
+    if (!sqliteMemo) {
+      const internal = await import("./sqlite-internal");
+      sqliteMemo = internal.getBetterSqliteDrizzle();
+    }
+    return sqliteMemo;
+  }
+
   try {
     const mod = await import("@opennextjs/cloudflare");
     const ctx = await mod.getCloudflareContext({ async: true });

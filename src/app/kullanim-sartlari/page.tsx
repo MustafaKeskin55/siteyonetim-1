@@ -50,9 +50,9 @@ export default function KullanimSartlari() {
               <section>
                 <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 mb-3">1. Hizmet Tanımı</h2>
                 <p>
-                  Site Yönetimi, apartman ve site yöneticileri ile sakinleri arasındaki iletişimi
-                  kolaylaştıran, aidat takibi, duyuru yönetimi ve arıza/talep yönetimi sunan
-                  dijital bir platformdur. Platform web tabanlı ve mobil uygulama (PWA) olarak
+                  Site Yönetimi, apartman ve site sakinleri arasındaki komşuluk bağlarını ve iletişimi
+                  güçlendiren, numarasız gizlilik korumalı sosyal akış, anket, duyuru ve fotoğraflı arıza/talep yönetimi
+                  sunan dijital bir komşuluk ağıdır. Platform web tabanlı ve mobil uygulama (PWA) olarak
                   erişilebilir.
                 </p>
               </section>

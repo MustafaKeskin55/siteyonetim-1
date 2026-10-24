@@ -203,7 +203,7 @@ export function PricingSection() {
           </span>
           <span className="flex items-center gap-2 font-medium">
             <Timer className="h-4 w-4 text-indigo-500" />
-            14 gün ücretsiz deneme
+            Lansmana Özel 60 Gün Ücretsiz Deneme
           </span>
           <span className="flex items-center gap-2 font-medium">
             <Heart className="h-4 w-4 text-rose-500" />

@@ -1,11 +1,18 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { verifyJwt } from "@/lib/auth";
 
 export async function GET() {
   try {
     const cookieStore = await cookies();
-    const token = cookieStore.get("token")?.value;
+    let token = cookieStore.get("token")?.value;
+    if (!token) {
+      const h = await headers();
+      const authHeader = h.get("authorization") || h.get("Authorization");
+      if (authHeader && authHeader.startsWith("Bearer ")) {
+        token = authHeader.substring(7).trim();
+      }
+    }
     if (!token) {
       return NextResponse.json({ authenticated: false, user: null });
     }

@@ -52,10 +52,10 @@ export default function GizlilikPolitikasi() {
                 <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 mb-3">1. Toplanan Veriler</h2>
                 <p>Platformumuz aşağıdaki kişisel verileri toplar ve işler:</p>
                 <ul className="list-disc list-inside space-y-2 mt-3">
-                  <li><strong>Hesap bilgileri:</strong> Ad Soyad, e-posta adresi veya telefon numarası</li>
-                  <li><strong>Site bilgileri:</strong> Apartman/site adı, adres, daire numarası</li>
-                  <li><strong>Finansal veriler:</strong> Aidat borçları, ödeme durumları, IBAN bilgisi</li>
-                  <li><strong>Talep verileri:</strong> Arıza talepleri, duyuru okuma geçmişi</li>
+                  <li><strong>Hesap bilgileri:</strong> Ad Soyad, e-posta adresi veya telefon numarası (numaranız gizli tutulur)</li>
+                  <li><strong>Site bilgileri:</strong> Apartman/site adı, blok ve daire numarası</li>
+                  <li><strong>Sosyal etkileşim verileri:</strong> Komşuluk gönderileri, yorumlar, anket oyları ve duyuru onayları</li>
+                  <li><strong>Talep verileri:</strong> Fotoğraflı arıza ve ortak alan bakım talepleri</li>
                   <li><strong>Teknik veriler:</strong> Oturum bilgileri, cihaz türü, IP adresi (sadece güvenlik amaçlı)</li>
                 </ul>
               </section>

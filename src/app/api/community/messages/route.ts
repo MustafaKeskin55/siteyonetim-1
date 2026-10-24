@@ -212,7 +212,7 @@ export async function POST(req: Request) {
     }
 
     const messageId = "msg_" + nanoid(12);
-    const contentStr: string = content ? String(content).trim() : (poll?.question ? String(poll.question).trim() : "Paylaşım");
+    const contentStr: string = content ? String(content).trim() : (poll?.question ? String(poll.question).trim() : "");
 
     await d.db.insert(communityMessages).values({
       id: messageId,
@@ -242,7 +242,11 @@ export async function DELETE(req: Request) {
     if (!d.ok) return await databaseUnavailable();
 
     const { searchParams } = new URL(req.url);
-    const messageId = searchParams.get("id");
+    let messageId = searchParams.get("id");
+    if (!messageId) {
+      const body = (await req.json().catch(() => ({}))) as { id?: string; messageId?: string };
+      messageId = body?.id || body?.messageId || null;
+    }
     if (!messageId) {
       return NextResponse.json({ error: "Mesaj ID zorunludur" }, { status: 400 });
     }
@@ -254,7 +258,7 @@ export async function DELETE(req: Request) {
       .limit(1);
 
     if (!msg) {
-      return NextResponse.json({ error: "Mesaj bulunamadı" }, { status: 404 });
+      return NextResponse.json({ success: true, message: "Mesaj zaten silinmiş" });
     }
 
     const isAuthor = msg.userId === session.id;
@@ -270,5 +274,56 @@ export async function DELETE(req: Request) {
   } catch (err: unknown) {
     console.error("DELETE /api/community/messages error:", err);
     return NextResponse.json({ error: "Mesaj silinemedi" }, { status: 500 });
+  }
+}
+
+export async function PATCH(req: Request) {
+  try {
+    const session = await getSession();
+    if (!session || !session.id) {
+      return NextResponse.json({ error: "Oturum açmanız gerekiyor" }, { status: 401 });
+    }
+
+    const d = await acquireDatabase();
+    if (!d.ok) return await databaseUnavailable();
+
+    const body = (await req.json().catch(() => ({}))) as {
+      id?: string;
+      content?: string;
+    };
+    const { id, content } = body;
+
+    if (!id || typeof id !== "string") {
+      return NextResponse.json({ error: "Mesaj ID zorunludur" }, { status: 400 });
+    }
+    if (!content || typeof content !== "string" || !content.trim()) {
+      return NextResponse.json({ error: "Mesaj içeriği boş olamaz" }, { status: 400 });
+    }
+
+    const [msg] = await d.db
+      .select()
+      .from(communityMessages)
+      .where(eq(communityMessages.id, id))
+      .limit(1);
+
+    if (!msg) {
+      return NextResponse.json({ error: "Mesaj bulunamadı" }, { status: 404 });
+    }
+
+    const isAuthor = msg.userId === session.id;
+    const isAdmin = session.role === "ADMIN" || session.role === "SUPER_ADMIN";
+    if (!isAuthor && !isAdmin) {
+      return NextResponse.json({ error: "Bu mesajı düzenleme yetkiniz yok" }, { status: 403 });
+    }
+
+    await d.db
+      .update(communityMessages)
+      .set({ content: content.trim() })
+      .where(eq(communityMessages.id, id));
+
+    return NextResponse.json({ success: true, messageId: id, content: content.trim() });
+  } catch (err: unknown) {
+    console.error("PATCH /api/community/messages error:", err);
+    return NextResponse.json({ error: "Mesaj düzenlenemedi" }, { status: 500 });
   }
 }

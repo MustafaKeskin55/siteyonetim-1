@@ -115,6 +115,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       message: "Giriş başarılı",
+      token,
       mustChangePassword,
       user: {
         id: user.id,
@@ -125,7 +126,7 @@ export async function POST(request: Request) {
       },
     });
   } catch (error: unknown) {
-    const msg = error instanceof Error ? error.message : String(error);
-    return NextResponse.json({ error: "Sunucu hatası", details: msg }, { status: 500 });
+    console.error("LOGIN API ERROR:", error);
+    return NextResponse.json({ error: "Sunucu hatası. Lütfen tekrar deneyin." }, { status: 500 });
   }
 }

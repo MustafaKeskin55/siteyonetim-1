@@ -69,47 +69,47 @@ export default function SifremiUnuttumPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-zinc-50 dark:bg-[#0b0f19] px-4 py-12">
-      <div className="w-full max-w-md p-8 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xl space-y-6">
+    <div className="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-[#070b14] px-4 py-12 transition-colors">
+      <div className="w-full max-w-md p-8 rounded-3xl border-2 border-slate-300 dark:border-slate-800 bg-white dark:bg-[#0d1424] shadow-xl ring-1 ring-slate-900/5 space-y-6">
         <div className="flex justify-center">
-          <SiteLogo width={64} height={64} rounded className="rounded-xl" alt="" />
+          <SiteLogo width={64} height={64} rounded className="rounded-xl ring-1 ring-slate-300 dark:ring-slate-700 shadow-xs" alt="" />
         </div>
         <div className="text-center space-y-1">
-          <h1 className="text-xl font-black text-zinc-900 dark:text-white">Şifre sıfırlama</h1>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
-            Kayıtlı <strong>e-posta adresinize</strong> logo ve marka ile sıfırlama bağlantısı gönderilir. Sistemde
-            kayıtlı olmayan bir adres için mail gönderilmez (güvenlik nedeniyle yine de başarı mesajı görünebilir).
+          <h1 className="text-xl font-black text-slate-900 dark:text-white">Şifre sıfırlama</h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+            Kayıtlı <strong>e-posta adresinize</strong> sıfırlama bağlantısı gönderilir. Sistemde
+            kayıtlı olmayan bir adres için mail gönderilmez.
           </p>
         </div>
         {emailReady === false && (
-          <div className="text-xs rounded-xl border border-amber-200 bg-amber-50 text-amber-900 p-3 space-y-1">
+          <div className="text-xs rounded-xl border-2 border-amber-300 bg-amber-50 dark:bg-amber-950/60 text-amber-900 dark:text-amber-200 p-3 space-y-1">
             <p className="font-semibold">
               Sunucuda e-posta ayarları henüz tamamlanmadı.
               {emailMissing.length > 0 ? (
                 <> Eksik değişken: <strong>{emailMissing.join(", ")}</strong></>
               ) : null}
             </p>
-            <p className="text-[11px] text-amber-800">
+            <p className="text-[11px] text-amber-800 dark:text-amber-300">
               Lütfen Cloudflare / Sunucu panelinizden <code>RESEND_API_KEY</code> ortam değişkenini tanımlayın.
             </p>
           </div>
         )}
         {msg ? (
-          <div className="text-sm rounded-xl border border-emerald-200 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-900 dark:text-emerald-100 p-3">
+          <div className="text-sm rounded-xl border-2 border-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-100 p-3 font-medium">
             {msg}
           </div>
         ) : null}
-        {err ? <div className="text-sm text-red-600 dark:text-red-400 p-2">{err}</div> : null}
+        {err ? <div className="text-sm text-rose-600 dark:text-rose-400 p-2 font-medium">{err}</div> : null}
         {!msg ? (
           <form onSubmit={onSubmit} className="space-y-4">
             <div>
-              <label className="text-xs font-bold text-zinc-500 uppercase mb-1 block">E-posta</label>
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1 block">E-posta</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950 py-3 px-3 outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full rounded-xl border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white py-3 px-3 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 shadow-xs transition-all"
                 placeholder="Kayıtlı e-posta adresiniz"
                 autoComplete="email"
               />
@@ -117,14 +117,14 @@ export default function SifremiUnuttumPage() {
             <button
               type="submit"
               disabled={busy || emailReady === false}
-              className="w-full py-3 rounded-xl bg-indigo-600 text-white font-bold text-sm disabled:opacity-60"
+              className="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md transition-all disabled:opacity-60 cursor-pointer"
             >
               {busy ? "Gönderiliyor..." : "Sıfırlama bağlantısı gönder"}
             </button>
           </form>
         ) : null}
-        <p className="text-center text-xs text-zinc-500">
-          <Link href="/login" className="underline font-semibold text-indigo-600 dark:text-indigo-400">
+        <p className="text-center text-xs text-slate-500 dark:text-slate-400">
+          <Link href="/login" className="underline font-semibold text-blue-600 dark:text-sky-400 hover:underline">
             Girişe dön
           </Link>
         </p>

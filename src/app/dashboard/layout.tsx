@@ -6,6 +6,7 @@ import { SiteLogo } from "@/components/SiteLogo";
 import { NotificationBell } from "@/components/NotificationBell";
 import { SITE_BRAND_NAME } from "@/lib/brand";
 import { Home, CreditCard, Megaphone, Wrench, LogOut, MessagesSquare, User, Bell } from "lucide-react";
+import { SiteFrozenBarrier } from "@/components/SiteFrozenBarrier";
 
 export default function DashboardLayout({
   children,
@@ -16,6 +17,20 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const [asideName, setAsideName] = React.useState("Sakin");
   const [asideMeta, setAsideMeta] = React.useState("");
+  const [sitePlan, setSitePlan] = React.useState<{
+    isFrozen?: boolean;
+    planName?: string;
+    daysRemaining?: number;
+  } | null>(null);
+
+  React.useEffect(() => {
+    fetch("/api/site/plan")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((d) => {
+        if (d) setSitePlan(d);
+      })
+      .catch(() => {});
+  }, []);
 
   React.useEffect(() => {
     try {
@@ -155,6 +170,11 @@ export default function DashboardLayout({
           })}
         </div>
       </nav>
+
+      {/* 60 Günlük Deneme Süresi Dolduğunda Tüm İşlemleri Donduran Bariyer */}
+      {sitePlan?.isFrozen && (
+        <SiteFrozenBarrier role="USER" planName={sitePlan.planName} />
+      )}
     </div>
   );
 }

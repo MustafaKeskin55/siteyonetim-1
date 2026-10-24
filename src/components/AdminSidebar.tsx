@@ -24,7 +24,9 @@ import {
   Building2,
   MessagesSquare,
   Bell,
+  Clock,
 } from "lucide-react";
+import { SiteFrozenBarrier } from "@/components/SiteFrozenBarrier";
 
 const NAV_ITEMS: {
   name: string;
@@ -52,6 +54,21 @@ export function AdminSidebar({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [managerRole, setManagerRole] = React.useState<string | null>(null);
   const [ready, setReady] = React.useState(false);
+  const [sitePlan, setSitePlan] = React.useState<{
+    isFrozen?: boolean;
+    planName?: string;
+    daysRemaining?: number;
+    isExpired?: boolean;
+  } | null>(null);
+
+  React.useEffect(() => {
+    fetch("/api/site/plan")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((d) => {
+        if (d) setSitePlan(d);
+      })
+      .catch(() => {});
+  }, []);
 
   React.useEffect(() => {
     const raw = localStorage.getItem("user");
@@ -197,12 +214,18 @@ export function AdminSidebar({ children }: { children: React.ReactNode }) {
         <header className="hidden lg:flex items-center justify-between h-16 px-8 bg-white border-b border-slate-200/80 shrink-0">
           <div className="flex items-center gap-3">
             <span className="text-sm font-extrabold text-slate-900">Yönetici Kontrol Paneli</span>
+            {sitePlan && !sitePlan.isFrozen && typeof sitePlan.daysRemaining === "number" && (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold border border-blue-200">
+                <span className="h-2 w-2 rounded-full bg-blue-600 animate-pulse" />
+                Lansman Denemesi: {sitePlan.daysRemaining} gün kaldı
+              </span>
+            )}
           </div>
           <div className="flex items-center gap-3">
             <NotificationBell role="ADMIN" align="right" />
             <Link
               href="/"
-              className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 px-3 py-1.5 rounded-xl hover:bg-indigo-50 transition"
+              className="text-xs font-semibold text-blue-600 hover:text-blue-700 px-3 py-1.5 rounded-xl hover:bg-blue-50 transition"
             >
               Siteye Dön &rarr;
             </Link>
@@ -222,7 +245,7 @@ export function AdminSidebar({ children }: { children: React.ReactNode }) {
           </div>
           <div className="flex items-center gap-2">
             <NotificationBell role="ADMIN" align="right" />
-            <Link href="/" className="text-xs font-semibold text-indigo-600 hover:underline">
+            <Link href="/" className="text-xs font-semibold text-blue-600 hover:underline">
               Siteye Dön
             </Link>
           </div>
@@ -235,6 +258,11 @@ export function AdminSidebar({ children }: { children: React.ReactNode }) {
           </div>
         </main>
       </div>
+
+      {/* 60 Günlük Deneme Süresi Dolduğunda Tüm İşlemleri Donduran Bariyer */}
+      {sitePlan?.isFrozen && (
+        <SiteFrozenBarrier role={managerRole} planName={sitePlan.planName} />
+      )}
 
     </div>
   );

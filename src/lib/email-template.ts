@@ -186,9 +186,9 @@ export function buildBaseEmailWrapper(opts: {
         <!-- Ana Kart Kapsayıcı (Max 580px, Modern Glassmorphism & Shadow) -->
         <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width: 580px; background-color: #ffffff; border-radius: 28px; overflow: hidden; box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.08), 0 0 1px 1px rgba(226, 232, 240, 0.8); border: 1px solid #e2e8f0;">
 
-          <!-- Üst Canlı Degrade Şerit (Indigo -> Purple -> Pink) -->
+          <!-- Üst Canlı Degrade Şerit (Corporate Blue -> Indigo -> Cyan) -->
           <tr>
-            <td style="height: 6px; background: linear-gradient(90deg, #4f46e5 0%, #7c3aed 50%, #ec4899 100%); font-size: 0; line-height: 0;">&nbsp;</td>
+            <td style="height: 6px; background: linear-gradient(90deg, #2563eb 0%, #4f46e5 50%, #0284c7 100%); font-size: 0; line-height: 0;">&nbsp;</td>
           </tr>
 
           <!-- Başlık & Logo Alanı (Modern Brand Header) -->

@@ -25,6 +25,7 @@ type RegisterBody = {
   newSiteName?: unknown;
   apartmentNo?: unknown;
   accountType?: unknown; // "RESIDENT" | "MANAGER"
+  selectedPlan?: unknown; // "starter" | "professional" | "enterprise"
 };
 
 export async function POST(request: Request) {
@@ -38,6 +39,7 @@ export async function POST(request: Request) {
     const newSiteName = typeof raw.newSiteName === "string" ? raw.newSiteName.trim() : "";
     let apartmentNo = typeof raw.apartmentNo === "string" ? raw.apartmentNo.trim() : "";
     const accountType = raw.accountType === "MANAGER" ? "MANAGER" : "RESIDENT";
+    const selectedPlanRaw = typeof raw.selectedPlan === "string" ? raw.selectedPlan.trim().toLowerCase() : "";
 
     if (!name || name.length < 2) {
       return NextResponse.json({ error: "Lütfen geçerli bir ad soyad girin." }, { status: 400 });
@@ -148,15 +150,33 @@ export async function POST(request: Request) {
       if (!newSiteName) {
         return NextResponse.json({ error: "Lütfen yöneteceğiniz site / apartman adını girin." }, { status: 400 });
       }
+
+      const allowedPlans = ["starter", "professional", "enterprise"] as const;
+      type AllowedPlan = (typeof allowedPlans)[number];
+      const planToSet: AllowedPlan | null = allowedPlans.includes(selectedPlanRaw as AllowedPlan)
+        ? (selectedPlanRaw as AllowedPlan)
+        : null;
+
+      if (!planToSet) {
+        return NextResponse.json(
+          { error: "Hesap oluşturabilmek için bir hizmet paketi seçmelisiniz. (Lansmana özel ilk 60 gün tamamen ücretsizdir.)" },
+          { status: 400 }
+        );
+      }
+
       siteId = generateSafeId();
       const generatedCode = generateSiteInviteCode(newSiteName, siteId);
+      // Lansmana özel 60 gün ücretsiz deneme
+      const trialDurationDays = 60;
+      const planExpiresAt = new Date(Date.now() + trialDurationDays * 24 * 60 * 60 * 1000).toISOString();
 
       let inserted = false;
       try {
         await db.insert(sites).values({
           id: siteId,
           name: newSiteName,
-          plan: "starter",
+          plan: planToSet,
+          planExpiresAt: planExpiresAt,
           inviteCode: generatedCode,
         });
         inserted = true;
@@ -167,7 +187,7 @@ export async function POST(request: Request) {
       if (!inserted) {
         try {
           await db.run(
-            sql`INSERT INTO sites (id, name, plan) VALUES (${siteId}, ${newSiteName}, 'starter')`
+            sql`INSERT INTO sites (id, name, plan, plan_expires_at, invite_code) VALUES (${siteId}, ${newSiteName}, ${planToSet}, ${planExpiresAt}, ${generatedCode})`
           );
           inserted = true;
         } catch (rawErr) {
@@ -178,8 +198,9 @@ export async function POST(request: Request) {
       if (!inserted) {
         try {
           await db.run(
-            sql`INSERT INTO sites (id, name) VALUES (${siteId}, ${newSiteName})`
+            sql`INSERT INTO sites (id, name, plan, plan_expires_at) VALUES (${siteId}, ${newSiteName}, ${planToSet}, ${planExpiresAt})`
           );
+          inserted = true;
         } catch (rawErr2) {
           console.error("Sites raw SQL failed:", rawErr2);
           throw rawErr2;
@@ -305,7 +326,7 @@ export async function POST(request: Request) {
       ok: true,
       message:
         accountType === "MANAGER"
-          ? "Site ve yönetici hesabınız başarıyla oluşturuldu! Şimdi giriş yapabilirsiniz."
+          ? "Site ve yönetici hesabınız oluşturuldu! Lansmana özel 60 günlük ücretsiz deneme süreniz tanımlandı. Şimdi giriş yapabilirsiniz."
           : "Kaydınız başarıyla oluşturuldu! Şimdi giriş yapabilirsiniz.",
       status: "APPROVED",
       siteName: resolvedSiteName,

@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { verifyJwt } from "./auth";
 
 export type SessionPayload = {
@@ -9,11 +9,24 @@ export type SessionPayload = {
   apartmentNo?: string | null;
 };
 
-/** HttpOnly JWT cookie → oturum (API route handlers). */
+/** HttpOnly JWT cookie veya Bearer Header → oturum (API route handlers). */
 export async function getSession(): Promise<SessionPayload | null> {
   try {
+    let t: string | undefined;
+    
+    // 1. Önce cookies kontrol et
     const c = await cookies();
-    const t = c.get("token")?.value;
+    t = c.get("token")?.value;
+
+    // 2. Cookie yoksa Authorization: Bearer <token> başlığını kontrol et (Mobil / Native)
+    if (!t) {
+      const h = await headers();
+      const authHeader = h.get("authorization") || h.get("Authorization");
+      if (authHeader && authHeader.startsWith("Bearer ")) {
+        t = authHeader.substring(7).trim();
+      }
+    }
+
     if (!t) return null;
     const p = await verifyJwt(t);
     if (

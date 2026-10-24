@@ -1,0 +1,188 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --sat: env(safe-area-inset-top, 0px);
+    --sab: env(safe-area-inset-bottom, 0px);
+    --sal: env(safe-area-inset-left, 0px);
+    --sar: env(safe-area-inset-right, 0px);
+  }
+
+  body {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    user-select: none;
+    background-color: #fafbfe;
+  }
+
+  input, textarea {
+    user-select: text;
+  }
+}
+
+/* iOS Smooth momentum scrolling */
+.smooth-scroll {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 3px;
+  height: 3px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.25);
+  border-radius: 9999px;
+}
+
+/* Modern clean card shadow & glassmorphism */
+.glass-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.04), 0 2px 6px -1px rgba(15, 23, 42, 0.02);
+}
+
+.glass-pill {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.7);
+}
+
+.ambient-glow {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(48px);
+  pointer-events: none;
+  opacity: 0.45;
+}
+
+/* Elegant gradients */
+.gradient-primary {
+  background: linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #818cf8 100%);
+}
+
+.gradient-mint {
+  background: linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%);
+}
+
+.gradient-coral {
+  background: linear-gradient(135deg, #e11d48 0%, #f43f5e 50%, #fb7185 100%);
+}
+
+.gradient-hero {
+  background: linear-gradient(135deg, #3730a3 0%, #4338ca 60%, #4f46e5 100%);
+}
+
+.gradient-btn {
+  background: #4f46e5;
+}
+
+.gradient-chat-bubble {
+  background: #4f46e5;
+}
+
+/* Safe Area Insets */
+.pt-safe {
+  padding-top: max(12px, var(--sat));
+}
+.pb-safe {
+  padding-bottom: max(16px, var(--sab));
+}
+
+/* Tap micro-animation */
+.active-bounce:active {
+  transform: scale(0.96);
+  transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Premium Phone Frame Shadow (Ultra-sleek titanium aesthetic) */
+.phone-shadow {
+  box-shadow: 0 25px 60px -15px rgba(99, 102, 241, 0.12), 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 0 0 1px rgba(226, 232, 240, 0.8);
+}
+
+/* Sleek Frameless Animated Hero Logo */
+@keyframes logo-float {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+    filter: drop-shadow(0 8px 16px rgba(99, 102, 241, 0.22));
+  }
+  50% {
+    transform: translateY(-6px) scale(1.03);
+    filter: drop-shadow(0 16px 24px rgba(99, 102, 241, 0.35));
+  }
+}
+
+@keyframes logo-glow-pulse {
+  0%, 100% {
+    opacity: 0.35;
+    transform: scale(0.92);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.12);
+  }
+}
+
+.animate-logo-float {
+  animation: logo-float 3.5s ease-in-out infinite;
+  will-change: transform, filter;
+}
+
+.animate-logo-glow {
+  animation: logo-glow-pulse 3.5s ease-in-out infinite;
+  will-change: opacity, transform;
+}
+
+/* Fluid Floating Brand Animation */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-7px) rotate(0.4deg);
+  }
+}
+
+.animate-float {
+  animation: float 4.2s ease-in-out infinite;
+}
+
+/* Pulsing Radiant Aura */
+@keyframes aura-pulse {
+  0%, 100% {
+    transform: scale(0.92);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scale(1.18);
+    opacity: 0.85;
+  }
+}
+
+.animate-aura {
+  animation: aura-pulse 3.8s ease-in-out infinite;
+}
+
+/* Luxury Gold VIP Glow */
+@keyframes vip-pulse {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(234, 179, 8, 0.3), 0 0 30px rgba(245, 158, 11, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(234, 179, 8, 0.5), 0 0 45px rgba(245, 158, 11, 0.3);
+  }
+}
+
+.vip-glow {
+  animation: vip-pulse 3s ease-in-out infinite;
+}
+

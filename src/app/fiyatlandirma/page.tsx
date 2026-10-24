@@ -1,66 +1,64 @@
 "use client";
 
-import * as React from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import {
-  Check,
-  CheckCircle2,
-  HelpCircle,
-  ShieldCheck,
-  Zap,
-  ArrowRight,
-  Building2,
-  Sparkles,
-} from "lucide-react";
+import { Check, ShieldCheck, Zap } from "lucide-react";
 
 export default function PricingPage() {
-  const [isAnnual, setIsAnnual] = React.useState(false);
+  const [isAnnual, setIsAnnual] = useState(true);
 
   const plans = [
     {
       name: "Başlangıç",
-      desc: "1 - 20 dairelik küçük apartmanlar ve butik binalar için",
-      monthlyPrice: 149,
-      annualPrice: 119,
+      desc: "1 - 20 dairelik butik apartmanlar ve küçük binalar için",
+      originalMonthlyPrice: 189,
+      originalAnnualPrice: 149,
+      monthlyPrice: 59,
+      annualPrice: 45,
       popular: false,
       features: [
         "20 Daireye Kadar Sakin Yönetimi",
-        "Aylık Aidat ve Borç Takibi",
-        "E-Posta Makbuz Bildirimleri",
+        "KVKK Numarasız Komşu Ağı",
+        "Görsel Komşu Akışı & Hikayeler",
+        "Canlı Komşuluk Anketleri",
         "Dijital Duyuru Panosu",
-        "Arıza & Talep Takip Sistemi",
+        "Fotoğraflı Arıza & İstek Takibi",
         "1 Yönetici Hesabı",
-        "E-posta ile Standart Destek",
+        "Standart Destek",
       ],
-      cta: "14 Gün Ücretsiz Başla",
-      href: "/kayit",
+      cta: "60 Gün Ücretsiz Başla",
+      href: "/kayit?plan=starter",
     },
     {
       name: "Profesyonel",
       desc: "21 - 80 dairelik orta ve büyük ölçekli siteler için ideal",
-      monthlyPrice: 349,
-      annualPrice: 279,
+      originalMonthlyPrice: 349,
+      originalAnnualPrice: 279,
+      monthlyPrice: 109,
+      annualPrice: 85,
       popular: true,
       features: [
         "80 Daireye Kadar Sakin Yönetimi",
         "Tüm Başlangıç Özellikleri",
-        "Gelişmiş Kasa ve Gelir/Gider Raporu",
+        "Özel Komşuluk Kanalları (İmece, İkinci El)",
         "Yönetici Onaylı Sakin Kayıt Mekanizması",
-        "Toplu E-Posta Gönderimi",
+        "Fotoğraflı Tamir & Çözüm Akışı",
         "3 Yönetici & Denetçi Hesabı",
         "Öncelikli Telefon ve Canlı Destek",
         "Excel Veri İçe/Dışa Aktarma",
       ],
-      cta: "En Çok Tercih Edilen",
-      href: "/kayit",
+      cta: "60 Gün Ücretsiz Başla",
+      href: "/kayit?plan=professional",
     },
     {
       name: "Kurumsal & Tesis",
       desc: "80+ daire, çok bloklu siteler ve profesyonel yönetim firmaları",
-      monthlyPrice: 699,
-      annualPrice: 559,
+      originalMonthlyPrice: 699,
+      originalAnnualPrice: 559,
+      monthlyPrice: 209,
+      annualPrice: 169,
       popular: false,
       features: [
         "Sınırsız Daire ve Blok Tanımlama",
@@ -68,41 +66,49 @@ export default function PricingPage() {
         "Çoklu Site Yönetimi Tek Panelden",
         "Özel Alan Adı (Domain) Entegrasyonu",
         "Sınırsız Yönetici ve Görevli Yetkisi",
-        "Banka ve Sanal POS Entegrasyonu",
+        "PWA Mobil Uygulama Desteği",
         "7/24 Özel Müşteri Temsilcisi",
         "Özel Veri Yedekleme ve SLA Garantisi",
       ],
-      cta: "Kurumsal Başvuru Yap",
-      href: "/kayit",
+      cta: "60 Gün Ücretsiz Başla",
+      href: "/kayit?plan=enterprise",
     },
   ];
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50 text-slate-900">
+    <div className="flex flex-col min-h-screen bg-slate-100 dark:bg-[#070b14] text-slate-900 dark:text-slate-100 transition-colors">
       <Navbar />
 
+      {/* Promosyon Banner */}
+      <div className="bg-gradient-to-r from-blue-700 via-indigo-600 to-slate-900 text-white text-center py-2.5 px-4 text-xs sm:text-sm font-bold shadow-md flex items-center justify-center gap-2">
+        <span className="px-2 py-0.5 rounded-full bg-white/20 text-white text-[11px] font-black uppercase tracking-wider animate-pulse">
+          %70 FIRSATI
+        </span>
+        <span>Lansmana Özel Tüm Paketlerde <strong>%70 İndirim</strong> Tanımlandı! 60 Gün Koşulsuz Ücretsiz Deneyin.</span>
+      </div>
+
       {/* Header */}
-      <section className="pt-16 pb-12 bg-white border-b border-slate-200/80 text-center">
+      <section className="pt-14 pb-12 bg-slate-50 dark:bg-[#090e1b] border-b border-slate-300 dark:border-slate-800 text-center transition-colors">
         <div className="max-w-4xl mx-auto px-6">
-          <span className="text-xs font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-3.5 py-1.5 rounded-full">
-            ŞEFFAF VE BASİT FİYATLANDIRMA
-          </span>
-          <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight mt-4 mb-4">
-            Gizli maliyet yok, dairenize en uygun paketi seçin
+          <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-blue-700 dark:text-sky-300 font-bold bg-blue-50 dark:bg-blue-950/60 px-4 py-1.5 rounded-full border border-blue-200 dark:border-blue-800 mb-4">
+            <span>🔥 LANSMAN KAMPANYASI • %70 İNDİRİM</span>
+          </div>
+          <h1 className="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight mt-2 mb-4">
+            Şeffaf Fiyatlar, <span className="text-blue-600 dark:text-sky-400 underline decoration-blue-500/40 underline-offset-8">%70 Lansman İndirimiyle</span>
           </h1>
-          <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed mb-8">
-            14 gün boyunca tüm özellikleri ücretsiz deneyin. Kredi kartı bilgisi gerekmez.
+          <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed mb-8">
+            Gizli masraf yok, taahhüt yok. Lansmana özel 60 gün boyunca tüm sosyal komşuluk ve yönetim özelliklerini tamamen ücretsiz deneyin.
           </p>
 
           {/* Aylık / Yıllık Geçiş */}
-          <div className="inline-flex items-center gap-3 p-1.5 bg-slate-100 rounded-2xl border border-slate-200">
+          <div className="inline-flex items-center gap-3 p-1.5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-300 dark:border-slate-800 shadow-xs">
             <button
               type="button"
               onClick={() => setIsAnnual(false)}
-              className={`py-2 px-5 rounded-xl text-sm font-bold transition-all ${
+              className={`py-2 px-5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
                 !isAnnual
-                  ? "bg-white text-slate-900 shadow-xs"
-                  : "text-slate-600 hover:text-slate-900"
+                  ? "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
               Aylık Ödeme
@@ -110,15 +116,15 @@ export default function PricingPage() {
             <button
               type="button"
               onClick={() => setIsAnnual(true)}
-              className={`py-2 px-5 rounded-xl text-sm font-bold transition-all flex items-center gap-2 ${
+              className={`py-2 px-5 rounded-xl text-sm font-bold transition-all flex items-center gap-2 cursor-pointer ${
                 isAnnual
-                  ? "bg-white text-slate-900 shadow-xs"
-                  : "text-slate-600 hover:text-slate-900"
+                  ? "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
               <span>Yıllık Ödeme</span>
-              <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-extrabold">
-                %20 İndirim
+              <span className="px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-400 text-[11px] font-extrabold border border-emerald-200 dark:border-emerald-500/30">
+                Ekstra Avantaj
               </span>
             </button>
           </div>
@@ -130,39 +136,69 @@ export default function PricingPage() {
         <div className="grid md:grid-cols-3 gap-8 items-stretch">
           {plans.map((plan, i) => {
             const price = isAnnual ? plan.annualPrice : plan.monthlyPrice;
+            const originalPrice = isAnnual ? plan.originalAnnualPrice : plan.originalMonthlyPrice;
+            const savings = originalPrice - price;
+
             return (
               <div
                 key={i}
-                className={`relative flex flex-col rounded-3xl p-8 transition-all bg-white border ${
+                className={`relative flex flex-col rounded-3xl p-8 transition-all bg-white dark:bg-[#0d1424] border-2 ${
                   plan.popular
-                    ? "border-indigo-600 shadow-xl ring-2 ring-indigo-600/20"
-                    : "border-slate-200/90 shadow-md hover:shadow-lg"
+                    ? "border-blue-600 dark:border-sky-400 shadow-xl ring-4 ring-blue-500/10 dark:ring-sky-400/20"
+                    : "border-slate-300 dark:border-slate-800 shadow-md hover:shadow-xl hover:border-slate-400 dark:hover:border-slate-700 ring-1 ring-slate-900/5"
                 }`}
               >
+                {/* 70% İndirim Etiketi */}
+                <div className="absolute -top-3.5 right-6 px-3 py-1 rounded-full bg-red-600 text-white text-[11px] font-black uppercase tracking-wider shadow-sm flex items-center gap-1">
+                  <span>%70 İNDİRİM</span>
+                </div>
+
                 {plan.popular && (
-                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-indigo-600 text-white text-xs font-black uppercase tracking-wider shadow-sm">
+                  <div className="absolute -top-3.5 left-6 px-3.5 py-1 rounded-full bg-blue-600 text-white text-[11px] font-black uppercase tracking-wider shadow-sm">
                     EN ÇOK TERCİH EDİLEN
                   </div>
                 )}
 
-                <div className="mb-6">
-                  <h3 className="text-xl font-bold text-slate-900">{plan.name}</h3>
-                  <p className="text-xs text-slate-500 mt-1.5 min-h-[36px]">{plan.desc}</p>
+                <div className="mb-6 pt-2">
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white">{plan.name}</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 min-h-[36px]">{plan.desc}</p>
                 </div>
 
-                <div className="flex items-baseline gap-1 mb-6 pb-6 border-b border-slate-100">
-                  <span className="text-4xl font-extrabold text-slate-900 tracking-tight">₺{price}</span>
-                  <span className="text-xs font-semibold text-slate-500">/ ay</span>
+                <div className="mb-6 pb-6 border-b border-slate-100 dark:border-slate-800">
+                  {/* Eski Fiyat & İndirim Rozeti */}
+                  <div className="flex items-center gap-2.5 mb-1.5">
+                    <span className="text-base sm:text-lg font-bold text-slate-400 dark:text-slate-500 line-through">
+                      ₺{originalPrice}
+                    </span>
+                    <span className="px-2 py-0.5 rounded-md bg-red-50 dark:bg-red-950/80 text-red-700 dark:text-red-300 text-xs font-black border border-red-200 dark:border-red-800">
+                      %70 İNDİRİMLİ
+                    </span>
+                  </div>
+
+                  {/* Güncel İndirimli Fiyat */}
+                  <div className="flex items-baseline gap-1.5">
+                    <span className="text-4xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
+                      ₺{price}
+                    </span>
+                    <span className="text-xs font-bold text-slate-500 dark:text-slate-400">/ ay</span>
+                  </div>
+
+                  {/* Tasarruf Bilgisi */}
+                  <div className="mt-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                    <span>✓ Her ay ₺{savings} tasarruf edersiniz</span>
+                  </div>
                   {isAnnual && (
-                    <span className="text-[11px] text-emerald-600 font-bold ml-2">Yıllık faturalandırılır</span>
+                    <span className="block mt-1 text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                      Yıllık periyotta faturalandırılır
+                    </span>
                   )}
                 </div>
 
                 <div className="space-y-3.5 mb-8 flex-1">
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Dahil Olan Özellikler:</span>
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Dahil Olan Özellikler:</span>
                   {plan.features.map((feat, fIndex) => (
-                    <div key={fIndex} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-700">
-                      <Check className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
+                    <div key={fIndex} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
+                      <Check className="h-4 w-4 text-emerald-600 dark:text-emerald-400 mt-0.5 shrink-0" />
                       <span>{feat}</span>
                     </div>
                   ))}
@@ -172,8 +208,8 @@ export default function PricingPage() {
                   href={plan.href}
                   className={`w-full py-3.5 px-4 rounded-xl text-center text-sm font-bold transition-all shadow-xs ${
                     plan.popular
-                      ? "bg-indigo-600 text-white hover:bg-indigo-700"
-                      : "bg-slate-100 text-slate-900 hover:bg-slate-200"
+                      ? "bg-blue-600 hover:bg-blue-700 text-white shadow-md font-bold"
+                      : "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white hover:bg-slate-200 dark:hover:bg-slate-700"
                   }`}
                 >
                   {plan.cta}
@@ -184,51 +220,51 @@ export default function PricingPage() {
         </div>
 
         {/* Feature Comparison Table */}
-        <div className="mt-20 bg-white rounded-3xl p-6 sm:p-10 border border-slate-200 shadow-sm">
-          <h2 className="text-2xl font-extrabold text-slate-900 mb-6 text-center">
+        <div className="mt-20 bg-white dark:bg-[#0d1424] rounded-3xl p-6 sm:p-10 border-2 border-slate-300 dark:border-slate-800 shadow-md ring-1 ring-slate-900/5 transition-colors">
+          <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white mb-6 text-center">
             Detaylı Paket Karşılaştırması
           </h2>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs sm:text-sm">
               <thead>
-                <tr className="border-b border-slate-200 text-slate-900">
+                <tr className="border-b-2 border-slate-300 dark:border-slate-800 text-slate-900 dark:text-white">
                   <th className="py-3 px-4 font-bold">Özellik</th>
                   <th className="py-3 px-4 font-bold text-center">Başlangıç</th>
                   <th className="py-3 px-4 font-bold text-center">Profesyonel</th>
                   <th className="py-3 px-4 font-bold text-center">Kurumsal</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-200 dark:divide-slate-800/80 text-slate-700 dark:text-slate-300">
                 <tr>
                   <td className="py-3 px-4 font-medium">Maksimum Daire Limiti</td>
                   <td className="py-3 px-4 text-center">20 Daire</td>
-                  <td className="py-3 px-4 text-center font-bold text-indigo-600">80 Daire</td>
-                  <td className="py-3 px-4 text-center font-bold text-emerald-600">Sınırsız</td>
+                  <td className="py-3 px-4 text-center font-bold text-blue-600 dark:text-sky-400">80 Daire</td>
+                  <td className="py-3 px-4 text-center font-bold text-cyan-600 dark:text-cyan-400">Sınırsız</td>
                 </tr>
                 <tr>
-                  <td className="py-3 px-4 font-medium">Aidat Tahakkuk ve Makbuz</td>
-                  <td className="py-3 px-4 text-center">✓</td>
-                  <td className="py-3 px-4 text-center">✓</td>
-                  <td className="py-3 px-4 text-center">✓</td>
-                </tr>
-                <tr>
-                  <td className="py-3 px-4 font-medium">Yönetici Onaylı Kayıt Mekanizması</td>
+                  <td className="py-3 px-4 font-medium">KVKK Numarasız Komşuluk Ağı</td>
                   <td className="py-3 px-4 text-center">✓</td>
                   <td className="py-3 px-4 text-center">✓</td>
                   <td className="py-3 px-4 text-center">✓</td>
                 </tr>
                 <tr>
-                  <td className="py-3 px-4 font-medium">Gelir / Gider Kasa Raporları</td>
-                  <td className="py-3 px-4 text-center">Temel</td>
-                  <td className="py-3 px-4 text-center">Gelişmiş</td>
-                  <td className="py-3 px-4 text-center">Özelleştirilebilir</td>
+                  <td className="py-3 px-4 font-medium">Görsel Komşu Akışı &amp; Hikayeler</td>
+                  <td className="py-3 px-4 text-center">✓</td>
+                  <td className="py-3 px-4 text-center">✓</td>
+                  <td className="py-3 px-4 text-center">✓</td>
+                </tr>
+                <tr>
+                  <td className="py-3 px-4 font-medium">Canlı Komşuluk Anketleri</td>
+                  <td className="py-3 px-4 text-center">✓</td>
+                  <td className="py-3 px-4 text-center">✓</td>
+                  <td className="py-3 px-4 text-center">✓</td>
                 </tr>
                 <tr>
                   <td className="py-3 px-4 font-medium">Özel Alan Adı (Domain) Kurulumu</td>
-                  <td className="py-3 px-4 text-center text-slate-300">—</td>
-                  <td className="py-3 px-4 text-center text-slate-300">—</td>
-                  <td className="py-3 px-4 text-center font-bold text-indigo-600">Dahil</td>
+                  <td className="py-3 px-4 text-center text-slate-300 dark:text-slate-600">—</td>
+                  <td className="py-3 px-4 text-center text-slate-300 dark:text-slate-600">—</td>
+                  <td className="py-3 px-4 text-center font-bold text-cyan-600 dark:text-cyan-400">Dahil</td>
                 </tr>
                 <tr>
                   <td className="py-3 px-4 font-medium">Teknik Destek Seviyesi</td>

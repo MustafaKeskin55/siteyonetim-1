@@ -40,7 +40,9 @@ function redirectByRole(role: string, req: NextRequest) {
 
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
-  const token = request.cookies.get("token")?.value;
+  const authHeader = request.headers.get("authorization") || request.headers.get("Authorization");
+  const bearerToken = authHeader && authHeader.startsWith("Bearer ") ? authHeader.substring(7).trim() : undefined;
+  const token = request.cookies.get("token")?.value || bearerToken;
 
   // ---- 1. API Route Access Strategy ----
   if (path.startsWith("/api/")) {

@@ -8,10 +8,10 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/admin/", "/super-admin/", "/dashboard/", "/api/", "/login", "/sifre-sifirla", "/sifre-belirle"],
+        disallow: ["/admin/", "/super-admin/", "/dashboard/", "/api/", "/sifre-sifirla", "/sifre-belirle"],
       },
       {
-        userAgent: "Googlebot",
+        userAgent: ["Googlebot", "Bingbot", "GPTBot", "PerplexityBot", "ClaudeBot", "Applebot"],
         allow: "/",
         disallow: ["/admin/", "/super-admin/", "/dashboard/", "/api/"],
       },

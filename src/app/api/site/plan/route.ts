@@ -23,6 +23,10 @@ export async function GET() {
     planName: PLAN_DETAILS[planInfo.plan].name,
     maxSites: planInfo.maxSites,
     maxUsers: planInfo.maxUsers,
+    planExpiresAt: planInfo.planExpiresAt,
+    isExpired: planInfo.isExpired,
+    isFrozen: planInfo.isFrozen,
+    daysRemaining: planInfo.daysRemaining,
     features: planInfo.features.map((f) => ({
       key: f,
       label: FEATURE_LABELS[f],
