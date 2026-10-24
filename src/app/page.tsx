@@ -63,44 +63,65 @@ export default function HomePage() {
     gsap.registerPlugin(ScrollTrigger);
 
     const ctx = gsap.context(() => {
-      gsap.from(".hero-stagger", {
-        opacity: 0,
-        y: 20,
-        duration: 0.6,
-        stagger: 0.08,
-        ease: "power2.out",
-      });
-
-      if (statsRef.current) {
-        gsap.from(".stat-item", {
-          scrollTrigger: {
-            trigger: statsRef.current,
-            start: "top 85%",
-          },
-          opacity: 0,
-          y: 20,
+      gsap.fromTo(
+        ".hero-stagger",
+        { opacity: 0, y: 20 },
+        {
+          opacity: 1,
+          y: 0,
           duration: 0.6,
           stagger: 0.08,
           ease: "power2.out",
-        });
+        }
+      );
+
+      if (statsRef.current) {
+        gsap.fromTo(
+          ".stat-item",
+          { opacity: 0, y: 20 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.5,
+            stagger: 0.06,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: statsRef.current,
+              start: "top 90%",
+              once: true,
+            },
+          }
+        );
       }
 
       if (bentoRef.current) {
-        gsap.from(".bento-card", {
-          scrollTrigger: {
-            trigger: bentoRef.current,
-            start: "top 85%",
-          },
-          opacity: 0,
-          y: 25,
-          duration: 0.7,
-          stagger: 0.1,
-          ease: "power2.out",
-        });
+        gsap.fromTo(
+          ".bento-card",
+          { opacity: 0, y: 25 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.5,
+            stagger: 0.07,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: bentoRef.current,
+              start: "top 90%",
+              once: true,
+            },
+          }
+        );
       }
     });
 
-    return () => ctx.revert();
+    const refreshTimer = setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 200);
+
+    return () => {
+      clearTimeout(refreshTimer);
+      ctx.revert();
+    };
   }, []);
 
   const handleLike = (id: number) => {
