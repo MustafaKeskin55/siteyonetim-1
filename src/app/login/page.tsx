@@ -7,6 +7,7 @@ import { ArrowRight, UserPlus, ShieldAlert, LogIn, Eye, EyeOff } from "lucide-re
 import { SiteLogo } from "@/components/SiteLogo";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { browserApiUrl, getBrowserApiBase } from "@/lib/browser-api-base";
+import { notifyAuthChange } from "@/lib/use-session";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -47,13 +48,12 @@ export default function LoginPage() {
 
           if (data?.authenticated && data.user?.role) {
             localStorage.setItem("user", JSON.stringify(data.user));
+            notifyAuthChange();
             if (data.user.mustChangePassword) {
               router.push("/sifre-belirle");
               return;
             }
-            if (data.user.role === "SUPER_ADMIN") {
-              router.push("/super-admin");
-            } else if (data.user.role === "ADMIN") {
+            if (data.user.role === "SUPER_ADMIN" || data.user.role === "ADMIN") {
               router.push("/admin");
             } else {
               router.push("/dashboard");
@@ -143,6 +143,7 @@ export default function LoginPage() {
       }
 
       localStorage.setItem("user", JSON.stringify(ok.user));
+      notifyAuthChange();
 
       if (ok.mustChangePassword === true) {
         router.push("/sifre-belirle");
@@ -150,9 +151,7 @@ export default function LoginPage() {
         return;
       }
 
-      if (ok.user.role === "SUPER_ADMIN") {
-        router.push("/super-admin");
-      } else if (ok.user.role === "ADMIN") {
+      if (ok.user.role === "SUPER_ADMIN" || ok.user.role === "ADMIN") {
         router.push("/admin");
       } else {
         router.push("/dashboard");

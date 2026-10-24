@@ -47,8 +47,7 @@ export default function SifreBelirlePage() {
       }
       const rec = j as { role?: string };
       localStorage.removeItem("user");
-      if (rec.role === "SUPER_ADMIN") router.replace("/super-admin");
-      else if (rec.role === "ADMIN") router.replace("/admin");
+      if (rec.role === "SUPER_ADMIN" || rec.role === "ADMIN") router.replace("/admin");
       else router.replace("/dashboard");
     } catch {
       setErr("Sunucuya ulaşılamadı.");

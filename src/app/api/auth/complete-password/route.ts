@@ -76,7 +76,15 @@ export async function POST(request: Request) {
       maxAge: 60 * 60 * 24,
     });
 
-    return NextResponse.json({ ok: true, role: u.role });
+    const response = NextResponse.json({ ok: true, role: u.role });
+    response.cookies.set("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24,
+    });
+    return response;
   } catch (e) {
     return jsonSqlError(e, "Şifre güncellenemedi.");
   }

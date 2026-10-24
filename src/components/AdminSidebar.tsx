@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { SiteLogo } from "@/components/SiteLogo";
 import { NotificationBell } from "@/components/NotificationBell";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { SITE_BRAND_NAME } from "@/lib/brand";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -37,7 +38,7 @@ const NAV_ITEMS: {
   { name: "Özet Durum", href: "/admin", icon: LayoutDashboard },
   { name: "Sakinler & Onay", href: "/admin/residents", icon: Users },
   { name: "Komşuluk & Sohbet", href: "/admin/topluluk", icon: MessagesSquare },
-  { name: "Kararlar & Anketler", href: "/admin/topluluk#anketler", icon: Vote },
+  { name: "Kararlar & Anketler", href: "/admin/anketler", icon: Vote },
   { name: "Duyuru Yönetimi", href: "/admin/announcements", icon: Megaphone },
   { name: "Arıza & Talepler", href: "/admin/requests", icon: Wrench },
   { name: "Bildirimler", href: "/admin/bildirimler", icon: Bell },
@@ -114,12 +115,12 @@ export function AdminSidebar({ children }: { children: React.ReactNode }) {
               collapsed && !onNavigate ? "justify-center" : ""
             } ${
               active
-                ? "bg-indigo-600 text-white shadow-xs font-bold"
-                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 font-medium"
+                ? "bg-blue-600 text-white shadow-xs font-bold"
+                : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-slate-900 dark:hover:text-white font-medium"
             }`}
             title={collapsed && !onNavigate ? item.name : undefined}
           >
-            <item.icon className={`h-5 w-5 shrink-0 ${active ? "text-white" : "text-slate-400 group-hover:text-indigo-600"}`} />
+            <item.icon className={`h-5 w-5 shrink-0 ${active ? "text-white" : "text-slate-400 dark:text-slate-500 group-hover:text-blue-600 dark:group-hover:text-sky-400"}`} />
             {(!collapsed || !!onNavigate) && <span className="text-sm">{item.name}</span>}
           </Link>
         );
@@ -128,16 +129,18 @@ export function AdminSidebar({ children }: { children: React.ReactNode }) {
   );
 
   const bottomActions = (onNavigate?: () => void) => (
-    <div className="border-t border-slate-100 p-3 space-y-1 shrink-0">
+    <div className="border-t border-slate-100 dark:border-slate-800 p-3 space-y-1 shrink-0">
       <button
         type="button"
         onClick={async () => {
           onNavigate?.();
           try { await fetch("/api/auth/logout", { method: "POST", credentials: "include" }); } catch {}
           localStorage.removeItem("user");
+          localStorage.removeItem("token");
+          window.dispatchEvent(new Event("auth-state-change"));
           router.push("/");
         }}
-        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition-colors w-full cursor-pointer ${collapsed && !onNavigate ? "justify-center" : ""}`}
+        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-500 dark:text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors w-full cursor-pointer ${collapsed && !onNavigate ? "justify-center" : ""}`}
       >
         <LogOut className="h-5 w-5 shrink-0" />
         {(!collapsed || !!onNavigate) && <span className="text-sm font-semibold">Çıkış Yap</span>}
@@ -146,21 +149,21 @@ export function AdminSidebar({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <div className="flex h-screen bg-slate-50 overflow-hidden">
+    <div className="flex h-screen bg-slate-100 dark:bg-[#070b14] text-slate-900 dark:text-slate-100 overflow-hidden transition-colors">
 
       {/* Desktop Sidebar */}
       <aside
         className={`hidden lg:flex flex-col shrink-0 h-full transition-all duration-300 ease-in-out relative ${
           collapsed ? "w-[72px]" : "w-[260px]"
-        } bg-white border-r border-slate-200/80`}
+        } bg-white dark:bg-[#090e1b] border-r border-slate-200/80 dark:border-slate-800`}
       >
         {/* Logo */}
-        <div className={`flex items-center gap-3 px-4 h-16 border-b border-slate-100 shrink-0 ${collapsed ? "justify-center" : ""}`}>
+        <div className={`flex items-center gap-3 px-4 h-16 border-b border-slate-100 dark:border-slate-800 shrink-0 ${collapsed ? "justify-center" : ""}`}>
           <SiteLogo width={36} height={36} rounded className="shrink-0 rounded-lg" alt="" />
           {!collapsed && (
             <div className="min-w-0">
-              <p className="text-sm font-extrabold text-slate-900 truncate">Site Yönetimi</p>
-              <p className="text-[11px] font-medium text-slate-500 truncate">Yönetici Portalı</p>
+              <p className="text-sm font-extrabold text-slate-900 dark:text-white truncate">Site Yönetimi</p>
+              <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400 truncate">Yönetici Portalı</p>
             </div>
           )}
         </div>
@@ -174,7 +177,7 @@ export function AdminSidebar({ children }: { children: React.ReactNode }) {
         {/* Collapse toggle */}
         <button
           onClick={() => setCollapsed((v) => !v)}
-          className="absolute -right-3 top-20 z-10 hidden lg:flex h-6 w-6 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 hover:text-slate-900 shadow-xs hover:scale-110 transition-all cursor-pointer"
+          className="absolute -right-3 top-20 z-10 hidden lg:flex h-6 w-6 items-center justify-center rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white shadow-xs hover:scale-110 transition-all cursor-pointer"
           aria-label={collapsed ? "Genişlet" : "Daralt"}
         >
           <ChevronLeft className={`h-3.5 w-3.5 transition-transform duration-200 ${collapsed ? "rotate-180" : ""}`} />
@@ -184,19 +187,19 @@ export function AdminSidebar({ children }: { children: React.ReactNode }) {
       {/* Mobile Drawer */}
       {mobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden flex">
-          <div className="fixed inset-0 bg-black/40 backdrop-blur-xs" onClick={() => setMobileOpen(false)} />
-          <div className="relative flex flex-col w-[280px] max-w-[85vw] h-full bg-white shadow-2xl z-10 animate-in slide-in-from-left duration-200">
-            <div className="flex items-center justify-between px-4 h-16 border-b border-slate-100">
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-xs" onClick={() => setMobileOpen(false)} />
+          <div className="relative flex flex-col w-[280px] max-w-[85vw] h-full bg-white dark:bg-[#090e1b] shadow-2xl z-10 animate-in slide-in-from-left duration-200 border-r border-slate-200 dark:border-slate-800">
+            <div className="flex items-center justify-between px-4 h-16 border-b border-slate-100 dark:border-slate-800">
               <div className="flex items-center gap-2.5">
                 <SiteLogo width={32} height={32} rounded className="rounded-lg" alt="" />
                 <div>
-                  <span className="text-sm font-extrabold text-slate-900">Site Yönetimi</span>
-                  <span className="block text-[10px] text-slate-500">Yönetici Paneli</span>
+                  <span className="text-sm font-extrabold text-slate-900 dark:text-white">Site Yönetimi</span>
+                  <span className="block text-[10px] text-slate-500 dark:text-slate-400">Yönetici Paneli</span>
                 </div>
               </div>
               <button
                 onClick={() => setMobileOpen(false)}
-                className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100"
+                className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -211,21 +214,22 @@ export function AdminSidebar({ children }: { children: React.ReactNode }) {
       <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
         
         {/* Desktop Header */}
-        <header className="hidden lg:flex items-center justify-between h-16 px-8 bg-white border-b border-slate-200/80 shrink-0">
+        <header className="hidden lg:flex items-center justify-between h-16 px-8 bg-white dark:bg-[#090e1b] border-b border-slate-200/80 dark:border-slate-800 shrink-0 transition-colors">
           <div className="flex items-center gap-3">
-            <span className="text-sm font-extrabold text-slate-900">Yönetici Kontrol Paneli</span>
+            <span className="text-sm font-extrabold text-slate-900 dark:text-white">Yönetici Kontrol Paneli</span>
             {sitePlan && !sitePlan.isFrozen && typeof sitePlan.daysRemaining === "number" && (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold border border-blue-200">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-sky-300 text-xs font-bold border border-blue-200 dark:border-blue-800">
                 <span className="h-2 w-2 rounded-full bg-blue-600 animate-pulse" />
                 Lansman Denemesi: {sitePlan.daysRemaining} gün kaldı
               </span>
             )}
           </div>
           <div className="flex items-center gap-3">
+            <ThemeToggle />
             <NotificationBell role="ADMIN" align="right" />
             <Link
               href="/"
-              className="text-xs font-semibold text-blue-600 hover:text-blue-700 px-3 py-1.5 rounded-xl hover:bg-blue-50 transition"
+              className="text-xs font-semibold text-blue-600 dark:text-sky-400 hover:text-blue-700 dark:hover:text-sky-300 px-3 py-1.5 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-950/50 transition"
             >
               Siteye Dön &rarr;
             </Link>
@@ -233,19 +237,20 @@ export function AdminSidebar({ children }: { children: React.ReactNode }) {
         </header>
 
         {/* Mobile Header */}
-        <header className="lg:hidden flex items-center justify-between h-16 px-4 bg-white border-b border-slate-200 shrink-0">
+        <header className="lg:hidden flex items-center justify-between h-16 px-4 bg-white dark:bg-[#090e1b] border-b border-slate-200 dark:border-slate-800 shrink-0 transition-colors">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setMobileOpen(true)}
-              className="p-2 rounded-xl text-slate-600 hover:bg-slate-100"
+              className="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
             >
               <Menu className="h-5 w-5" />
             </button>
-            <span className="text-sm font-bold text-slate-900">Yönetici Portalı</span>
+            <span className="text-sm font-bold text-slate-900 dark:text-white">Yönetici Portalı</span>
           </div>
           <div className="flex items-center gap-2">
+            <ThemeToggle />
             <NotificationBell role="ADMIN" align="right" />
-            <Link href="/" className="text-xs font-semibold text-blue-600 hover:underline">
+            <Link href="/" className="text-xs font-semibold text-blue-600 dark:text-sky-400 hover:underline">
               Siteye Dön
             </Link>
           </div>

@@ -122,6 +122,8 @@ export default function DashboardLayout({
             onClick={async () => {
               try { await fetch("/api/auth/logout", { method: "POST", credentials: "include" }); } catch {}
               localStorage.removeItem("user");
+              localStorage.removeItem("token");
+              window.dispatchEvent(new Event("auth-state-change"));
               router.push("/");
             }}
             className="flex items-center gap-1.5 text-xs text-rose-600 dark:text-rose-400 hover:underline font-semibold cursor-pointer"

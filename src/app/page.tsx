@@ -5,6 +5,7 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { useSession } from "@/lib/use-session";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
@@ -32,6 +33,7 @@ import {
   PlusCircle,
   Clock,
   Pin,
+  LayoutDashboard,
 } from "lucide-react";
 
 // Fast dynamic import with zero SSR delay
@@ -48,6 +50,7 @@ const ThreeHeroCanvas = dynamic(
 );
 
 export default function HomePage() {
+  const { user, isAuthenticated, panelUrl, roleLabel } = useSession();
   const [activeTab, setActiveTab] = React.useState<"akis" | "sohbet" | "anket" | "ariza">("akis");
   const [likedPosts, setLikedPosts] = React.useState<Record<number, boolean>>({ 1: true });
   const [likeCounts, setLikeCounts] = React.useState<Record<number, number>>({ 1: 19, 2: 32 });
@@ -194,22 +197,44 @@ export default function HomePage() {
 
               {/* Action Buttons */}
               <div className="hero-stagger flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-1">
-                <Link
-                  href="/kayit"
-                  className="inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 shadow-md hover:shadow-lg shadow-blue-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
-                >
-                  <UserPlus className="h-4 w-4" />
-                  <span>Sitenizi Ücretsiz Başlatın</span>
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
+                {isAuthenticated && user ? (
+                  <>
+                    <Link
+                      href={panelUrl}
+                      className="inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-blue-600 via-indigo-600 to-sky-600 hover:from-blue-700 hover:to-indigo-700 shadow-md hover:shadow-lg shadow-blue-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                    >
+                      <LayoutDashboard className="h-4.5 w-4.5" />
+                      <span>{user.role === "USER" ? "Sakin Panelinize Geçin" : "Yönetim Panelinize Geçin"}</span>
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
 
-                <Link
-                  href="/login"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900/80 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-700/80 hover:border-slate-400 dark:hover:border-slate-600 transition-all shadow-xs"
-                >
-                  <LogIn className="h-4 w-4 text-blue-600 dark:text-sky-400" />
-                  <span>Giriş Yap</span>
-                </Link>
+                    <Link
+                      href={`${panelUrl}/hesabim`}
+                      className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900/80 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-700/80 hover:border-slate-400 dark:hover:border-slate-600 transition-all shadow-xs"
+                    >
+                      <span>Hesap &amp; Ayarlar</span>
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href="/kayit"
+                      className="inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 shadow-md hover:shadow-lg shadow-blue-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                    >
+                      <UserPlus className="h-4 w-4" />
+                      <span>Sitenizi Ücretsiz Başlatın</span>
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+
+                    <Link
+                      href="/login"
+                      className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900/80 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-700/80 hover:border-slate-400 dark:hover:border-slate-600 transition-all shadow-xs"
+                    >
+                      <LogIn className="h-4 w-4 text-blue-600 dark:text-sky-400" />
+                      <span>Giriş Yap</span>
+                    </Link>
+                  </>
+                )}
               </div>
 
               {/* Social Pillars */}
@@ -786,14 +811,25 @@ export default function HomePage() {
             Lansmana özel 60 gün boyunca tüm özellikleri ücretsiz deneyin. Kredi kartı gerekmez, kurulum dakikalar içinde tamamlanır.
           </p>
           <div className="pt-2">
-            <Link
-              href="/kayit"
-              className="inline-flex items-center gap-2.5 px-8 py-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-sm shadow-xl shadow-blue-500/20 transition-all hover:scale-105"
-            >
-              <UserPlus className="h-4 w-4" />
-              <span>Sitenizi Şimdi Ücretsiz Kaydedin</span>
-              <ArrowRight className="h-4 w-4" />
-            </Link>
+            {isAuthenticated && user ? (
+              <Link
+                href={panelUrl}
+                className="inline-flex items-center gap-2.5 px-8 py-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-sm shadow-xl shadow-blue-500/20 transition-all hover:scale-105"
+              >
+                <LayoutDashboard className="h-4 w-4" />
+                <span>{user.role === "USER" ? "Sakin Paneline Dön" : "Yönetim Paneline Dön"}</span>
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            ) : (
+              <Link
+                href="/kayit"
+                className="inline-flex items-center gap-2.5 px-8 py-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-sm shadow-xl shadow-blue-500/20 transition-all hover:scale-105"
+              >
+                <UserPlus className="h-4 w-4" />
+                <span>Sitenizi Şimdi Ücretsiz Kaydedin</span>
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            )}
           </div>
         </div>
       </section>

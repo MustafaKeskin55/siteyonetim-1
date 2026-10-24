@@ -111,9 +111,7 @@ export async function POST(request: Request) {
       maxAge: 60 * 60 * 24,
     });
 
-
-
-    return NextResponse.json({
+    const response = NextResponse.json({
       message: "Giriş başarılı",
       token,
       mustChangePassword,
@@ -125,6 +123,16 @@ export async function POST(request: Request) {
         apartmentNo: user.apartmentNo,
       },
     });
+
+    response.cookies.set("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24,
+    });
+
+    return response;
   } catch (error: unknown) {
     console.error("LOGIN API ERROR:", error);
     return NextResponse.json({ error: "Sunucu hatası. Lütfen tekrar deneyin." }, { status: 500 });

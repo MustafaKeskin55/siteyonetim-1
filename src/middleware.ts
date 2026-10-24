@@ -33,8 +33,7 @@ function isPublicApiPath(path: string): boolean {
 }
 
 function redirectByRole(role: string, req: NextRequest) {
-  if (role === "SUPER_ADMIN") return NextResponse.redirect(new URL("/super-admin", req.url));
-  if (role === "ADMIN") return NextResponse.redirect(new URL("/admin", req.url));
+  if (role === "SUPER_ADMIN" || role === "ADMIN") return NextResponse.redirect(new URL("/admin", req.url));
   return NextResponse.redirect(new URL("/dashboard", req.url));
 }
 
@@ -116,7 +115,11 @@ export async function middleware(request: NextRequest) {
   const isAdminRoute = path.startsWith("/admin");
   const isUserRoute = path.startsWith("/dashboard");
 
-  if (!(isSuperAdminRoute || isAdminRoute || isUserRoute)) {
+  if (isSuperAdminRoute) {
+    return NextResponse.redirect(new URL("/admin", request.url));
+  }
+
+  if (!(isAdminRoute || isUserRoute)) {
     return NextResponse.next();
   }
 
