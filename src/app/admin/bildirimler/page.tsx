@@ -42,15 +42,15 @@ function formatTimeAgo(isoString: string | null): string {
 function getNotificationIcon(type: string) {
   switch (type) {
     case "ANNOUNCEMENT":
-      return <Megaphone className="h-5 w-5 text-amber-600" />;
+      return <Megaphone className="h-5 w-5 text-amber-600 dark:text-amber-400" />;
     case "PAYMENT":
-      return <CreditCard className="h-5 w-5 text-emerald-600" />;
+      return <CreditCard className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />;
     case "REQUEST":
-      return <Wrench className="h-5 w-5 text-indigo-600" />;
+      return <Wrench className="h-5 w-5 text-blue-600 dark:text-sky-400" />;
     case "WELCOME":
-      return <Sparkles className="h-5 w-5 text-violet-600" />;
+      return <Sparkles className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />;
     default:
-      return <Info className="h-5 w-5 text-blue-600" />;
+      return <Info className="h-5 w-5 text-blue-600 dark:text-sky-400" />;
   }
 }
 
@@ -186,11 +186,11 @@ export default function AdminNotificationsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
-            <Bell className="h-7 w-7 text-indigo-600" />
-            Yönetici Bildirim Merkezi
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
+            <Bell className="h-7 w-7 text-blue-600 dark:text-sky-400" />
+            <span>Yönetici Bildirim Merkezi</span>
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
             Yeni talep, sakin kayıtları ve sistem uyarılarını buradan yönetin.
           </p>
         </div>
@@ -200,10 +200,10 @@ export default function AdminNotificationsPage() {
             type="button"
             onClick={sendTestNotification}
             disabled={testSending}
-            className="flex items-center gap-1.5 px-3.5 py-2.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-2xl text-xs font-bold transition shadow-xs cursor-pointer disabled:opacity-50"
+            className="flex items-center gap-1.5 px-3.5 py-2.5 bg-white dark:bg-[#0d1424] border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-2xl text-xs font-bold transition shadow-xs cursor-pointer disabled:opacity-50"
             title="Test Bildirimi Gönder"
           >
-            {testSending ? <Loader2 className="h-4 w-4 animate-spin text-indigo-600" /> : <Send className="h-4 w-4 text-indigo-600" />}
+            {testSending ? <Loader2 className="h-4 w-4 animate-spin text-blue-600 dark:text-sky-400" /> : <Send className="h-4 w-4 text-blue-600 dark:text-sky-400" />}
             <span>Test Bildirimi Oluştur</span>
           </button>
 
@@ -211,7 +211,7 @@ export default function AdminNotificationsPage() {
             <button
               type="button"
               onClick={markAllRead}
-              className="flex items-center gap-1.5 px-3.5 py-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-200 rounded-2xl text-xs font-bold transition cursor-pointer"
+              className="flex items-center gap-1.5 px-3.5 py-2.5 bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 dark:hover:bg-blue-900/60 text-blue-600 dark:text-sky-400 border border-blue-200 dark:border-blue-800/60 rounded-2xl text-xs font-bold transition cursor-pointer"
             >
               <CheckCheck className="h-4 w-4" />
               <span>Tümünü Oku ({unreadCount})</span>
@@ -221,11 +221,11 @@ export default function AdminNotificationsPage() {
       </div>
 
       {testResult && (
-        <div className="p-3.5 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-900 text-xs font-semibold flex items-center justify-between animate-in fade-in">
+        <div className="p-3.5 rounded-2xl bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800/60 text-blue-900 dark:text-blue-200 text-xs font-semibold flex items-center justify-between animate-in fade-in">
           <span>{testResult}</span>
           <button
             onClick={() => setTestResult(null)}
-            className="text-indigo-400 hover:text-indigo-700"
+            className="text-blue-400 hover:text-blue-700 dark:hover:text-blue-200 text-lg leading-none cursor-pointer"
           >
             &times;
           </button>
@@ -239,8 +239,8 @@ export default function AdminNotificationsPage() {
           onClick={() => setFilter("ALL")}
           className={`px-3.5 py-2 rounded-xl text-xs font-bold transition shrink-0 cursor-pointer ${
             filter === "ALL"
-              ? "bg-indigo-600 text-white shadow-xs"
-              : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
+              ? "bg-blue-600 text-white shadow-xs"
+              : "bg-white dark:bg-[#0d1424] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/80"
           }`}
         >
           Tümü ({items.length})
@@ -250,8 +250,8 @@ export default function AdminNotificationsPage() {
           onClick={() => setFilter("UNREAD")}
           className={`px-3.5 py-2 rounded-xl text-xs font-bold transition shrink-0 cursor-pointer ${
             filter === "UNREAD"
-              ? "bg-indigo-600 text-white shadow-xs"
-              : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
+              ? "bg-blue-600 text-white shadow-xs"
+              : "bg-white dark:bg-[#0d1424] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/80"
           }`}
         >
           Okunmamış ({unreadCount})
@@ -261,8 +261,8 @@ export default function AdminNotificationsPage() {
           onClick={() => setFilter("REQUEST")}
           className={`px-3.5 py-2 rounded-xl text-xs font-bold transition shrink-0 cursor-pointer ${
             filter === "REQUEST"
-              ? "bg-indigo-600 text-white shadow-xs"
-              : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
+              ? "bg-blue-600 text-white shadow-xs"
+              : "bg-white dark:bg-[#0d1424] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/80"
           }`}
         >
           Talepler & Arızalar
@@ -272,8 +272,8 @@ export default function AdminNotificationsPage() {
           onClick={() => setFilter("SYSTEM")}
           className={`px-3.5 py-2 rounded-xl text-xs font-bold transition shrink-0 cursor-pointer ${
             filter === "SYSTEM"
-              ? "bg-indigo-600 text-white shadow-xs"
-              : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
+              ? "bg-blue-600 text-white shadow-xs"
+              : "bg-white dark:bg-[#0d1424] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/80"
           }`}
         >
           Sakin Kayıtları & Sistem
@@ -284,18 +284,18 @@ export default function AdminNotificationsPage() {
       <div className="space-y-3">
         {loading ? (
           <div className="py-16 text-center text-slate-400">
-            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-3 text-indigo-600" />
+            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-3 text-blue-600 dark:text-sky-400" />
             <p className="text-xs font-medium">Bildirimler yükleniyor…</p>
           </div>
         ) : filteredItems.length === 0 ? (
-          <div className="bg-white rounded-3xl p-12 text-center border border-slate-200/80 space-y-3 shadow-sm">
-            <div className="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto">
+          <div className="bg-white dark:bg-[#0d1424] rounded-3xl p-12 text-center border border-slate-200/80 dark:border-slate-800 space-y-3 shadow-xs">
+            <div className="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-sky-400 flex items-center justify-center mx-auto border border-blue-200 dark:border-blue-800/60">
               <CheckCircle2 className="h-7 w-7" />
             </div>
-            <h3 className="font-extrabold text-base text-slate-900">
+            <h3 className="font-extrabold text-base text-slate-900 dark:text-white">
               Bildirim Bulunmuyor
             </h3>
-            <p className="text-xs text-slate-500 max-w-sm mx-auto">
+            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
               {filter === "UNREAD"
                 ? "Tüm bildirimleri incelediniz! Yeni bir sakin kaydı veya talep geldiğinde burada görünecektir."
                 : "Bu filtreye ait herhangi bir bildirim kaydı bulunamadı."}
@@ -305,14 +305,14 @@ export default function AdminNotificationsPage() {
           filteredItems.map((item) => (
             <div
               key={item.id}
-              className={`group bg-white rounded-3xl p-4 sm:p-5 border transition-all duration-200 shadow-xs flex items-start gap-4 ${
+              className={`group rounded-3xl p-4 sm:p-5 border transition-all duration-200 shadow-xs flex items-start gap-4 ${
                 !item.read
-                  ? "border-indigo-200 bg-indigo-50/20"
-                  : "border-slate-200/80 hover:border-slate-300"
+                  ? "border-blue-200 dark:border-blue-800/60 bg-blue-50/40 dark:bg-blue-950/20"
+                  : "bg-white dark:bg-[#0d1424] border-slate-200/80 dark:border-slate-800/80 hover:border-slate-300 dark:hover:border-slate-700"
               }`}
             >
               {/* İkon */}
-              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100 shrink-0">
+              <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shrink-0">
                 {getNotificationIcon(item.type)}
               </div>
 
@@ -320,25 +320,25 @@ export default function AdminNotificationsPage() {
               <div className="flex-1 min-w-0 space-y-1.5">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 text-[10px] font-bold rounded-lg bg-slate-100 text-slate-600 uppercase tracking-wider">
+                    <span className="px-2 py-0.5 text-[10px] font-bold rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 uppercase tracking-wider border border-slate-200/60 dark:border-slate-700/60">
                       {getTypeName(item.type)}
                     </span>
                     <h3
                       className={`text-sm font-bold ${
-                        !item.read ? "text-slate-900" : "text-slate-700"
+                        !item.read ? "text-slate-900 dark:text-white" : "text-slate-700 dark:text-slate-300"
                       }`}
                     >
                       {item.title}
                     </h3>
                   </div>
 
-                  <div className="flex items-center gap-2 text-xs text-slate-400">
+                  <div className="flex items-center gap-2 text-xs text-slate-400 dark:text-slate-500 font-mono">
                     <Clock className="h-3.5 w-3.5" />
                     <span>{formatTimeAgo(item.createdAt)}</span>
                   </div>
                 </div>
 
-                <p className="text-xs text-slate-600 leading-relaxed whitespace-pre-wrap">
+                <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">
                   {item.body}
                 </p>
 
@@ -350,7 +350,7 @@ export default function AdminNotificationsPage() {
                       onClick={() => {
                         if (!item.read) markSingleRead(item.id);
                       }}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition shadow-xs"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition shadow-xs"
                     >
                       <span>İlgili Sayfaya Git</span>
                       <ExternalLink className="h-3 w-3" />
@@ -361,9 +361,9 @@ export default function AdminNotificationsPage() {
                     <button
                       type="button"
                       onClick={() => markSingleRead(item.id)}
-                      className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition cursor-pointer"
+                      className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
                     >
-                      <CheckCheck className="h-3.5 w-3.5 text-indigo-600" />
+                      <CheckCheck className="h-3.5 w-3.5 text-blue-600 dark:text-sky-400" />
                       Okundu Olarak İşaretle
                     </button>
                   )}
@@ -371,7 +371,7 @@ export default function AdminNotificationsPage() {
                   <button
                     type="button"
                     onClick={() => deleteSingle(item.id)}
-                    className="ml-auto p-1.5 rounded-xl text-slate-400 hover:text-red-600 hover:bg-red-50 transition cursor-pointer"
+                    className="ml-auto p-1.5 rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 transition cursor-pointer"
                     title="Bildirimi Sil"
                   >
                     <Trash2 className="h-4 w-4" />
