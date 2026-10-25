@@ -13,7 +13,6 @@ import {
   Camera,
   Heart,
   MessageCircle,
-  Share2,
   Bookmark,
   Pin,
   Send,
@@ -74,7 +73,6 @@ interface FeedPost {
   time: string;
   content: string;
   imageUrl?: string;
-  tags: string[];
   likes: number;
   isLiked?: boolean;
   isSaved?: boolean;
@@ -167,7 +165,6 @@ export default function AdminCommunityPage() {
       imageUrl: "https://images.unsplash.com/photo-1584467735871-8e85353a8413?auto=format&fit=crop&w=1200&q=80",
       content:
         "📢 Sayın site sakinlerimiz, ortak alan bahçe kamelyamızın ahşap zemin ve masa bakımları tamamlanmıştır. Yeni oturma minderleri yerleştirildi. Komşularımızın keyifli akşamlarda güle güle kullanmasını dileriz.",
-      tags: ["#ResmiDuyuru", "#BahçeYenileme", "#OrtakAlan"],
       likes: 42,
       isLiked: true,
       isSaved: true,
@@ -184,7 +181,6 @@ export default function AdminCommunityPage() {
       imageUrl: "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=1200&q=80",
       content:
         "Merhabalar komşular! ☕️🍪 Kamelyada komşularla akşam çayı başlattık. Taze kek ve kurabiyemiz bol, çayını veya bardağını kapan tüm komşularımızı bahçeye bekliyoruz!",
-      tags: ["#KomşulukÇayı", "#BahçeBuluşması", "#Sohbet"],
       likes: 29,
       isLiked: false,
       isSaved: false,
@@ -200,7 +196,6 @@ export default function AdminCommunityPage() {
       imageUrl: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=1200&q=80",
       content:
         "Bina giriş kapısının önünde mavi tasmaya sahip tatlı bir sarman kedi gördük. Soğukta kalmaması için güvenliğe haber verdik, şu an yönetim ofisinde ısınıyor. Sahibini arıyoruz 🐱",
-      tags: ["#KayıpKedi", "#BinaDuyuru", "#CanDostlarımız"],
       likes: 36,
       isLiked: true,
       isSaved: false,
@@ -216,7 +211,6 @@ export default function AdminCommunityPage() {
       imageUrl: "https://images.unsplash.com/photo-1581783342308-f792dbdd27c5?auto=format&fit=crop&w=1200&q=80",
       content:
         "Salon perdesi kornişini monte etmek için 1 saatliğine darbeli matkap ve basamaklı merdiven ödünç verebilecek bir komşumuz var mıdır? İşim biter bitmez hemen teslim ederim.",
-      tags: ["#ÖdünçEşya", "#İmece", "#Yardımlaşma"],
       likes: 18,
       isLiked: false,
       isSaved: false,
@@ -230,7 +224,6 @@ export default function AdminCommunityPage() {
   const [newPostText, setNewPostText] = React.useState("");
   const [newPostImageUrl, setNewPostImageUrl] = React.useState("");
   const [showImageInput, setShowImageInput] = React.useState(false);
-  const [selectedTag, setSelectedTag] = React.useState<string | null>(null);
   const [commentInputs, setCommentInputs] = React.useState<Record<string, string>>({});
 
   // ══════════════════════════════════════════════════════════
@@ -440,14 +433,6 @@ export default function AdminCommunityPage() {
     );
   };
 
-  const handleSharePost = (postId: string) => {
-    showAlert({
-      title: "Bağlantı Hazır",
-      message: "Gönderi komşuluk panosuna kopyalandı. Komşularınızla güvenle paylaşabilirsiniz.",
-      variant: "success",
-    });
-  };
-
   const handleDeletePost = async (postId: string) => {
     const ok = await showConfirm({
       title: "Gönderiyi Kaldır",
@@ -472,7 +457,6 @@ export default function AdminCommunityPage() {
       time: "Şimdi",
       content: newPostText.trim(),
       imageUrl: newPostImageUrl.trim() || undefined,
-      tags: selectedTag ? [selectedTag] : ["#ResmiDuyuru"],
       likes: 1,
       isLiked: true,
       isSaved: false,
@@ -483,7 +467,6 @@ export default function AdminCommunityPage() {
     setNewPostText("");
     setNewPostImageUrl("");
     setShowImageInput(false);
-    setSelectedTag(null);
     showAlert({ title: "Paylaşıldı", message: "Resmi gönderi komşuluk akışında yayınlandı.", variant: "success" });
   };
 
@@ -661,25 +644,6 @@ export default function AdminCommunityPage() {
                     </div>
                   </div>
 
-                  {/* Quick Tags */}
-                  <div className="flex flex-wrap items-center gap-1.5 pt-1 pl-0 sm:pl-13">
-                    <span className="text-[10px] text-slate-400 font-semibold mr-1">Etiket:</span>
-                    {["#ResmiDuyuru", "#BahçeBuluşması", "#Yardımlaşma", "#ÖdünçEşya", "#İkinciEl"].map((tag) => (
-                      <button
-                        key={tag}
-                        type="button"
-                        onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
-                        className={`text-[10px] px-2.5 py-1 rounded-full font-mono font-semibold transition-colors cursor-pointer ${
-                          selectedTag === tag
-                            ? "bg-blue-600 text-white"
-                            : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-                        }`}
-                      >
-                        {tag}
-                      </button>
-                    ))}
-                  </div>
-
                   {/* Actions & Submit */}
                   <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800">
                     <button
@@ -779,7 +743,7 @@ export default function AdminCommunityPage() {
                       </div>
                     )}
 
-                    {/* 3. POST ACTION BAR (HEART, COMMENT, SHARE, BOOKMARK) */}
+                    {/* 3. POST ACTION BAR (HEART, COMMENT, BOOKMARK) */}
                     <div className="px-4 pt-3 pb-1 flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         {/* Like Button */}
@@ -812,16 +776,6 @@ export default function AdminCommunityPage() {
                         >
                           <MessageCircle className="h-6 w-6" />
                         </button>
-
-                        {/* Share Button */}
-                        <button
-                          type="button"
-                          onClick={() => handleSharePost(post.id)}
-                          className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-sky-400 transition-colors cursor-pointer"
-                          title="Bağlantıyı Kopyala & Paylaş"
-                        >
-                          <Share2 className="h-5 w-5" />
-                        </button>
                       </div>
 
                       {/* Bookmark Button */}
@@ -846,7 +800,7 @@ export default function AdminCommunityPage() {
                       </p>
                     </div>
 
-                    {/* 5. CAPTION & HASHTAGS */}
+                    {/* 5. CAPTION */}
                     <div className="px-4 pt-1.5 space-y-1 text-xs sm:text-sm leading-relaxed">
                       <p className="text-slate-800 dark:text-slate-200">
                         <span className="font-bold text-slate-900 dark:text-white mr-2">
@@ -854,20 +808,6 @@ export default function AdminCommunityPage() {
                         </span>
                         <span>{post.content}</span>
                       </p>
-
-                      {/* Tags */}
-                      {post.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5 pt-0.5">
-                          {post.tags.map((tag) => (
-                            <span
-                              key={tag}
-                              className="text-blue-600 dark:text-sky-400 hover:underline font-medium text-xs cursor-pointer"
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      )}
                     </div>
 
                     {/* 6. COMMENTS PREVIEW */}
