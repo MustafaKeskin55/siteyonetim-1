@@ -47,6 +47,25 @@ interface Story {
   image?: string;
 }
 
+type ReactionType = "like" | "love" | "applause" | "tea" | "useful" | "sad";
+
+interface ReactionDef {
+  type: ReactionType;
+  emoji: string;
+  label: string;
+  color: string;
+  badgeBg: string;
+}
+
+const REACTIONS: ReactionDef[] = [
+  { type: "like", emoji: "👍", label: "Beğen", color: "text-blue-500", badgeBg: "bg-blue-50 dark:bg-blue-950/70" },
+  { type: "love", emoji: "❤️", label: "Sevdim", color: "text-rose-500", badgeBg: "bg-rose-50 dark:bg-rose-950/70" },
+  { type: "applause", emoji: "👏", label: "Harika", color: "text-amber-500", badgeBg: "bg-amber-50 dark:bg-amber-950/70" },
+  { type: "tea", emoji: "☕", label: "Komşuluk", color: "text-orange-500", badgeBg: "bg-orange-50 dark:bg-orange-950/70" },
+  { type: "useful", emoji: "💡", label: "Faydalı", color: "text-yellow-500", badgeBg: "bg-yellow-50 dark:bg-yellow-950/70" },
+  { type: "sad", emoji: "😢", label: "Üzücü", color: "text-indigo-400", badgeBg: "bg-indigo-50 dark:bg-indigo-950/70" },
+];
+
 interface FeedPost {
   id: string;
   authorName: string;
@@ -57,8 +76,8 @@ interface FeedPost {
   tags?: string[];
   isPinned?: boolean;
   image?: string;
-  likes: number;
-  liked: boolean;
+  reactions: Record<ReactionType, number>;
+  userReaction?: ReactionType | null;
   comments: { author: string; apt: string; text: string; time: string }[];
   poll?: {
     question: string;
@@ -76,6 +95,9 @@ export default function DashboardPage() {
   const [activeStory, setActiveStory] = React.useState<Story | null>(null);
   const [newPostText, setNewPostText] = React.useState("");
   const [selectedTag, setSelectedTag] = React.useState<string | null>(null);
+  const [activeReactionPostId, setActiveReactionPostId] = React.useState<string | null>(null);
+  const [commentInputs, setCommentInputs] = React.useState<Record<string, string>>({});
+  const [openCommentPostId, setOpenCommentPostId] = React.useState<string | null>(null);
 
   // Initial rich social feed data
   const [posts, setPosts] = React.useState<FeedPost[]>([
@@ -89,8 +111,8 @@ export default function DashboardPage() {
       content:
         "Değerli sakinlerimiz, perşembe günü 10:00 - 13:00 saatleri arasında merkezi asansör ve hidrofor sistemlerinin periyodik güvenlik denetimi yapılacaktır. Kısa süreli su basıncı düşüşü yaşanabilir. Anlayışınız için teşekkür ederiz.",
       tags: ["#ResmiDuyuru", "#BakımOnarım"],
-      likes: 34,
-      liked: false,
+      reactions: { like: 24, useful: 12, applause: 6, tea: 0, love: 0, sad: 0 },
+      userReaction: null,
       comments: [
         {
           author: "Murat Bey",
@@ -108,8 +130,8 @@ export default function DashboardPage() {
       content:
         "Merhabalar komşular! ☕️🍪 Havalar güzelleşmişken bahçedeki kamelyada komşuluk çayı ve ev yapımı kurabiye ikramı hazırladık. Müsait olan tüm komşularımızı ve çocukları bekleriz!",
       tags: ["#KomşulukÇayı", "#BahçeBuluşması"],
-      likes: 28,
-      liked: true,
+      reactions: { tea: 16, love: 11, like: 8, applause: 2, useful: 0, sad: 0 },
+      userReaction: "tea",
       comments: [
         {
           author: "Kemal Bey",
@@ -133,8 +155,8 @@ export default function DashboardPage() {
       content:
         "Bina sakinlerimizin ortak kararıyla: Bahçe peyzajında kullanılmayan atıl çim alanına çocuklar için güvenli kauçuk zeminli mini oyun parkı yapılsın mı?",
       tags: ["#DemokratikOylama", "#BinaGelişimi"],
-      likes: 42,
-      liked: false,
+      reactions: { useful: 21, applause: 8, like: 14, tea: 0, love: 0, sad: 0 },
+      userReaction: "useful",
       comments: [],
       poll: {
         question: "Çocuk oyun parkı alanı genişletilsin mi?",
@@ -154,8 +176,8 @@ export default function DashboardPage() {
       content:
         "Komşular selam, salona avize takmak için 2 saatliğine yüksek merdiveni olan komşum var mıdır? İşim biter bitmez teslim ederim.",
       tags: ["#ÖdünçEşya", "#Yardımlaşma"],
-      likes: 12,
-      liked: false,
+      reactions: { like: 7, tea: 5, useful: 3, applause: 0, love: 0, sad: 0 },
+      userReaction: null,
       comments: [
         {
           author: "Selin Kaya",
@@ -257,17 +279,79 @@ export default function DashboardPage() {
       .catch(() => {});
   }, []);
 
-  const handleLike = (postId: string) => {
+  // Multi-Emoji Reactions Handlers (Facebook style)
+  const handleReactToPost = (postId: string, reactionType: ReactionType) => {
+    setPosts((prev) =>
+      prev.map((p) => {
+        if (p.id !== postId) return p;
+        const currentReaction = p.userReaction;
+        const updatedReactions = { ...p.reactions };
+
+        if (currentReaction === reactionType) {
+          // Toggle off
+          updatedReactions[reactionType] = Math.max(0, (updatedReactions[reactionType] || 1) - 1);
+          return {
+            ...p,
+            userReaction: null,
+            reactions: updatedReactions,
+          };
+        } else {
+          // Decrement previous if existed
+          if (currentReaction) {
+            updatedReactions[currentReaction] = Math.max(0, (updatedReactions[currentReaction] || 1) - 1);
+          }
+          // Increment new
+          updatedReactions[reactionType] = (updatedReactions[reactionType] || 0) + 1;
+          return {
+            ...p,
+            userReaction: reactionType,
+            reactions: updatedReactions,
+          };
+        }
+      })
+    );
+    setActiveReactionPostId(null);
+  };
+
+  const handleQuickReactionToggle = (postId: string) => {
+    const post = posts.find((p) => p.id === postId);
+    if (!post) return;
+    if (post.userReaction) {
+      handleReactToPost(postId, post.userReaction);
+    } else {
+      handleReactToPost(postId, "like");
+    }
+  };
+
+  const getTotalReactions = (reactions: Record<ReactionType, number>) => {
+    return Object.values(reactions).reduce((acc, count) => acc + count, 0);
+  };
+
+  const getActiveReactions = (reactions: Record<ReactionType, number>) => {
+    return REACTIONS.filter((r) => (reactions[r.type] || 0) > 0);
+  };
+
+  const handleAddComment = (postId: string) => {
+    const text = (commentInputs[postId] || "").trim();
+    if (!text) return;
     setPosts((prev) =>
       prev.map((p) => {
         if (p.id !== postId) return p;
         return {
           ...p,
-          liked: !p.liked,
-          likes: p.liked ? p.likes - 1 : p.likes + 1,
+          comments: [
+            ...p.comments,
+            {
+              author: residentName,
+              apt: `D.${apartmentNo}`,
+              text,
+              time: "Şimdi",
+            },
+          ],
         };
       })
     );
+    setCommentInputs((prev) => ({ ...prev, [postId]: "" }));
   };
 
   const handleVote = (postId: string, optionIndex: number) => {
@@ -309,8 +393,8 @@ export default function DashboardPage() {
       timeAgo: "Az önce",
       content: newPostText.trim(),
       tags: selectedTag ? [selectedTag] : ["#Komşuluk"],
-      likes: 1,
-      liked: true,
+      reactions: { like: 1, love: 0, applause: 0, tea: 0, useful: 0, sad: 0 },
+      userReaction: "like",
       comments: [],
     };
 
@@ -625,53 +709,157 @@ export default function DashboardPage() {
                       )}
                     </div>
 
-                    {/* Post Bottom Action Bar */}
-                    <div className="flex items-center justify-between pt-3 border-t border-slate-200/90 dark:border-slate-800/80 text-xs">
-                      <div className="flex items-center gap-4">
-                        <button
-                          type="button"
-                          onClick={() => handleLike(post.id)}
-                          className={`flex items-center gap-1.5 font-bold transition-colors cursor-pointer ${
-                            post.liked
-                              ? "text-blue-600 dark:text-sky-400"
-                              : "text-slate-600 dark:text-slate-400 hover:text-blue-600"
-                          }`}
-                        >
-                          <Heart className={`h-4 w-4 ${post.liked ? "fill-blue-600 dark:fill-sky-400" : ""}`} />
-                          <span>{post.likes}</span>
-                        </button>
+                    {/* Post Bottom Action Bar (Facebook-Style Multi-Emoji Reactions & Comments) */}
+                    <div className="pt-3 border-t border-slate-200/90 dark:border-slate-800/80 space-y-2 text-xs">
+                      <div className="flex items-center justify-between relative">
+                        <div className="flex items-center gap-2 sm:gap-3">
+                          {/* Reaction Picker Container */}
+                          <div
+                            className="relative"
+                            onMouseEnter={() => setActiveReactionPostId(post.id)}
+                          >
+                            {/* Floating Reaction Dock */}
+                            {activeReactionPostId === post.id && (
+                              <div
+                                onMouseLeave={() => setActiveReactionPostId(null)}
+                                className="absolute -top-13 left-0 z-30 bg-white dark:bg-[#070b14] border border-slate-200 dark:border-slate-800 rounded-full px-3 py-1.5 shadow-2xl flex items-center gap-2.5 animate-in fade-in zoom-in-95 duration-150 backdrop-blur-md"
+                              >
+                                {REACTIONS.map((r) => (
+                                  <button
+                                    key={r.type}
+                                    type="button"
+                                    onClick={() => handleReactToPost(post.id, r.type)}
+                                    className="group/emoji relative text-2xl transform hover:scale-135 hover:-translate-y-1.5 active:scale-105 transition-all duration-150 cursor-pointer p-0.5 select-none"
+                                  >
+                                    <span>{r.emoji}</span>
+                                    {/* Tooltip */}
+                                    <span className="opacity-0 group-hover/emoji:opacity-100 transition-opacity absolute -top-7 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold px-2 py-0.5 rounded-full pointer-events-none whitespace-nowrap shadow-md">
+                                      {r.label}
+                                    </span>
+                                  </button>
+                                ))}
+                              </div>
+                            )}
 
-                        <button
-                          type="button"
-                          className="flex items-center gap-1.5 font-semibold text-slate-600 dark:text-slate-400 hover:text-blue-600 transition-colors cursor-pointer"
-                        >
-                          <MessageCircle className="h-4 w-4" />
-                          <span>{post.comments.length} Yorum</span>
-                        </button>
-                      </div>
-
-                      <Link
-                        href="/dashboard/topluluk"
-                        className="text-[11px] text-blue-600 dark:text-sky-400 font-bold hover:underline flex items-center gap-1"
-                      >
-                        <span>Sohbete Katıl</span>
-                        <ArrowRight className="h-3 w-3" />
-                      </Link>
-                    </div>
-
-                    {/* Comments preview */}
-                    {post.comments.length > 0 && (
-                      <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2">
-                        {post.comments.map((cm, ci) => (
-                          <div key={ci} className="text-xs bg-slate-50 dark:bg-slate-900/70 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 flex items-start gap-2">
-                            <span className="font-bold text-blue-700 dark:text-sky-300 shrink-0">
-                              {cm.apt} &bull; {cm.author}:
-                            </span>
-                            <span className="text-slate-700 dark:text-slate-300">{cm.text}</span>
+                            {/* Reaction Button */}
+                            <button
+                              type="button"
+                              onClick={() => handleQuickReactionToggle(post.id)}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-all cursor-pointer font-bold text-xs"
+                            >
+                              {post.userReaction ? (
+                                <>
+                                  <span className="text-base">
+                                    {REACTIONS.find((r) => r.type === post.userReaction)?.emoji}
+                                  </span>
+                                  <span className={REACTIONS.find((r) => r.type === post.userReaction)?.color}>
+                                    {REACTIONS.find((r) => r.type === post.userReaction)?.label}
+                                  </span>
+                                </>
+                              ) : (
+                                <>
+                                  <span className="text-base">👍</span>
+                                  <span className="text-slate-600 dark:text-slate-300">Tepki Bırak</span>
+                                </>
+                              )}
+                            </button>
                           </div>
-                        ))}
+
+                          {/* Comment Button */}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setOpenCommentPostId(openCommentPostId === post.id ? null : post.id);
+                              setTimeout(() => {
+                                document.getElementById(`comment-input-${post.id}`)?.focus();
+                              }, 50);
+                            }}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/80 text-slate-600 dark:text-slate-300 transition-colors cursor-pointer font-semibold text-xs"
+                            title="Yorum Yap"
+                          >
+                            <MessageCircle className="h-4 w-4" />
+                            <span>Yorum ({post.comments.length})</span>
+                          </button>
+                        </div>
+
+                        <Link
+                          href="/dashboard/topluluk"
+                          className="text-[11px] text-blue-600 dark:text-sky-400 font-bold hover:underline flex items-center gap-1"
+                        >
+                          <span>Sohbete Git</span>
+                          <ArrowRight className="h-3 w-3" />
+                        </Link>
                       </div>
-                    )}
+
+                      {/* Reactions Breakdown / Summary */}
+                      <div className="pt-1">
+                        {getTotalReactions(post.reactions) > 0 ? (
+                          <div className="flex items-center gap-2">
+                            <div className="flex items-center -space-x-1.5">
+                              {getActiveReactions(post.reactions)
+                                .slice(0, 3)
+                                .map((r) => (
+                                  <span
+                                    key={r.type}
+                                    className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-slate-100 dark:bg-slate-800 border-2 border-white dark:border-[#0d1424] text-xs shadow-2xs"
+                                    title={`${r.label}: ${post.reactions[r.type]}`}
+                                  >
+                                    {r.emoji}
+                                  </span>
+                                ))}
+                            </div>
+                            <span className="font-bold text-xs text-slate-800 dark:text-slate-200">
+                              {getTotalReactions(post.reactions)} komşu tepki verdi
+                            </span>
+                          </div>
+                        ) : (
+                          <p className="text-xs text-slate-400">
+                            İlk tepkiyi bırakan komşu siz olun
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Comment Input Form */}
+                      {openCommentPostId === post.id && (
+                        <div className="mt-2 pt-2 flex items-center gap-2">
+                          <input
+                            id={`comment-input-${post.id}`}
+                            type="text"
+                            value={commentInputs[post.id] || ""}
+                            onChange={(e) => setCommentInputs({ ...commentInputs, [post.id]: e.target.value })}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                e.preventDefault();
+                                handleAddComment(post.id);
+                              }
+                            }}
+                            placeholder="Komşunuza saygılı bir yorum yazın..."
+                            className="flex-1 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-hidden focus:ring-1 focus:ring-blue-500"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handleAddComment(post.id)}
+                            className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-xs transition-colors cursor-pointer"
+                          >
+                            Gönder
+                          </button>
+                        </div>
+                      )}
+
+                      {/* Comments preview */}
+                      {post.comments.length > 0 && (
+                        <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2">
+                          {post.comments.map((cm, ci) => (
+                            <div key={ci} className="text-xs bg-slate-50 dark:bg-slate-900/70 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 flex items-start gap-2">
+                              <span className="font-bold text-blue-700 dark:text-sky-300 shrink-0">
+                                {cm.apt} &bull; {cm.author}:
+                              </span>
+                              <span className="text-slate-700 dark:text-slate-300">{cm.text}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </article>
                 );
               })}
@@ -718,7 +906,7 @@ export default function DashboardPage() {
                 </button>
 
                 <Link
-                  href="/dashboard/topluluk"
+                  href="/dashboard/anketler"
                   className="w-full py-2.5 px-3 rounded-xl text-center text-xs text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-sky-400 font-semibold block transition-colors"
                 >
                   Tüm Komşuluk Kararları &rarr;
