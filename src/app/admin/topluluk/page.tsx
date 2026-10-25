@@ -23,6 +23,8 @@ import {
   Clock,
   CheckCircle2,
   Megaphone,
+  Smile,
+  MoreHorizontal,
 } from "lucide-react";
 import { useAlert, useConfirm } from "@/components/ModalProvider";
 
@@ -75,6 +77,7 @@ interface FeedPost {
   tags: string[];
   likes: number;
   isLiked?: boolean;
+  isSaved?: boolean;
   isPinned?: boolean;
   comments: {
     id: string;
@@ -108,7 +111,7 @@ export default function AdminCommunityPage() {
       name: "Bina Yönetimi",
       label: "Duyuru 📌",
       apt: "YNT",
-      color: "from-blue-600 to-indigo-600",
+      color: "from-blue-600 via-indigo-600 to-sky-500",
       content: "Perşembe günü 13:00 - 15:00 saatleri arasında hidrofor bakımı yapılacaktır. Kısa süreli su kesintisi olabilir.",
       time: "2 saat önce",
     },
@@ -117,7 +120,7 @@ export default function AdminCommunityPage() {
       name: "Zeynep Hanım",
       label: "Çay Saati ☕️",
       apt: "D.6",
-      color: "from-cyan-500 to-blue-600",
+      color: "from-cyan-500 via-sky-600 to-blue-700",
       content: "Kamelyada komşuluk çayı ve kurabiye etkinliği başladı, müsait olan tüm komşularımızı bekleriz!",
       time: "45 dk önce",
     },
@@ -126,7 +129,7 @@ export default function AdminCommunityPage() {
       name: "Murat Bey",
       label: "Kedi Bulundu 🐱",
       apt: "D.9",
-      color: "from-amber-500 to-orange-500",
+      color: "from-amber-500 via-orange-500 to-yellow-600",
       content: "Bina girişindeki merdiven altında tasmalı sarman bir kedi bulundu. Sahibini arıyoruz, yönetim odasında bekliyor.",
       time: "3 saat önce",
     },
@@ -135,7 +138,7 @@ export default function AdminCommunityPage() {
       name: "Ahmet Bey",
       label: "Matkap Lazım 🔧",
       apt: "D.12",
-      color: "from-emerald-500 to-teal-600",
+      color: "from-emerald-500 via-teal-600 to-cyan-600",
       content: "Merhaba komşular, 1 saatliğine ödünç darbeli matkap verebilecek var mı?",
       time: "4 saat önce",
     },
@@ -144,7 +147,7 @@ export default function AdminCommunityPage() {
       name: "Sevgi Hanım",
       label: "Temiz Masa 🎁",
       apt: "D.18",
-      color: "from-blue-500 to-sky-400",
+      color: "from-indigo-500 via-blue-600 to-slate-700",
       content: "Çocuk odasındaki az kullanılmış beyaz çalışma masasını ihtiyacı olan bir komşumuza hediye ediyoruz.",
       time: "5 saat önce",
     },
@@ -161,45 +164,72 @@ export default function AdminCommunityPage() {
       author: { name: "Bina Yönetimi (Resmi)", apt: "YNT", isManagement: true },
       time: "1 saat önce",
       isPinned: true,
+      imageUrl: "https://images.unsplash.com/photo-1584467735871-8e85353a8413?auto=format&fit=crop&w=1200&q=80",
       content:
-        "📢 Sayın site sakinlerimiz, ortak alan bahçe kamelyası yenilenmiş ve oturma grupları boyanmıştır. Komşularımızın güzel günlerde keyifle kullanmasını dileriz.",
-      tags: ["#ResmiDuyuru", "#BahçeYenileme"],
-      likes: 38,
+        "📢 Sayın site sakinlerimiz, ortak alan bahçe kamelyamızın ahşap zemin ve masa bakımları tamamlanmıştır. Yeni oturma minderleri yerleştirildi. Komşularımızın keyifli akşamlarda güle güle kullanmasını dileriz.",
+      tags: ["#ResmiDuyuru", "#BahçeYenileme", "#OrtakAlan"],
+      likes: 42,
       isLiked: true,
+      isSaved: true,
       comments: [
-        { id: "c1", author: "Zeynep K.", apt: "D.6", text: "Çok güzel olmuş, yönetime teşekkür ederiz! 👏", time: "40 dk önce" },
-        { id: "c2", author: "Mehmet Y.", apt: "D.14", text: "Ellerinize sağlık, çok ferah duruyor.", time: "25 dk önce" },
+        { id: "c1", author: "Zeynep K.", apt: "D.6", text: "Çok ferah ve nezih olmuş, emeğinize sağlık yönetici bey! 👏🌸", time: "40 dk önce" },
+        { id: "c2", author: "Mehmet Y.", apt: "D.14", text: "Hafta sonu komşularla çay saatine çok uygun oldu, teşekkürler.", time: "25 dk önce" },
+        { id: "c3", author: "Selin A.", apt: "D.2", text: "Akşam aydınlatması da çok hoş görünüyor ✨", time: "10 dk önce" },
       ],
     },
     {
       id: "p2",
       author: { name: "Zeynep Hanım", apt: "D.6" },
       time: "3 saat önce",
+      imageUrl: "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=1200&q=80",
       content:
-        "Merhabalar komşular! ☕️🍪 Bahçedeki kamelyada komşularla akşam çayı etkinliği yapıyoruz. Çayını, kurabiyesini alan tüm komşularımızı ve çocukları bekleriz!",
-      tags: ["#KomşulukÇayı", "#BahçeBuluşması", "#İmece"],
-      likes: 24,
+        "Merhabalar komşular! ☕️🍪 Kamelyada komşularla akşam çayı başlattık. Taze kek ve kurabiyemiz bol, çayını veya bardağını kapan tüm komşularımızı bahçeye bekliyoruz!",
+      tags: ["#KomşulukÇayı", "#BahçeBuluşması", "#Sohbet"],
+      likes: 29,
       isLiked: false,
+      isSaved: false,
       comments: [
-        { id: "c3", author: "Fatma D.", apt: "D.8", text: "Börek yapıp hemen iniyorum Zeynep Hanım! 😊", time: "2 saat önce" },
+        { id: "c4", author: "Fatma D.", apt: "D.8", text: "Fırından sıcak poğaça aldım hemen aşağı iniyorum Zeynep Hanım! 😊", time: "2 saat önce" },
+        { id: "c5", author: "Barış K.", apt: "D.11", text: "Çocukları parka indirdim, biz de kamelyadayız selamlar!", time: "1 saat önce" },
       ],
     },
     {
       id: "p3",
-      author: { name: "Ahmet Bey", apt: "D.12" },
+      author: { name: "Murat Bey", apt: "D.9" },
       time: "5 saat önce",
+      imageUrl: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=1200&q=80",
       content:
-        "Komşular selamlar, salon avizesini takmak için 1 saatliğine ödünç merdiven rica edebilir miyim? İşim bitince hemen geri getireceğim.",
-      tags: ["#ÖdünçEşya", "#Yardımlaşma"],
-      likes: 12,
-      isLiked: false,
+        "Bina giriş kapısının önünde mavi tasmaya sahip tatlı bir sarman kedi gördük. Soğukta kalmaması için güvenliğe haber verdik, şu an yönetim ofisinde ısınıyor. Sahibini arıyoruz 🐱",
+      tags: ["#KayıpKedi", "#BinaDuyuru", "#CanDostlarımız"],
+      likes: 36,
+      isLiked: true,
+      isSaved: false,
       comments: [
-        { id: "c4", author: "Kemal T.", apt: "D.3", text: "Bizim katta var Ahmet Bey, gelip alabilirsiniz.", time: "4 saat önce" },
+        { id: "c6", author: "Aylin T.", apt: "D.4", text: "Bizim 3. kattaki Aylin'lerin kedisine benziyor, hemen haber veriyorum!", time: "4 saat önce" },
+        { id: "c7", author: "Bina Yönetimi", apt: "YNT", text: "Kedimizin mamasını ve suyunu verdik, güvende bekliyor.", time: "3 saat önce" },
+      ],
+    },
+    {
+      id: "p4",
+      author: { name: "Ahmet Bey", apt: "D.12" },
+      time: "7 saat önce",
+      imageUrl: "https://images.unsplash.com/photo-1581783342308-f792dbdd27c5?auto=format&fit=crop&w=1200&q=80",
+      content:
+        "Salon perdesi kornişini monte etmek için 1 saatliğine darbeli matkap ve basamaklı merdiven ödünç verebilecek bir komşumuz var mıdır? İşim biter bitmez hemen teslim ederim.",
+      tags: ["#ÖdünçEşya", "#İmece", "#Yardımlaşma"],
+      likes: 18,
+      isLiked: false,
+      isSaved: false,
+      comments: [
+        { id: "c8", author: "Kemal T.", apt: "D.3", text: "Ahmet Bey bende hem matkap seti hem de merdiven var. Daire 3'e uğrayıp alabilirsiniz.", time: "6 saat önce" },
+        { id: "c9", author: "Ahmet Bey", apt: "D.12", text: "Çok teşekkür ederim Kemal Bey, hemen geliyorum!", time: "5 saat önce" },
       ],
     },
   ]);
 
   const [newPostText, setNewPostText] = React.useState("");
+  const [newPostImageUrl, setNewPostImageUrl] = React.useState("");
+  const [showImageInput, setShowImageInput] = React.useState(false);
   const [selectedTag, setSelectedTag] = React.useState<string | null>(null);
   const [commentInputs, setCommentInputs] = React.useState<Record<string, string>>({});
 
@@ -397,6 +427,27 @@ export default function AdminCommunityPage() {
     setCommentInputs((prev) => ({ ...prev, [postId]: "" }));
   };
 
+  const handleToggleSavePost = (postId: string) => {
+    setPosts((prev) =>
+      prev.map((p) => {
+        if (p.id !== postId) return p;
+        const willSave = !p.isSaved;
+        return {
+          ...p,
+          isSaved: willSave,
+        };
+      })
+    );
+  };
+
+  const handleSharePost = (postId: string) => {
+    showAlert({
+      title: "Bağlantı Hazır",
+      message: "Gönderi komşuluk panosuna kopyalandı. Komşularınızla güvenle paylaşabilirsiniz.",
+      variant: "success",
+    });
+  };
+
   const handleDeletePost = async (postId: string) => {
     const ok = await showConfirm({
       title: "Gönderiyi Kaldır",
@@ -420,14 +471,18 @@ export default function AdminCommunityPage() {
       author: { name: "Bina Yönetimi (Resmi)", apt: "YNT", isManagement: true },
       time: "Şimdi",
       content: newPostText.trim(),
-      tags: selectedTag ? [selectedTag] : ["#YönetimDuyurusu"],
+      imageUrl: newPostImageUrl.trim() || undefined,
+      tags: selectedTag ? [selectedTag] : ["#ResmiDuyuru"],
       likes: 1,
       isLiked: true,
+      isSaved: false,
       comments: [],
     };
 
     setPosts([newPost, ...posts]);
     setNewPostText("");
+    setNewPostImageUrl("");
+    setShowImageInput(false);
     setSelectedTag(null);
     showAlert({ title: "Paylaşıldı", message: "Resmi gönderi komşuluk akışında yayınlandı.", variant: "success" });
   };
@@ -564,24 +619,51 @@ export default function AdminCommunityPage() {
         <div className="lg:col-span-7 space-y-5">
               
               {/* Quick Post Box for Management */}
-              <div className="bg-white dark:bg-[#0d1424] rounded-3xl p-5 border-2 border-slate-300 dark:border-slate-800 shadow-sm transition-colors">
+              <div className="bg-white dark:bg-[#0d1424] rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-sm transition-colors">
                 <form onSubmit={handleCreatePost} className="space-y-3">
                   <div className="flex items-start gap-3">
-                    <div className="h-10 w-10 rounded-2xl bg-blue-600 text-white flex items-center justify-center text-xs font-bold shrink-0">
-                      YNT
+                    <div className="h-10 w-10 rounded-full p-[2px] bg-gradient-to-tr from-blue-600 via-indigo-600 to-sky-400 shrink-0">
+                      <div className="h-full w-full rounded-full bg-white dark:bg-[#0d1424] p-[1px]">
+                        <div className="h-full w-full rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center font-bold text-xs text-blue-600 dark:text-sky-400">
+                          YNT
+                        </div>
+                      </div>
                     </div>
-                    <textarea
-                      rows={2}
-                      value={newPostText}
-                      onChange={(e) => setNewPostText(e.target.value)}
-                      placeholder="Bina sakinleriyle bir duyuru, fotoğraf veya komşuluk mesajı paylaşın..."
-                      className="w-full text-xs sm:text-sm bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-2xl p-3 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-500/10 resize-none transition-all text-slate-900 dark:text-white"
-                    />
+                    <div className="flex-1 space-y-2">
+                      <textarea
+                        rows={2}
+                        value={newPostText}
+                        onChange={(e) => setNewPostText(e.target.value)}
+                        placeholder="Bina sakinleriyle bir duyuru veya komşuluk fotoğrafı paylaşın..."
+                        className="w-full text-xs sm:text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-3 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-500/20 resize-none transition-all text-slate-900 dark:text-white"
+                      />
+                      {showImageInput && (
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="url"
+                            placeholder="Fotoğraf görsel URL'si yapıştırın (https://...)"
+                            value={newPostImageUrl}
+                            onChange={(e) => setNewPostImageUrl(e.target.value)}
+                            className="flex-1 text-xs px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setNewPostImageUrl("");
+                              setShowImageInput(false);
+                            }}
+                            className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 px-2 py-1 cursor-pointer"
+                          >
+                            İptal
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   {/* Quick Tags */}
-                  <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                    <span className="text-[10px] text-slate-400 font-semibold mr-1">Etiket Seçin:</span>
+                  <div className="flex flex-wrap items-center gap-1.5 pt-1 pl-0 sm:pl-13">
+                    <span className="text-[10px] text-slate-400 font-semibold mr-1">Etiket:</span>
                     {["#ResmiDuyuru", "#BahçeBuluşması", "#Yardımlaşma", "#ÖdünçEşya", "#İkinciEl"].map((tag) => (
                       <button
                         key={tag}
@@ -599,18 +681,20 @@ export default function AdminCommunityPage() {
                   </div>
 
                   {/* Actions & Submit */}
-                  <div className="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-slate-800">
-                    <div className="flex items-center gap-1 text-slate-500 dark:text-slate-400 text-xs">
-                      <span className="flex items-center gap-1">
-                        <Camera className="h-4 w-4 text-blue-600" />
-                        Fotoğraflı Komşu Duvarı
-                      </span>
-                    </div>
+                  <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800">
+                    <button
+                      type="button"
+                      onClick={() => setShowImageInput(!showImageInput)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-sky-400 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold transition-colors cursor-pointer"
+                    >
+                      <Camera className="h-4 w-4 text-blue-600 dark:text-sky-400" />
+                      <span>{showImageInput ? "Görsel Alanını Kapat" : "Fotoğraf Ekle"}</span>
+                    </button>
 
                     <button
                       type="submit"
                       disabled={!newPostText.trim()}
-                      className="inline-flex items-center gap-1.5 px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all disabled:opacity-40 cursor-pointer"
+                      className="inline-flex items-center gap-1.5 px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all disabled:opacity-40 cursor-pointer shadow-xs"
                     >
                       <Send className="h-3.5 w-3.5" />
                       <span>Paylaş</span>
@@ -620,124 +704,208 @@ export default function AdminCommunityPage() {
               </div>
 
               {/* Feed Stream */}
-              <div className="space-y-4">
+              <div className="space-y-5">
                 {posts.map((post) => (
-                  <div
+                  <article
                     key={post.id}
-                    className="bg-white dark:bg-[#0d1424] rounded-3xl border-2 border-slate-300 dark:border-slate-800 shadow-sm overflow-hidden transition-colors"
+                    className="bg-white dark:bg-[#0d1424] rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden transition-colors"
                   >
-                    {/* Post Header */}
-                    <div className="p-4 sm:p-5 flex items-center justify-between border-b border-slate-100 dark:border-slate-800/80">
+                    {/* 1. POST HEADER */}
+                    <header className="px-4 py-3 sm:px-5 sm:py-3.5 flex items-center justify-between border-b border-slate-100 dark:border-slate-800/60">
                       <div className="flex items-center gap-3">
-                        <div
-                          className={`h-10 w-10 rounded-2xl flex items-center justify-center font-bold text-xs ${
-                            post.author.isManagement
-                              ? "bg-blue-600 text-white"
-                              : "bg-slate-100 dark:bg-slate-800 text-blue-600 dark:text-sky-400 border border-slate-200 dark:border-slate-700"
-                          }`}
-                        >
-                          {post.author.apt}
+                        <div className="h-10 w-10 rounded-full p-[2px] bg-gradient-to-tr from-blue-600 via-indigo-600 to-sky-400 shrink-0">
+                          <div className="h-full w-full rounded-full bg-white dark:bg-[#0d1424] p-[1.5px]">
+                            <div className="h-full w-full rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center font-bold text-xs text-blue-600 dark:text-sky-400">
+                              {post.author.apt}
+                            </div>
+                          </div>
                         </div>
                         <div>
-                          <div className="flex items-center gap-2">
-                            <span className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white cursor-pointer hover:underline">
                               {post.author.name}
                             </span>
-                            {post.isPinned && (
-                              <span className="inline-flex items-center gap-1 text-[10px] font-mono text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 px-2 py-0.5 rounded border border-amber-200 dark:border-amber-800/50">
-                                <Pin className="h-3 w-3" /> Sabitlenmiş
+                            {post.author.isManagement && (
+                              <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-blue-600 dark:text-sky-400 bg-blue-50 dark:bg-blue-950/80 px-2 py-0.5 rounded-full border border-blue-200 dark:border-blue-800/60">
+                                <CheckCircle2 className="h-3 w-3 inline text-blue-600 dark:text-sky-400" />
+                                <span>Yönetim</span>
                               </span>
                             )}
+                            <span className="text-slate-300 dark:text-slate-600 text-xs">•</span>
+                            <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                              {post.time}
+                            </span>
+                            {post.isPinned && (
+                              <>
+                                <span className="text-slate-300 dark:text-slate-600 text-xs">•</span>
+                                <span className="inline-flex items-center gap-1 text-[10px] font-mono text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 px-1.5 py-0.5 rounded border border-amber-200 dark:border-amber-800/50">
+                                  <Pin className="h-2.5 w-2.5" /> Sabit
+                                </span>
+                              </>
+                            )}
                           </div>
-                          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{post.time}</p>
+                          <p className="text-[11px] text-slate-400 dark:text-slate-500 font-mono">Daire: {post.author.apt}</p>
                         </div>
                       </div>
 
-                      {/* Admin Moderation Button */}
+                      {/* Right: Moderation */}
                       <button
                         type="button"
                         onClick={() => handleDeletePost(post.id)}
-                        className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
-                        title="Gönderiyi Akıştan Kaldır"
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
+                        title="Gönderiyi Akıştan Kaldır (Moderatör)"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
-                    </div>
+                    </header>
 
-                    {/* Post Content */}
-                    <div className="p-4 sm:p-5 space-y-3">
-                      <p className="text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed whitespace-pre-line">
-                        {post.content}
-                      </p>
-
-                      {/* Tags */}
-                      <div className="flex flex-wrap gap-1.5 pt-1">
-                        {post.tags.map((tag) => (
-                          <span
-                            key={tag}
-                            className="text-[10px] text-blue-700 dark:text-sky-400 bg-blue-50 dark:bg-blue-950/60 px-2.5 py-0.5 rounded-full font-mono border border-blue-200 dark:border-blue-800/50"
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Post Interactions Bar */}
-                    <div className="px-4 py-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs bg-slate-50/50 dark:bg-slate-900/40">
-                      <div className="flex items-center gap-5">
-                        <button
-                          type="button"
-                          onClick={() => handleLikePost(post.id)}
-                          className={`flex items-center gap-1.5 font-bold transition-transform active:scale-125 cursor-pointer ${
-                            post.isLiked
-                              ? "text-rose-600 dark:text-rose-400"
-                              : "text-slate-500 dark:text-slate-400 hover:text-rose-600"
-                          }`}
-                        >
-                          <Heart
-                            className={`h-4 w-4 ${post.isLiked ? "fill-rose-600 dark:fill-rose-400" : ""}`}
-                          />
-                          <span>{post.likes} Beğeni</span>
-                        </button>
-
-                        <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 font-semibold">
-                          <MessageCircle className="h-4 w-4" />
-                          <span>{post.comments.length} Yorum</span>
+                    {/* 2. POST MEDIA / IMAGE */}
+                    {post.imageUrl && (
+                      <div
+                        className="relative w-full aspect-[4/3] sm:aspect-[16/10] bg-slate-100 dark:bg-slate-900 overflow-hidden cursor-pointer select-none group"
+                        onDoubleClick={() => handleLikePost(post.id)}
+                      >
+                        <img
+                          src={post.imageUrl}
+                          alt="Komşuluk Paylaşımı"
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                          loading="lazy"
+                        />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors pointer-events-none" />
+                        <div className="absolute bottom-3 right-3 px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-md text-white text-[10px] font-mono flex items-center gap-1.5">
+                          <Camera className="h-3 w-3" />
+                          <span>Komşu Fotoğrafı</span>
                         </div>
-                      </div>
-
-                      <span className="text-[11px] font-mono text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-0.5 rounded border border-emerald-200 dark:border-emerald-800/50">
-                        🔒 Numaralar Gizli
-                      </span>
-                    </div>
-
-                    {/* Comments Section */}
-                    {post.comments.length > 0 && (
-                      <div className="p-4 bg-slate-50 dark:bg-[#070b14] border-t border-slate-100 dark:border-slate-800/80 space-y-2">
-                        {post.comments.map((comment) => (
-                          <div
-                            key={comment.id}
-                            className="text-xs p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800"
-                          >
-                            <div className="flex items-center justify-between mb-1">
-                              <span className="font-bold text-slate-900 dark:text-white flex items-center gap-1">
-                                <span className="text-blue-600 font-mono text-[10px]">{comment.apt}</span>
-                                <span>{comment.author}</span>
-                              </span>
-                              <span className="text-[10px] text-slate-400">{comment.time}</span>
-                            </div>
-                            <p className="text-slate-700 dark:text-slate-300">{comment.text}</p>
-                          </div>
-                        ))}
                       </div>
                     )}
 
-                    {/* Add Comment Input */}
-                    <div className="p-3 border-t border-slate-100 dark:border-slate-800 flex items-center gap-2">
+                    {/* 3. POST ACTION BAR (HEART, COMMENT, SHARE, BOOKMARK) */}
+                    <div className="px-4 pt-3 pb-1 flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        {/* Like Button */}
+                        <button
+                          type="button"
+                          onClick={() => handleLikePost(post.id)}
+                          className={`transition-transform active:scale-125 cursor-pointer ${
+                            post.isLiked
+                              ? "text-rose-600 dark:text-rose-400"
+                              : "text-slate-700 dark:text-slate-200 hover:text-rose-600 dark:hover:text-rose-400"
+                          }`}
+                          title="Beğen"
+                        >
+                          <Heart
+                            className={`h-6 w-6 transition-all ${
+                              post.isLiked ? "fill-rose-600 dark:fill-rose-400 stroke-rose-600 dark:stroke-rose-400" : ""
+                            }`}
+                          />
+                        </button>
+
+                        {/* Comment Button */}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const inputEl = document.getElementById(`comment-input-${post.id}`);
+                            inputEl?.focus();
+                          }}
+                          className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-sky-400 transition-colors cursor-pointer"
+                          title="Yorum Yap"
+                        >
+                          <MessageCircle className="h-6 w-6" />
+                        </button>
+
+                        {/* Share Button */}
+                        <button
+                          type="button"
+                          onClick={() => handleSharePost(post.id)}
+                          className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-sky-400 transition-colors cursor-pointer"
+                          title="Bağlantıyı Kopyala & Paylaş"
+                        >
+                          <Share2 className="h-5 w-5" />
+                        </button>
+                      </div>
+
+                      {/* Bookmark Button */}
+                      <button
+                        type="button"
+                        onClick={() => handleToggleSavePost(post.id)}
+                        className={`transition-colors cursor-pointer ${
+                          post.isSaved
+                            ? "text-blue-600 dark:text-sky-400"
+                            : "text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-sky-400"
+                        }`}
+                        title="Kaydet"
+                      >
+                        <Bookmark className={`h-6 w-6 ${post.isSaved ? "fill-blue-600 dark:fill-sky-400" : ""}`} />
+                      </button>
+                    </div>
+
+                    {/* 4. LIKES COUNT */}
+                    <div className="px-4 pt-1.5">
+                      <p className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white">
+                        {post.likes > 0 ? `${post.likes.toLocaleString("tr-TR")} komşu beğendi` : "İlk beğenen komşu siz olun"}
+                      </p>
+                    </div>
+
+                    {/* 5. CAPTION & HASHTAGS */}
+                    <div className="px-4 pt-1.5 space-y-1 text-xs sm:text-sm leading-relaxed">
+                      <p className="text-slate-800 dark:text-slate-200">
+                        <span className="font-bold text-slate-900 dark:text-white mr-2">
+                          {post.author.name}
+                        </span>
+                        <span>{post.content}</span>
+                      </p>
+
+                      {/* Tags */}
+                      {post.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 pt-0.5">
+                          {post.tags.map((tag) => (
+                            <span
+                              key={tag}
+                              className="text-blue-600 dark:text-sky-400 hover:underline font-medium text-xs cursor-pointer"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* 6. COMMENTS PREVIEW */}
+                    <div className="px-4 pt-2 pb-1 space-y-1">
+                      {post.comments.length > 2 && (
+                        <button
+                          type="button"
+                          className="text-xs text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer block"
+                        >
+                          Tüm {post.comments.length} yorumu gör
+                        </button>
+                      )}
+
+                      {post.comments.map((comment) => (
+                        <div key={comment.id} className="text-xs flex items-baseline justify-between gap-2">
+                          <p className="text-slate-800 dark:text-slate-200">
+                            <span className="font-bold text-slate-900 dark:text-white mr-1.5">
+                              {comment.author}
+                            </span>
+                            <span className="text-[10px] text-blue-600 dark:text-sky-400 font-mono mr-1.5">({comment.apt})</span>
+                            <span>{comment.text}</span>
+                          </p>
+                          <span className="text-[10px] text-slate-400 shrink-0">{comment.time}</span>
+                        </div>
+                      ))}
+
+                      <p className="text-[10px] uppercase font-semibold tracking-wider text-slate-400 pt-1">
+                        {post.time}
+                      </p>
+                    </div>
+
+                    {/* 7. INLINE COMMENT COMPOSER (EXACT SOCIAL FEED STYLE) */}
+                    <div className="mt-2 px-4 py-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center gap-3">
+                      <Smile className="h-5 w-5 text-slate-400 dark:text-slate-500 shrink-0 cursor-pointer hover:text-slate-600 dark:hover:text-slate-300 transition-colors" />
                       <input
+                        id={`comment-input-${post.id}`}
                         type="text"
-                        placeholder="Yönetici olarak yanıt yaz..."
+                        placeholder="Bir komşu yorumu ekle..."
                         value={commentInputs[post.id] || ""}
                         onChange={(e) =>
                           setCommentInputs({ ...commentInputs, [post.id]: e.target.value })
@@ -745,25 +913,52 @@ export default function AdminCommunityPage() {
                         onKeyDown={(e) => {
                           if (e.key === "Enter") handleAddComment(post.id);
                         }}
-                        className="flex-1 px-3 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="flex-1 text-xs bg-transparent text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none"
                       />
                       <button
                         type="button"
                         onClick={() => handleAddComment(post.id)}
-                        className="p-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold cursor-pointer"
+                        disabled={!(commentInputs[post.id] || "").trim()}
+                        className="text-xs font-bold text-blue-600 dark:text-sky-400 hover:text-blue-700 dark:hover:text-sky-300 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-colors"
                       >
-                        <Send className="h-3.5 w-3.5" />
+                        Paylaş
                       </button>
                     </div>
-                  </div>
+                  </article>
                 ))}
               </div>
             </div>
 
         {/* SAĞ KOLON (5 COLS): TEMATİK KOMŞU SOHBET KANALLARI & CANLI İLETİŞİM */}
         <div className="lg:col-span-5 space-y-5">
+          {/* Yönetici & Moderatör Profil Kartı (Social Sidebar Style) */}
+          <div className="bg-white dark:bg-[#0d1424] rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between transition-colors">
+            <div className="flex items-center gap-3">
+              <div className="h-12 w-12 rounded-full p-[2px] bg-gradient-to-tr from-blue-600 via-indigo-600 to-sky-400 shrink-0">
+                <div className="h-full w-full rounded-full bg-white dark:bg-[#0d1424] p-[1.5px]">
+                  <div className="h-full w-full rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs">
+                    YNT
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="font-bold text-sm text-slate-900 dark:text-white">Bina Yönetim Portalı</span>
+                  <CheckCircle2 className="h-3.5 w-3.5 text-blue-600 dark:text-sky-400" />
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-0.5">
+                  <span className="h-2 w-2 rounded-full bg-emerald-500 inline-block animate-pulse" />
+                  <span>Canlı Moderasyon Aktif</span>
+                </p>
+              </div>
+            </div>
+            <span className="text-[11px] font-mono font-bold text-blue-600 dark:text-sky-400 bg-blue-50 dark:bg-blue-950/80 px-2.5 py-1 rounded-full border border-blue-200 dark:border-blue-800">
+              {channels.length} Kanal
+            </span>
+          </div>
+
           {/* Sohbet Kanalları & Canlı Mesajlaşma Kartı */}
-          <div className="bg-white dark:bg-[#0d1424] rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden transition-colors">
+          <div className="bg-white dark:bg-[#0d1424] rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden transition-colors">
             {/* Header */}
             <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
               <div>
