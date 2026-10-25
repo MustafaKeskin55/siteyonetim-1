@@ -334,3 +334,84 @@ CREATE TABLE IF NOT EXISTS `community_messages` (
 
 CREATE INDEX IF NOT EXISTS `idx_community_messages_channel_date` ON `community_messages` (`channel_id`, `created_at`);
 
+-- -----------------------------------------------------------------------------
+-- [D] SOSYAL AKIŞ & BİREYSEL KOMŞU MESAJLAŞMASI (DM)
+-- -----------------------------------------------------------------------------
+
+-- Sosyal Akış Gönderileri
+CREATE TABLE IF NOT EXISTS `community_posts` (
+  `id` text PRIMARY KEY NOT NULL,
+  `site_id` text NOT NULL,
+  `author_id` text NOT NULL,
+  `content` text NOT NULL,
+  `image_url` text,
+  `is_pinned` integer NOT NULL DEFAULT 0,
+  `created_at` text DEFAULT (CURRENT_TIMESTAMP),
+  FOREIGN KEY (`site_id`) REFERENCES `sites`(`id`),
+  FOREIGN KEY (`author_id`) REFERENCES `users`(`id`)
+);
+
+CREATE INDEX IF NOT EXISTS `idx_community_posts_site` ON `community_posts` (`site_id`, `created_at`);
+
+-- Çoklu Emoji Tepkileri (Facebook Tarzı: 👍, ❤️, 👏, ☕, 💡, 😢)
+CREATE TABLE IF NOT EXISTS `community_post_reactions` (
+  `id` text PRIMARY KEY NOT NULL,
+  `post_id` text NOT NULL,
+  `user_id` text NOT NULL,
+  `reaction_type` text NOT NULL,
+  `created_at` text DEFAULT (CURRENT_TIMESTAMP),
+  FOREIGN KEY (`post_id`) REFERENCES `community_posts`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`)
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS `idx_post_user_reaction` ON `community_post_reactions` (`post_id`, `user_id`);
+CREATE INDEX IF NOT EXISTS `idx_post_reactions_post` ON `community_post_reactions` (`post_id`);
+
+-- Gönderi Yorumları
+CREATE TABLE IF NOT EXISTS `community_post_comments` (
+  `id` text PRIMARY KEY NOT NULL,
+  `post_id` text NOT NULL,
+  `user_id` text NOT NULL,
+  `content` text NOT NULL,
+  `created_at` text DEFAULT (CURRENT_TIMESTAMP),
+  FOREIGN KEY (`post_id`) REFERENCES `community_posts`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`)
+);
+
+CREATE INDEX IF NOT EXISTS `idx_post_comments_post` ON `community_post_comments` (`post_id`, `created_at`);
+
+-- 24 Saatlik Komşuluk Hikayeleri
+CREATE TABLE IF NOT EXISTS `community_stories` (
+  `id` text PRIMARY KEY NOT NULL,
+  `site_id` text NOT NULL,
+  `author_id` text NOT NULL,
+  `title` text,
+  `content` text NOT NULL,
+  `image_url` text,
+  `expires_at` text,
+  `created_at` text DEFAULT (CURRENT_TIMESTAMP),
+  FOREIGN KEY (`site_id`) REFERENCES `sites`(`id`),
+  FOREIGN KEY (`author_id`) REFERENCES `users`(`id`)
+);
+
+CREATE INDEX IF NOT EXISTS `idx_community_stories_site` ON `community_stories` (`site_id`, `created_at`);
+
+-- Komşular Arası Bireysel Özel Sohbet (1-e-1 Direct Messaging / DM)
+CREATE TABLE IF NOT EXISTS `direct_messages` (
+  `id` text PRIMARY KEY NOT NULL,
+  `site_id` text NOT NULL,
+  `sender_id` text NOT NULL,
+  `receiver_id` text NOT NULL,
+  `content` text NOT NULL,
+  `is_read` integer NOT NULL DEFAULT 0,
+  `read_at` text,
+  `created_at` text DEFAULT (CURRENT_TIMESTAMP),
+  FOREIGN KEY (`site_id`) REFERENCES `sites`(`id`),
+  FOREIGN KEY (`sender_id`) REFERENCES `users`(`id`),
+  FOREIGN KEY (`receiver_id`) REFERENCES `users`(`id`)
+);
+
+CREATE INDEX IF NOT EXISTS `idx_direct_messages_thread` ON `direct_messages` (`site_id`, `sender_id`, `receiver_id`);
+CREATE INDEX IF NOT EXISTS `idx_direct_messages_unread` ON `direct_messages` (`receiver_id`, `is_read`);
+
+

@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer, real, primaryKey } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text, integer, real, primaryKey, uniqueIndex } from "drizzle-orm/sqlite-core";
 import { sql } from "drizzle-orm";
 
 export const sites = sqliteTable("sites", {
@@ -280,4 +280,64 @@ export const communityMessages = sqliteTable("community_messages", {
   pollId: text("poll_id").references(() => communityPolls.id),
   createdAt: text("created_at").default(sql`(CURRENT_TIMESTAMP)`),
 });
+
+/** Site İçi Sosyal Akış Gönderileri (Feed Posts) */
+export const communityPosts = sqliteTable("community_posts", {
+  id: text("id").primaryKey(),
+  siteId: text("site_id").notNull().references(() => sites.id),
+  authorId: text("author_id").notNull().references(() => users.id),
+  content: text("content").notNull(),
+  imageUrl: text("image_url"),
+  isPinned: integer("is_pinned", { mode: "boolean" }).notNull().default(false),
+  createdAt: text("created_at").default(sql`(CURRENT_TIMESTAMP)`),
+});
+
+/** Gönderi Çoklu Emoji Tepkileri (Facebook Tarzı: like, love, applause, tea, useful, sad) */
+export const communityPostReactions = sqliteTable(
+  "community_post_reactions",
+  {
+    id: text("id").primaryKey(),
+    postId: text("post_id").notNull().references(() => communityPosts.id),
+    userId: text("user_id").notNull().references(() => users.id),
+    reactionType: text("reaction_type").notNull(),
+    createdAt: text("created_at").default(sql`(CURRENT_TIMESTAMP)`),
+  },
+  (t) => ({
+    uniqueUserReaction: uniqueIndex("idx_post_user_reaction").on(t.postId, t.userId),
+  }),
+);
+
+/** Gönderi Yorumları (Comments) */
+export const communityPostComments = sqliteTable("community_post_comments", {
+  id: text("id").primaryKey(),
+  postId: text("post_id").notNull().references(() => communityPosts.id),
+  userId: text("user_id").notNull().references(() => users.id),
+  content: text("content").notNull(),
+  createdAt: text("created_at").default(sql`(CURRENT_TIMESTAMP)`),
+});
+
+/** 24 Saatlik Komşuluk Hikayeleri (Stories) */
+export const communityStories = sqliteTable("community_stories", {
+  id: text("id").primaryKey(),
+  siteId: text("site_id").notNull().references(() => sites.id),
+  authorId: text("author_id").notNull().references(() => users.id),
+  title: text("title"),
+  content: text("content").notNull(),
+  imageUrl: text("image_url"),
+  expiresAt: text("expires_at"),
+  createdAt: text("created_at").default(sql`(CURRENT_TIMESTAMP)`),
+});
+
+/** Komşular Arası Bireysel Özel Sohbet (1-e-1 Direct Messaging / DM) */
+export const directMessages = sqliteTable("direct_messages", {
+  id: text("id").primaryKey(),
+  siteId: text("site_id").notNull().references(() => sites.id),
+  senderId: text("sender_id").notNull().references(() => users.id),
+  receiverId: text("receiver_id").notNull().references(() => users.id),
+  content: text("content").notNull(),
+  isRead: integer("is_read", { mode: "boolean" }).notNull().default(false),
+  readAt: text("read_at"),
+  createdAt: text("created_at").default(sql`(CURRENT_TIMESTAMP)`),
+});
+
 
