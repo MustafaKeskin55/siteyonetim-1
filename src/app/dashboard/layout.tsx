@@ -1,11 +1,22 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { SiteLogo } from "@/components/SiteLogo";
 import { NotificationBell } from "@/components/NotificationBell";
 import { SITE_BRAND_NAME } from "@/lib/brand";
-import { Home, CreditCard, Megaphone, Wrench, LogOut, MessagesSquare, User, Bell, Vote } from "lucide-react";
+import {
+  Home,
+  Megaphone,
+  Wrench,
+  LogOut,
+  MessagesSquare,
+  User,
+  Bell,
+  Vote,
+  ChevronLeft,
+} from "lucide-react";
 import { SiteFrozenBarrier } from "@/components/SiteFrozenBarrier";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
@@ -16,6 +27,7 @@ export default function DashboardLayout({
 }) {
   const router = useRouter();
   const pathname = usePathname();
+  const [collapsed, setCollapsed] = React.useState(false);
   const [asideName, setAsideName] = React.useState("Sakin");
   const [asideMeta, setAsideMeta] = React.useState("");
   const [sitePlan, setSitePlan] = React.useState<{
@@ -42,7 +54,6 @@ export default function DashboardLayout({
         const apt = typeof u.apartmentNo === "string" ? u.apartmentNo.trim() : "";
         setAsideMeta(apt ? `Daire ${apt}` : "Kayıtlı sakin");
       } else {
-        // Fallback demo resident so direct links to /dashboard don't redirect away
         const demoUser = {
           id: "demo-sakin-1",
           name: "Ahmet Yılmaz",
@@ -73,52 +84,72 @@ export default function DashboardLayout({
   ];
 
   return (
-    <div className="flex h-dvh bg-zinc-50 dark:bg-[#0b0f19] flex-col sm:flex-row overflow-hidden">
+    <div className="flex h-screen bg-slate-100 dark:bg-[#070b14] text-slate-900 dark:text-slate-100 overflow-hidden transition-colors">
 
-      {/* ══════ DESKTOP SIDEBAR ══════ */}
-      <aside className="hidden sm:flex flex-col w-64 border-r border-zinc-200/60 dark:border-zinc-800 bg-white dark:bg-zinc-900 h-full p-4 shrink-0">
-        <div className="px-2 py-4 mb-4 border-b border-zinc-100 dark:border-zinc-800/80 space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <SiteLogo width={36} height={36} alt="" />
-              <p className="text-xs font-bold text-zinc-700 dark:text-zinc-300 truncate">{SITE_BRAND_NAME}</p>
+      {/* ══════ DESKTOP SIDEBAR (MATCHING ADMIN PANEL 1:1) ══════ */}
+      <aside
+        className={`hidden lg:flex flex-col shrink-0 h-full transition-all duration-300 ease-in-out relative ${
+          collapsed ? "w-[72px]" : "w-[260px]"
+        } bg-white dark:bg-[#090e1b] border-r border-slate-200/80 dark:border-slate-800`}
+      >
+        {/* Logo Header */}
+        <div className={`flex items-center gap-3 px-4 h-16 border-b border-slate-100 dark:border-slate-800 shrink-0 ${collapsed ? "justify-center" : ""}`}>
+          <SiteLogo width={36} height={36} rounded className="shrink-0 rounded-lg" alt="" />
+          {!collapsed && (
+            <div className="min-w-0">
+              <p className="text-sm font-extrabold text-slate-900 dark:text-white truncate">{SITE_BRAND_NAME}</p>
+              <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400 truncate">Sakin Portalı</p>
             </div>
-            <NotificationBell role="USER" align="left" />
+          )}
+        </div>
+
+        {/* User Card */}
+        {collapsed ? (
+          <div className="py-2.5 border-b border-slate-100 dark:border-slate-800/80 flex justify-center shrink-0" title={`${asideName} (${asideMeta})`}>
+            <div className="h-8 w-8 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-sky-400 flex items-center justify-center border border-blue-200 dark:border-blue-900/40 text-xs font-bold shrink-0">
+              {asideName.charAt(0).toUpperCase()}
+            </div>
           </div>
-          <div className="flex items-center gap-2 px-1">
+        ) : (
+          <div className="px-3.5 py-2.5 mx-3 my-2 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/80 flex items-center gap-2.5 shrink-0">
             <div className="h-8 w-8 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-sky-400 flex items-center justify-center border border-blue-200 dark:border-blue-900/40 text-xs font-bold shrink-0">
               {asideName.charAt(0).toUpperCase()}
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-bold text-slate-900 dark:text-slate-100 truncate">{asideName}</p>
-              <p className="text-xs font-semibold text-blue-600 dark:text-sky-400 truncate">{asideMeta}</p>
+              <p className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">{asideName}</p>
+              <p className="text-[11px] font-semibold text-blue-600 dark:text-sky-400 truncate">{asideMeta}</p>
             </div>
           </div>
-        </div>
+        )}
 
-        <nav className="flex-1 space-y-1 overflow-y-auto">
+        {/* Nav Links */}
+        <nav className="flex-1 overflow-y-auto py-3 px-3 space-y-1">
           {menuItems.map((item) => {
             const active = isActive(item.href);
             return (
-              <a
+              <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-150 font-medium text-sm ${
+                className={`group flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all ${
+                  collapsed ? "justify-center" : ""
+                } ${
                   active
                     ? "bg-blue-600 text-white shadow-xs font-bold"
-                    : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
+                    : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-slate-900 dark:hover:text-white font-medium"
                 }`}
+                title={collapsed ? item.name : undefined}
               >
-                <item.icon className="h-4.5 w-4.5 shrink-0" />
-                <span>{item.name}</span>
-              </a>
+                <item.icon className={`h-5 w-5 shrink-0 ${active ? "text-white" : "text-slate-400 dark:text-slate-500 group-hover:text-blue-600 dark:group-hover:text-sky-400"}`} />
+                {!collapsed && <span className="text-sm">{item.name}</span>}
+              </Link>
             );
           })}
         </nav>
 
-        <div className="mt-auto border-t border-slate-200 dark:border-slate-800 pt-4 flex justify-between items-center px-1">
-          <ThemeToggle />
+        {/* Bottom Actions */}
+        <div className="border-t border-slate-100 dark:border-slate-800 p-3 space-y-1 shrink-0">
           <button
+            type="button"
             onClick={async () => {
               try { await fetch("/api/auth/logout", { method: "POST", credentials: "include" }); } catch {}
               localStorage.removeItem("user");
@@ -126,62 +157,99 @@ export default function DashboardLayout({
               window.dispatchEvent(new Event("auth-state-change"));
               router.push("/");
             }}
-            className="flex items-center gap-1.5 text-xs text-rose-600 dark:text-rose-400 hover:underline font-semibold cursor-pointer"
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-500 dark:text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors w-full cursor-pointer ${collapsed ? "justify-center" : ""}`}
+            title={collapsed ? "Çıkış Yap" : undefined}
           >
-            <LogOut className="h-4 w-4" />
-            Çıkış Yap
+            <LogOut className="h-5 w-5 shrink-0" />
+            {!collapsed && <span className="text-sm font-semibold">Çıkış Yap</span>}
           </button>
         </div>
+
+        {/* Collapse toggle button on right edge */}
+        <button
+          type="button"
+          onClick={() => setCollapsed((v) => !v)}
+          className="absolute -right-3 top-20 z-10 hidden lg:flex h-6 w-6 items-center justify-center rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white shadow-xs hover:scale-110 transition-all cursor-pointer"
+          aria-label={collapsed ? "Genişlet" : "Daralt"}
+        >
+          <ChevronLeft className={`h-3.5 w-3.5 transition-transform duration-200 ${collapsed ? "rotate-180" : ""}`} />
+        </button>
       </aside>
 
-      {/* ══════ MOBILE HEADER ══════ */}
-      <header className="sm:hidden flex items-center justify-between px-4 h-14 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0b101d] shrink-0">
-        <div className="flex items-center gap-2.5 min-w-0">
-          <SiteLogo width={28} height={28} alt="" />
-          <span className="text-sm font-bold text-slate-900 dark:text-white truncate">Sakin Paneli</span>
-        </div>
-        <div className="flex items-center gap-2 shrink-0">
-          <ThemeToggle />
-          <NotificationBell role="USER" align="right" />
-          <button
-            onClick={async () => {
-              try { await fetch("/api/auth/logout", { method: "POST", credentials: "include" }); } catch {}
-              localStorage.removeItem("user");
-              router.push("/");
-            }}
-            className="p-1.5 rounded-xl text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer"
-            title="Çıkış Yap"
-          >
-            <LogOut className="h-4.5 w-4.5" />
-          </button>
-        </div>
-      </header>
+      {/* ══════ MAIN CONTENT & DESKTOP HEADER AREA ══════ */}
+      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
+        
+        {/* Desktop Header */}
+        <header className="hidden lg:flex items-center justify-between h-16 px-8 bg-white dark:bg-[#090e1b] border-b border-slate-200/80 dark:border-slate-800 shrink-0 transition-colors">
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-extrabold text-slate-900 dark:text-white">Sakin Portalı</span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-sky-300 text-xs font-bold border border-blue-200 dark:border-blue-800">
+              <span className="h-2 w-2 rounded-full bg-blue-600 animate-pulse" />
+              {asideName} &bull; {asideMeta}
+            </span>
+          </div>
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <NotificationBell role="USER" align="right" />
+            <Link
+              href="/"
+              className="text-xs font-semibold text-blue-600 dark:text-sky-400 hover:text-blue-700 dark:hover:text-sky-300 px-3 py-1.5 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-950/50 transition"
+            >
+              Ana Sayfaya Dön &rarr;
+            </Link>
+          </div>
+        </header>
 
-      {/* ══════ MAIN CONTENT ══════ */}
-      <main className="flex-1 min-h-0 overflow-y-auto overscroll-contain sm:pb-0 pb-20">
-        {children}
-      </main>
+        {/* Mobile Header */}
+        <header className="lg:hidden flex items-center justify-between px-4 h-14 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#090e1b] shrink-0">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <SiteLogo width={28} height={28} rounded className="rounded-lg" alt="" />
+            <span className="text-sm font-bold text-slate-900 dark:text-white truncate">Sakin Paneli</span>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <ThemeToggle />
+            <NotificationBell role="USER" align="right" />
+            <button
+              type="button"
+              onClick={async () => {
+                try { await fetch("/api/auth/logout", { method: "POST", credentials: "include" }); } catch {}
+                localStorage.removeItem("user");
+                router.push("/");
+              }}
+              className="p-1.5 rounded-xl text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer"
+              title="Çıkış Yap"
+            >
+              <LogOut className="h-4.5 w-4.5" />
+            </button>
+          </div>
+        </header>
+
+        {/* Scrollable Main Area */}
+        <main className="flex-1 min-h-0 overflow-y-auto overscroll-contain pb-20 lg:pb-0 bg-slate-100 dark:bg-[#070b14]">
+          {children}
+        </main>
+      </div>
 
       {/* ══════ MOBILE BOTTOM NAV ══════ */}
-      <nav className="sm:hidden fixed bottom-0 inset-x-0 bg-white dark:bg-zinc-900 border-t border-zinc-200/60 dark:border-zinc-800/80 z-50" style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}>
+      <nav className="lg:hidden fixed bottom-0 inset-x-0 bg-white dark:bg-[#090e1b] border-t border-slate-200/80 dark:border-slate-800 z-50" style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}>
         <div className="flex items-center justify-around h-16">
           {menuItems.map((item) => {
             const active = isActive(item.href);
             return (
-              <a
+              <Link
                 key={item.href}
                 href={item.href}
                 className={`flex flex-col items-center justify-center gap-0.5 flex-1 h-full transition-colors ${
                   active
-                    ? "text-indigo-600 dark:text-indigo-400"
-                    : "text-zinc-400 dark:text-zinc-500 active:text-zinc-600"
+                    ? "text-blue-600 dark:text-sky-400"
+                    : "text-slate-400 dark:text-slate-500 active:text-slate-600"
                 }`}
               >
-                <div className={`p-1.5 rounded-xl transition-colors ${active ? "bg-indigo-50 dark:bg-indigo-950/40" : ""}`}>
+                <div className={`p-1.5 rounded-xl transition-colors ${active ? "bg-blue-50 dark:bg-blue-950/50" : ""}`}>
                   <item.icon className="h-5 w-5" strokeWidth={active ? 2.5 : 2} />
                 </div>
                 <span className={`text-[10px] ${active ? "font-bold" : "font-medium"}`}>{item.shortName}</span>
-              </a>
+              </Link>
             );
           })}
         </div>
