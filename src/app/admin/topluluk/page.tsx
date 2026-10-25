@@ -10,10 +10,10 @@ import {
   RefreshCw,
   X,
   Users,
+  User,
   Camera,
   Heart,
   MessageCircle,
-  Bookmark,
   Pin,
   Send,
   Sparkles,
@@ -26,6 +26,80 @@ import {
   MoreHorizontal,
 } from "lucide-react";
 import { useAlert, useConfirm } from "@/components/ModalProvider";
+
+type ReactionType = "like" | "love" | "applause" | "tea" | "useful" | "sad";
+
+interface ReactionDef {
+  type: ReactionType;
+  emoji: string;
+  label: string;
+  color: string;
+  badgeBg: string;
+}
+
+const REACTIONS: ReactionDef[] = [
+  { type: "like", emoji: "👍", label: "Beğen", color: "text-blue-500", badgeBg: "bg-blue-50 dark:bg-blue-950/70" },
+  { type: "love", emoji: "❤️", label: "Sevdim", color: "text-rose-500", badgeBg: "bg-rose-50 dark:bg-rose-950/70" },
+  { type: "applause", emoji: "👏", label: "Harika", color: "text-amber-500", badgeBg: "bg-amber-50 dark:bg-amber-950/70" },
+  { type: "tea", emoji: "☕", label: "Komşuluk", color: "text-orange-500", badgeBg: "bg-orange-50 dark:bg-orange-950/70" },
+  { type: "useful", emoji: "💡", label: "Faydalı", color: "text-yellow-500", badgeBg: "bg-yellow-50 dark:bg-yellow-950/70" },
+  { type: "sad", emoji: "😢", label: "Üzücü", color: "text-indigo-400", badgeBg: "bg-indigo-50 dark:bg-indigo-950/70" },
+];
+
+interface DirectNeighbor {
+  id: string;
+  name: string;
+  apartmentNo: string;
+  avatarBg: string;
+  isOnline: boolean;
+  unreadCount?: number;
+}
+
+interface DirectMessage {
+  id: string;
+  sender: "manager" | "neighbor";
+  text: string;
+  time: string;
+}
+
+const NEIGHBORS: DirectNeighbor[] = [
+  { id: "n1", name: "Zeynep Hanım", apartmentNo: "6", avatarBg: "from-blue-600 to-indigo-600", isOnline: true, unreadCount: 1 },
+  { id: "n2", name: "Murat Bey", apartmentNo: "9", avatarBg: "from-amber-500 to-orange-600", isOnline: true },
+  { id: "n3", name: "Ahmet Bey", apartmentNo: "12", avatarBg: "from-emerald-500 to-teal-600", isOnline: false },
+  { id: "n4", name: "Fatma Hanım", apartmentNo: "8", avatarBg: "from-indigo-500 to-sky-600", isOnline: false },
+  { id: "n5", name: "Kemal Bey", apartmentNo: "3", avatarBg: "from-slate-600 to-slate-800", isOnline: true },
+  { id: "n6", name: "Selin Hanım", apartmentNo: "2", avatarBg: "from-cyan-500 to-blue-600", isOnline: true },
+];
+
+const INITIAL_DIRECT_MESSAGES: Record<string, DirectMessage[]> = {
+  n1: [
+    { id: "dm1", sender: "neighbor", text: "Merhaba yönetici bey, bahçedeki kamelyaya yeni minderler için teşekkür ederiz çok rahat olmuş.", time: "14:10" },
+    { id: "dm2", sender: "manager", text: "Rica ederiz Zeynep Hanım, komşularımızın memnun kalmasına çok sevindik. Güle güle kullanın!", time: "14:15" },
+    { id: "dm3", sender: "neighbor", text: "Çay demledik birazdan ineriz, müsait olursanız bir bardak sıcak çay ikram etmek isteriz.", time: "14:18" },
+  ],
+  n2: [
+    { id: "dm4", sender: "neighbor", text: "Yönetici bey selamlar, bina girişinde bulduğumuz sarman kedi sahibine ulaştı mı acaba?", time: "11:30" },
+    { id: "dm5", sender: "manager", text: "Evet Murat Bey, Daire 4 Aylin Hanım'ların misafirinin kedisiymiş, teslim ettik. Duyarlılığınız için çok sağ olun.", time: "11:42" },
+    { id: "dm6", sender: "neighbor", text: "Çok sevindim, teşekkürler kolay gelsin!", time: "11:45" },
+  ],
+  n3: [
+    { id: "dm7", sender: "neighbor", text: "Yönetici bey iyi günler, otoparkta 12 nolu yerimin önüne yabancı bir araç yanaşmış çıkamıyorum. Plakayı anons edebilir miyiz?", time: "09:20" },
+    { id: "dm8", sender: "manager", text: "Merhaba Ahmet Bey, hemen güvenlik personeline bilgi veriyorum, 5 dakikaya çektiriyoruz.", time: "09:23" },
+    { id: "dm9", sender: "neighbor", text: "Hızlı dönüşünüz için teşekkür ederim.", time: "09:26" },
+  ],
+  n4: [
+    { id: "dm10", sender: "neighbor", text: "Merhaba, bu ayın aidat makbuzunu sistem üzerinden kontrol ettim, sorunsuz onaylanmış teşekkürler.", time: "Dün" },
+    { id: "dm11", sender: "manager", text: "İyi günler Fatma Hanım, ödemeniz kayıtlara geçmiştir, teşekkür ederiz.", time: "Dün" },
+  ],
+  n5: [
+    { id: "dm12", sender: "neighbor", text: "Yönetim selamlar, bina ana giriş kapısının hidroliği biraz sert çarpıyor gibi, kontrol edilebilir mi?", time: "Dün" },
+    { id: "dm13", sender: "manager", text: "Merhaba Kemal Bey, servis bakım listemize aldık, yarın sabah ayarı yapılacak.", time: "Dün" },
+  ],
+  n6: [
+    { id: "dm14", sender: "neighbor", text: "İyi çalışmalar, çocuk parkındaki salıncak zincirinin bir tarafı biraz gevşemiş, rica etsem bakılabilir mi?", time: "2 gün önce" },
+    { id: "dm15", sender: "manager", text: "Bilgilendirme için teşekkürler Selin Hanım, teknik görevlimiz bugün öğlen sağlamlaştırdı.", time: "2 gün önce" },
+  ],
+};
 
 interface Channel {
   id: string;
@@ -73,9 +147,8 @@ interface FeedPost {
   time: string;
   content: string;
   imageUrl?: string;
-  likes: number;
-  isLiked?: boolean;
-  isSaved?: boolean;
+  reactions: Record<ReactionType, number>;
+  userReaction?: ReactionType | null;
   isPinned?: boolean;
   comments: {
     id: string;
@@ -165,9 +238,8 @@ export default function AdminCommunityPage() {
       imageUrl: "https://images.unsplash.com/photo-1584467735871-8e85353a8413?auto=format&fit=crop&w=1200&q=80",
       content:
         "📢 Sayın site sakinlerimiz, ortak alan bahçe kamelyamızın ahşap zemin ve masa bakımları tamamlanmıştır. Yeni oturma minderleri yerleştirildi. Komşularımızın keyifli akşamlarda güle güle kullanmasını dileriz.",
-      likes: 42,
-      isLiked: true,
-      isSaved: true,
+      reactions: { like: 24, love: 14, applause: 4, tea: 0, useful: 0, sad: 0 },
+      userReaction: "love",
       comments: [
         { id: "c1", author: "Zeynep K.", apt: "D.6", text: "Çok ferah ve nezih olmuş, emeğinize sağlık yönetici bey! 👏🌸", time: "40 dk önce" },
         { id: "c2", author: "Mehmet Y.", apt: "D.14", text: "Hafta sonu komşularla çay saatine çok uygun oldu, teşekkürler.", time: "25 dk önce" },
@@ -181,9 +253,8 @@ export default function AdminCommunityPage() {
       imageUrl: "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=1200&q=80",
       content:
         "Merhabalar komşular! ☕️🍪 Kamelyada komşularla akşam çayı başlattık. Taze kek ve kurabiyemiz bol, çayını veya bardağını kapan tüm komşularımızı bahçeye bekliyoruz!",
-      likes: 29,
-      isLiked: false,
-      isSaved: false,
+      reactions: { like: 8, love: 5, applause: 2, tea: 14, useful: 0, sad: 0 },
+      userReaction: null,
       comments: [
         { id: "c4", author: "Fatma D.", apt: "D.8", text: "Fırından sıcak poğaça aldım hemen aşağı iniyorum Zeynep Hanım! 😊", time: "2 saat önce" },
         { id: "c5", author: "Barış K.", apt: "D.11", text: "Çocukları parka indirdim, biz de kamelyadayız selamlar!", time: "1 saat önce" },
@@ -196,9 +267,8 @@ export default function AdminCommunityPage() {
       imageUrl: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=1200&q=80",
       content:
         "Bina giriş kapısının önünde mavi tasmaya sahip tatlı bir sarman kedi gördük. Soğukta kalmaması için güvenliğe haber verdik, şu an yönetim ofisinde ısınıyor. Sahibini arıyoruz 🐱",
-      likes: 36,
-      isLiked: true,
-      isSaved: false,
+      reactions: { like: 12, love: 18, applause: 0, tea: 0, useful: 6, sad: 0 },
+      userReaction: "love",
       comments: [
         { id: "c6", author: "Aylin T.", apt: "D.4", text: "Bizim 3. kattaki Aylin'lerin kedisine benziyor, hemen haber veriyorum!", time: "4 saat önce" },
         { id: "c7", author: "Bina Yönetimi", apt: "YNT", text: "Kedimizin mamasını ve suyunu verdik, güvende bekliyor.", time: "3 saat önce" },
@@ -211,9 +281,8 @@ export default function AdminCommunityPage() {
       imageUrl: "https://images.unsplash.com/photo-1581783342308-f792dbdd27c5?auto=format&fit=crop&w=1200&q=80",
       content:
         "Salon perdesi kornişini monte etmek için 1 saatliğine darbeli matkap ve basamaklı merdiven ödünç verebilecek bir komşumuz var mıdır? İşim biter bitmez hemen teslim ederim.",
-      likes: 18,
-      isLiked: false,
-      isSaved: false,
+      reactions: { like: 6, love: 0, applause: 3, tea: 0, useful: 9, sad: 0 },
+      userReaction: null,
       comments: [
         { id: "c8", author: "Kemal T.", apt: "D.3", text: "Ahmet Bey bende hem matkap seti hem de merdiven var. Daire 3'e uğrayıp alabilirsiniz.", time: "6 saat önce" },
         { id: "c9", author: "Ahmet Bey", apt: "D.12", text: "Çok teşekkür ederim Kemal Bey, hemen geliyorum!", time: "5 saat önce" },
@@ -225,6 +294,15 @@ export default function AdminCommunityPage() {
   const [newPostImageUrl, setNewPostImageUrl] = React.useState("");
   const [showImageInput, setShowImageInput] = React.useState(false);
   const [commentInputs, setCommentInputs] = React.useState<Record<string, string>>({});
+  const [activeReactionPostId, setActiveReactionPostId] = React.useState<string | null>(null);
+
+  // ══════════════════════════════════════════════════════════
+  // CANLI İLETİŞİM STATE (KANALLAR & ÖZEL MESAJLAR - DM)
+  // ══════════════════════════════════════════════════════════
+  const [commMode, setCommMode] = React.useState<"CHANNELS" | "DIRECT">("CHANNELS");
+  const [selectedNeighborId, setSelectedNeighborId] = React.useState<string>("n1");
+  const [directMessages, setDirectMessages] = React.useState<Record<string, DirectMessage[]>>(INITIAL_DIRECT_MESSAGES);
+  const [dmInputText, setDmInputText] = React.useState<string>("");
 
   // ══════════════════════════════════════════════════════════
   // TEXT CHANNELS STATE
@@ -381,18 +459,76 @@ export default function AdminCommunityPage() {
   // ══════════════════════════════════════════════════════════
   // KOMŞULUK AKIŞI ACTIONS
   // ══════════════════════════════════════════════════════════
-  const handleLikePost = (postId: string) => {
+  // Facebook-Style Multi-Emoji Reactions Handler
+  const handleReactToPost = (postId: string, reactionType: ReactionType) => {
     setPosts((prev) =>
       prev.map((p) => {
         if (p.id !== postId) return p;
-        const willLike = !p.isLiked;
-        return {
-          ...p,
-          isLiked: willLike,
-          likes: p.likes + (willLike ? 1 : -1),
-        };
+        const currentReaction = p.userReaction;
+        const updatedReactions = { ...p.reactions };
+
+        if (currentReaction === reactionType) {
+          // Toggle off
+          updatedReactions[reactionType] = Math.max(0, (updatedReactions[reactionType] || 1) - 1);
+          return {
+            ...p,
+            userReaction: null,
+            reactions: updatedReactions,
+          };
+        } else {
+          // Decrement previous if existed
+          if (currentReaction) {
+            updatedReactions[currentReaction] = Math.max(0, (updatedReactions[currentReaction] || 1) - 1);
+          }
+          // Increment new
+          updatedReactions[reactionType] = (updatedReactions[reactionType] || 0) + 1;
+          return {
+            ...p,
+            userReaction: reactionType,
+            reactions: updatedReactions,
+          };
+        }
       })
     );
+    setActiveReactionPostId(null);
+  };
+
+  const handleQuickReactionToggle = (postId: string) => {
+    const post = posts.find((p) => p.id === postId);
+    if (!post) return;
+    if (post.userReaction) {
+      handleReactToPost(postId, post.userReaction);
+    } else {
+      handleReactToPost(postId, "like");
+    }
+  };
+
+  // Helper calculation for reactions
+  const getTotalReactions = (reactions: Record<ReactionType, number>) => {
+    return Object.values(reactions).reduce((acc, count) => acc + count, 0);
+  };
+
+  const getActiveReactions = (reactions: Record<ReactionType, number>) => {
+    return REACTIONS.filter((r) => (reactions[r.type] || 0) > 0);
+  };
+
+  // Direct Message (DM) Handler
+  const handleSendDirectMessage = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!dmInputText.trim() || !selectedNeighborId) return;
+
+    const newMsg: DirectMessage = {
+      id: "dm_" + Date.now(),
+      sender: "manager",
+      text: dmInputText.trim(),
+      time: new Date().toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" }),
+    };
+
+    setDirectMessages((prev) => ({
+      ...prev,
+      [selectedNeighborId]: [...(prev[selectedNeighborId] || []), newMsg],
+    }));
+    setDmInputText("");
   };
 
   const handleAddComment = (postId: string) => {
@@ -420,19 +556,6 @@ export default function AdminCommunityPage() {
     setCommentInputs((prev) => ({ ...prev, [postId]: "" }));
   };
 
-  const handleToggleSavePost = (postId: string) => {
-    setPosts((prev) =>
-      prev.map((p) => {
-        if (p.id !== postId) return p;
-        const willSave = !p.isSaved;
-        return {
-          ...p,
-          isSaved: willSave,
-        };
-      })
-    );
-  };
-
   const handleDeletePost = async (postId: string) => {
     const ok = await showConfirm({
       title: "Gönderiyi Kaldır",
@@ -457,9 +580,8 @@ export default function AdminCommunityPage() {
       time: "Şimdi",
       content: newPostText.trim(),
       imageUrl: newPostImageUrl.trim() || undefined,
-      likes: 1,
-      isLiked: true,
-      isSaved: false,
+      reactions: { like: 1, love: 0, applause: 0, tea: 0, useful: 0, sad: 0 },
+      userReaction: "like",
       comments: [],
     };
 
@@ -727,7 +849,7 @@ export default function AdminCommunityPage() {
                     {post.imageUrl && (
                       <div
                         className="relative w-full aspect-[4/3] sm:aspect-[16/10] bg-slate-100 dark:bg-slate-900 overflow-hidden cursor-pointer select-none group"
-                        onDoubleClick={() => handleLikePost(post.id)}
+                        onDoubleClick={() => handleQuickReactionToggle(post.id)}
                       >
                         <img
                           src={post.imageUrl}
@@ -743,26 +865,60 @@ export default function AdminCommunityPage() {
                       </div>
                     )}
 
-                    {/* 3. POST ACTION BAR (HEART, COMMENT, BOOKMARK) */}
-                    <div className="px-4 pt-3 pb-1 flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        {/* Like Button */}
-                        <button
-                          type="button"
-                          onClick={() => handleLikePost(post.id)}
-                          className={`transition-transform active:scale-125 cursor-pointer ${
-                            post.isLiked
-                              ? "text-rose-600 dark:text-rose-400"
-                              : "text-slate-700 dark:text-slate-200 hover:text-rose-600 dark:hover:text-rose-400"
-                          }`}
-                          title="Beğen"
+                    {/* 3. POST ACTION BAR (FACEBOOK-STYLE MULTI-EMOJI REACTIONS & COMMENTS) */}
+                    <div className="px-4 pt-3 pb-1 flex items-center justify-between relative">
+                      <div className="flex items-center gap-3">
+                        {/* Reaction Picker Container */}
+                        <div
+                          className="relative"
+                          onMouseEnter={() => setActiveReactionPostId(post.id)}
                         >
-                          <Heart
-                            className={`h-6 w-6 transition-all ${
-                              post.isLiked ? "fill-rose-600 dark:fill-rose-400 stroke-rose-600 dark:stroke-rose-400" : ""
-                            }`}
-                          />
-                        </button>
+                          {/* Floating Reaction Dock */}
+                          {activeReactionPostId === post.id && (
+                            <div
+                              onMouseLeave={() => setActiveReactionPostId(null)}
+                              className="absolute -top-13 left-0 z-30 bg-white dark:bg-[#070b14] border border-slate-200 dark:border-slate-800 rounded-full px-3 py-1.5 shadow-2xl flex items-center gap-2.5 animate-in fade-in zoom-in-95 duration-150 backdrop-blur-md"
+                            >
+                              {REACTIONS.map((r) => (
+                                <button
+                                  key={r.type}
+                                  type="button"
+                                  onClick={() => handleReactToPost(post.id, r.type)}
+                                  className="group/emoji relative text-2xl transform hover:scale-135 hover:-translate-y-1.5 active:scale-105 transition-all duration-150 cursor-pointer p-0.5 select-none"
+                                >
+                                  <span>{r.emoji}</span>
+                                  {/* Tooltip */}
+                                  <span className="opacity-0 group-hover/emoji:opacity-100 transition-opacity absolute -top-7 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold px-2 py-0.5 rounded-full pointer-events-none whitespace-nowrap shadow-md">
+                                    {r.label}
+                                  </span>
+                                </button>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* Reaction Button */}
+                          <button
+                            type="button"
+                            onClick={() => handleQuickReactionToggle(post.id)}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-all cursor-pointer font-bold text-xs"
+                          >
+                            {post.userReaction ? (
+                              <>
+                                <span className="text-base">
+                                  {REACTIONS.find((r) => r.type === post.userReaction)?.emoji}
+                                </span>
+                                <span className={REACTIONS.find((r) => r.type === post.userReaction)?.color}>
+                                  {REACTIONS.find((r) => r.type === post.userReaction)?.label}
+                                </span>
+                              </>
+                            ) : (
+                              <>
+                                <span className="text-base">👍</span>
+                                <span className="text-slate-600 dark:text-slate-300">Tepki Ver</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
 
                         {/* Comment Button */}
                         <button
@@ -771,33 +927,45 @@ export default function AdminCommunityPage() {
                             const inputEl = document.getElementById(`comment-input-${post.id}`);
                             inputEl?.focus();
                           }}
-                          className="text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-sky-400 transition-colors cursor-pointer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/80 text-slate-600 dark:text-slate-300 transition-colors cursor-pointer font-semibold text-xs"
                           title="Yorum Yap"
                         >
-                          <MessageCircle className="h-6 w-6" />
+                          <MessageCircle className="h-4 w-4" />
+                          <span>Yorum ({post.comments.length})</span>
                         </button>
                       </div>
 
-                      {/* Bookmark Button */}
-                      <button
-                        type="button"
-                        onClick={() => handleToggleSavePost(post.id)}
-                        className={`transition-colors cursor-pointer ${
-                          post.isSaved
-                            ? "text-blue-600 dark:text-sky-400"
-                            : "text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-sky-400"
-                        }`}
-                        title="Kaydet"
-                      >
-                        <Bookmark className={`h-6 w-6 ${post.isSaved ? "fill-blue-600 dark:fill-sky-400" : ""}`} />
-                      </button>
+                      <span className="text-[11px] font-mono text-slate-400">
+                        🔒 Bina İçi
+                      </span>
                     </div>
 
-                    {/* 4. LIKES COUNT */}
+                    {/* 4. REACTIONS BREAKDOWN / SUMMARY */}
                     <div className="px-4 pt-1.5">
-                      <p className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white">
-                        {post.likes > 0 ? `${post.likes.toLocaleString("tr-TR")} komşu beğendi` : "İlk beğenen komşu siz olun"}
-                      </p>
+                      {getTotalReactions(post.reactions) > 0 ? (
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center -space-x-1.5">
+                            {getActiveReactions(post.reactions)
+                              .slice(0, 3)
+                              .map((r) => (
+                                <span
+                                  key={r.type}
+                                  className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-slate-100 dark:bg-slate-800 border-2 border-white dark:border-[#0d1424] text-xs shadow-2xs"
+                                  title={`${r.label}: ${post.reactions[r.type]}`}
+                                >
+                                  {r.emoji}
+                                </span>
+                              ))}
+                          </div>
+                          <span className="font-bold text-xs text-slate-800 dark:text-slate-200">
+                            {getTotalReactions(post.reactions)} komşu tepki verdi
+                          </span>
+                        </div>
+                      ) : (
+                        <p className="text-xs text-slate-400">
+                          İlk tepkiyi bırakan komşu siz olun
+                        </p>
+                      )}
                     </div>
 
                     {/* 5. CAPTION */}
@@ -897,133 +1065,291 @@ export default function AdminCommunityPage() {
             </span>
           </div>
 
-          {/* Sohbet Kanalları & Canlı Mesajlaşma Kartı */}
+          {/* Sohbet Kanalları & Bireysel Komşu Mesajları Kartı */}
           <div className="bg-white dark:bg-[#0d1424] rounded-2xl sm:rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden transition-colors">
-            {/* Header */}
-            <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-              <div>
-                <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  <MessagesSquare className="h-4 w-4 text-blue-600 dark:text-sky-400" />
-                  <span>Komşu Sohbet Kanalları</span>
-                </h3>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-                  Bina içi tematik sohbet grupları ve canlı mesaj akışı
-                </p>
-              </div>
+            {/* Header Tabs: Bina Kanalları vs Özel Mesajlar (DM) */}
+            <div className="p-3 bg-slate-50 dark:bg-slate-900/60 border-b border-slate-100 dark:border-slate-800 grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setCommMode("CHANNELS")}
+                className={`py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                  commMode === "CHANNELS"
+                    ? "bg-blue-600 text-white shadow-xs"
+                    : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700/60"
+                }`}
+              >
+                <MessagesSquare className="h-4 w-4" />
+                <span>Bina Kanalları ({channels.length})</span>
+              </button>
 
               <button
                 type="button"
-                onClick={() => setShowNewChannelModal(true)}
-                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/80 text-blue-700 dark:text-sky-300 border border-blue-200 dark:border-blue-800 text-xs font-bold hover:bg-blue-100 dark:hover:bg-blue-900/60 cursor-pointer"
-                title="Yeni Kanal Ekle"
+                onClick={() => setCommMode("DIRECT")}
+                className={`py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer relative ${
+                  commMode === "DIRECT"
+                    ? "bg-blue-600 text-white shadow-xs"
+                    : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700/60"
+                }`}
               >
-                <Plus className="h-3.5 w-3.5" />
-                <span>Kanal</span>
+                <Users className="h-4 w-4" />
+                <span>Özel Komşu DM</span>
+                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
               </button>
             </div>
 
-            {/* Kanal Seçim Çipleri */}
-            <div className="p-3 bg-slate-50/80 dark:bg-slate-900/60 border-b border-slate-100 dark:border-slate-800 flex items-center gap-1.5 overflow-x-auto scrollbar-none">
-              {channels.map((ch) => {
-                const isSelected = selectedChannelId === ch.id;
-                return (
+            {/* TAB 1: BİNA SOHBET KANALLARI (#) */}
+            {commMode === "CHANNELS" ? (
+              <>
+                {/* Subheader */}
+                <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                  <div>
+                    <h3 className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                      <span>Tematik Kanallar</span>
+                    </h3>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                      Bina geneli ortak konular ve canlı akış
+                    </p>
+                  </div>
+
                   <button
-                    key={ch.id}
                     type="button"
-                    onClick={() => setSelectedChannelId(ch.id)}
-                    className={`shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
-                      isSelected
-                        ? "bg-blue-600 text-white shadow-xs"
-                        : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700 hover:border-slate-300"
-                    }`}
+                    onClick={() => setShowNewChannelModal(true)}
+                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/80 text-blue-700 dark:text-sky-300 border border-blue-200 dark:border-blue-800 text-xs font-bold hover:bg-blue-100 dark:hover:bg-blue-900/60 cursor-pointer"
+                    title="Yeni Kanal Ekle"
                   >
-                    <span>#</span>
-                    <span>{ch.name}</span>
-                    {ch.isAnnouncementOnly && <Lock className="h-2.5 w-2.5 opacity-70" />}
+                    <Plus className="h-3.5 w-3.5" />
+                    <span>Kanal</span>
                   </button>
-                );
-              })}
-            </div>
+                </div>
 
-            {/* Seçili Kanal Başlığı */}
-            <div className="px-4 py-2.5 bg-slate-50/40 dark:bg-slate-900/30 border-b border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs">
-              <span className="font-bold text-slate-800 dark:text-slate-200 truncate">
-                #{channels.find((c) => c.id === selectedChannelId)?.name || "Kanal"}
-                {channels.find((c) => c.id === selectedChannelId)?.isAnnouncementOnly && (
-                  <span className="ml-2 text-[10px] font-mono bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-400 px-1.5 py-0.5 rounded">
-                    Yalnızca Yönetim
+                {/* Kanal Seçim Çipleri */}
+                <div className="p-3 bg-slate-50/50 dark:bg-slate-900/40 border-b border-slate-100 dark:border-slate-800 flex items-center gap-1.5 overflow-x-auto scrollbar-none">
+                  {channels.map((ch) => {
+                    const isSelected = selectedChannelId === ch.id;
+                    return (
+                      <button
+                        key={ch.id}
+                        type="button"
+                        onClick={() => setSelectedChannelId(ch.id)}
+                        className={`shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                          isSelected
+                            ? "bg-blue-600 text-white shadow-xs"
+                            : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700 hover:border-slate-300"
+                        }`}
+                      >
+                        <span>#</span>
+                        <span>{ch.name}</span>
+                        {ch.isAnnouncementOnly && <Lock className="h-2.5 w-2.5 opacity-70" />}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Seçili Kanal Başlığı */}
+                <div className="px-4 py-2.5 bg-slate-50/40 dark:bg-slate-900/30 border-b border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs">
+                  <span className="font-bold text-slate-800 dark:text-slate-200 truncate">
+                    #{channels.find((c) => c.id === selectedChannelId)?.name || "Kanal"}
+                    {channels.find((c) => c.id === selectedChannelId)?.isAnnouncementOnly && (
+                      <span className="ml-2 text-[10px] font-mono bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-400 px-1.5 py-0.5 rounded">
+                        Yalnızca Yönetim
+                      </span>
+                    )}
                   </span>
-                )}
-              </span>
-              <button
-                type="button"
-                onClick={() => fetchMessages(selectedChannelId)}
-                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 cursor-pointer"
-                title="Yenile"
-              >
-                <RefreshCw className={`h-3.5 w-3.5 ${loadingMessages ? "animate-spin" : ""}`} />
-              </button>
-            </div>
-
-            {/* Mesaj Akışı */}
-            <div className="p-4 space-y-2.5 overflow-y-auto max-h-[380px] min-h-[280px]">
-              {loadingMessages ? (
-                <div className="text-center py-12 text-xs text-slate-400">Mesajlar yükleniyor...</div>
-              ) : messages.length === 0 ? (
-                <div className="text-center py-12 text-xs text-slate-400">Bu kanalda henüz mesaj bulunmuyor.</div>
-              ) : (
-                messages.map((msg) => (
-                  <div
-                    key={msg.id}
-                    className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800 flex items-start justify-between gap-2.5 group"
+                  <button
+                    type="button"
+                    onClick={() => fetchMessages(selectedChannelId)}
+                    className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 cursor-pointer"
+                    title="Yenile"
                   >
-                    <div className="min-w-0 space-y-0.5">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-xs font-bold text-slate-900 dark:text-white">
-                          {msg.author?.name || "Sakin"}
+                    <RefreshCw className={`h-3.5 w-3.5 ${loadingMessages ? "animate-spin" : ""}`} />
+                  </button>
+                </div>
+
+                {/* Mesaj Akışı */}
+                <div className="p-4 space-y-2.5 overflow-y-auto max-h-[340px] min-h-[260px]">
+                  {loadingMessages ? (
+                    <div className="text-center py-12 text-xs text-slate-400">Mesajlar yükleniyor...</div>
+                  ) : messages.length === 0 ? (
+                    <div className="text-center py-12 text-xs text-slate-400">Bu kanalda henüz mesaj bulunmuyor.</div>
+                  ) : (
+                    messages.map((msg) => (
+                      <div
+                        key={msg.id}
+                        className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800 flex items-start justify-between gap-2.5 group"
+                      >
+                        <div className="min-w-0 space-y-0.5">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-xs font-bold text-slate-900 dark:text-white">
+                              {msg.author?.name || "Sakin"}
+                            </span>
+                            <span className="text-[10px] font-mono text-blue-600 dark:text-sky-400 font-bold bg-blue-50 dark:bg-blue-950/60 px-1.5 py-0.2 rounded">
+                              D.{msg.author?.apartmentNo || "—"}
+                            </span>
+                            <span className="text-[10px] text-slate-400">
+                              {new Date(msg.createdAt).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" })}
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line">
+                            {msg.content}
+                          </p>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteMessage(msg.id)}
+                          className="opacity-0 group-hover:opacity-100 p-1 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-all cursor-pointer shrink-0"
+                          title="Mesajı Sil (Moderasyon)"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                {/* Input Bar */}
+                <form onSubmit={handleSendChannelMessage} className="p-3 border-t border-slate-100 dark:border-slate-800 flex items-center gap-2">
+                  <input
+                    type="text"
+                    placeholder="Yönetici olarak mesaj yazın..."
+                    value={channelMessageText}
+                    onChange={(e) => setChannelMessageText(e.target.value)}
+                    className="flex-1 px-3.5 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  />
+                  <button
+                    type="submit"
+                    disabled={!channelMessageText.trim()}
+                    className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold disabled:opacity-40 cursor-pointer shrink-0"
+                  >
+                    Gönder
+                  </button>
+                </form>
+              </>
+            ) : (
+              /* TAB 2: BİREYSEL / ÖZEL KOMŞU SOHBETLERİ (DM) */
+              <>
+                {/* Neighbor Selector Horizontal Bar */}
+                <div className="p-3 bg-slate-50/50 dark:bg-slate-900/40 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2 overflow-x-auto scrollbar-none">
+                  {NEIGHBORS.map((nbr) => {
+                    const isSelected = selectedNeighborId === nbr.id;
+                    return (
+                      <button
+                        key={nbr.id}
+                        type="button"
+                        onClick={() => setSelectedNeighborId(nbr.id)}
+                        className={`shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
+                          isSelected
+                            ? "bg-blue-600 text-white shadow-xs"
+                            : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700 hover:border-slate-300"
+                        }`}
+                      >
+                        <span className="relative flex h-2 w-2">
+                          {nbr.isOnline && (
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                          )}
+                          <span
+                            className={`relative inline-flex rounded-full h-2 w-2 ${
+                              nbr.isOnline ? "bg-emerald-500" : "bg-slate-400"
+                            }`}
+                          />
                         </span>
-                        <span className="text-[10px] font-mono text-blue-600 dark:text-sky-400 font-bold bg-blue-50 dark:bg-blue-950/60 px-1.5 py-0.2 rounded">
-                          D.{msg.author?.apartmentNo || "—"}
-                        </span>
-                        <span className="text-[10px] text-slate-400">
-                          {new Date(msg.createdAt).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" })}
+                        <span>{nbr.name}</span>
+                        <span className="font-mono text-[10px] opacity-75">(D.{nbr.apartmentNo})</span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Selected Neighbor Header & Privacy Shield */}
+                {(() => {
+                  const currentNeighbor = NEIGHBORS.find((n) => n.id === selectedNeighborId) || NEIGHBORS[0];
+                  const currentThread = directMessages[currentNeighbor.id] || [];
+                  return (
+                    <>
+                      <div className="px-4 py-3 bg-slate-50/40 dark:bg-slate-900/30 border-b border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs">
+                        <div className="flex items-center gap-2.5">
+                          <div
+                            className={`h-8 w-8 rounded-full bg-gradient-to-tr ${currentNeighbor.avatarBg} text-white font-bold flex items-center justify-center text-xs shrink-0`}
+                          >
+                            D.{currentNeighbor.apartmentNo}
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-bold text-slate-900 dark:text-white">
+                                {currentNeighbor.name}
+                              </span>
+                              <span className="text-[10px] font-mono text-blue-600 dark:text-sky-400 font-bold bg-blue-50 dark:bg-blue-950/60 px-1.5 py-0.2 rounded">
+                                Daire {currentNeighbor.apartmentNo}
+                              </span>
+                            </div>
+                            <span className="text-[10px] text-emerald-600 dark:text-emerald-400 flex items-center gap-1 mt-0.5">
+                              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 inline-block" />
+                              <span>{currentNeighbor.isOnline ? "Çevrimiçi" : "Son görülme bugün"}</span>
+                            </span>
+                          </div>
+                        </div>
+
+                        <span className="text-[10px] font-mono text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/70 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-800/50">
+                          🔒 Telefon Gizli
                         </span>
                       </div>
-                      <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line">
-                        {msg.content}
-                      </p>
-                    </div>
 
-                    <button
-                      type="button"
-                      onClick={() => handleDeleteMessage(msg.id)}
-                      className="opacity-0 group-hover:opacity-100 p-1 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-all cursor-pointer shrink-0"
-                      title="Mesajı Sil (Moderasyon)"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </button>
-                  </div>
-                ))
-              )}
-            </div>
+                      {/* Direct Message Bubbles Stream */}
+                      <div className="p-4 space-y-3 overflow-y-auto max-h-[340px] min-h-[260px] bg-slate-50/30 dark:bg-[#070b14]/50">
+                        {currentThread.length === 0 ? (
+                          <div className="text-center py-12 text-xs text-slate-400">
+                            {currentNeighbor.name} ile henüz özel mesajlaşma başlamadı. Bir komşuluk mesajı gönderin!
+                          </div>
+                        ) : (
+                          currentThread.map((msg) => (
+                            <div
+                              key={msg.id}
+                              className={`flex flex-col ${
+                                msg.sender === "manager" ? "items-end" : "items-start"
+                              }`}
+                            >
+                              <div
+                                className={`max-w-[82%] px-3.5 py-2.5 rounded-2xl text-xs leading-relaxed shadow-xs ${
+                                  msg.sender === "manager"
+                                    ? "bg-blue-600 text-white rounded-br-xs"
+                                    : "bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-bl-xs"
+                                }`}
+                              >
+                                <p>{msg.text}</p>
+                              </div>
+                              <span className="text-[10px] text-slate-400 mt-1 px-1 font-mono">
+                                {msg.time}
+                              </span>
+                            </div>
+                          ))
+                        )}
+                      </div>
 
-            {/* Input Bar */}
-            <form onSubmit={handleSendChannelMessage} className="p-3 border-t border-slate-100 dark:border-slate-800 flex items-center gap-2">
-              <input
-                type="text"
-                placeholder="Yönetici olarak mesaj yazın..."
-                value={channelMessageText}
-                onChange={(e) => setChannelMessageText(e.target.value)}
-                className="flex-1 px-3.5 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-              <button
-                type="submit"
-                disabled={!channelMessageText.trim()}
-                className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold disabled:opacity-40 cursor-pointer shrink-0"
-              >
-                Gönder
-              </button>
-            </form>
+                      {/* Direct Message Input Bar */}
+                      <form
+                        onSubmit={handleSendDirectMessage}
+                        className="p-3 border-t border-slate-100 dark:border-slate-800 flex items-center gap-2"
+                      >
+                        <input
+                          type="text"
+                          placeholder={`${currentNeighbor.name} (D.${currentNeighbor.apartmentNo}) komşunuza özel mesaj...`}
+                          value={dmInputText}
+                          onChange={(e) => setDmInputText(e.target.value)}
+                          className="flex-1 px-3.5 py-2 rounded-xl text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        />
+                        <button
+                          type="submit"
+                          disabled={!dmInputText.trim()}
+                          className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold disabled:opacity-40 cursor-pointer shrink-0"
+                        >
+                          Gönder
+                        </button>
+                      </form>
+                    </>
+                  );
+                })()}
+              </>
+            )}
           </div>
 
           {/* Komşuluk İlkeleri Kartı */}
