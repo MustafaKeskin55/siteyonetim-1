@@ -1387,13 +1387,13 @@ export default function AdminCommunityPage() {
             </div>
 
             <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-800">
-              <div className="flex items-center gap-2.5">
-                <div className="h-9 w-9 rounded-full bg-blue-600 flex items-center justify-center font-bold text-xs">
-                  {activeStory.apt}
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="h-9 w-9 rounded-full bg-blue-600 flex items-center justify-center font-bold text-xs text-white shrink-0 overflow-hidden shadow-xs">
+                  {activeStory.apt.length > 3 ? "YNT" : activeStory.apt}
                 </div>
-                <div>
-                  <h4 className="text-xs font-bold text-white">{activeStory.name}</h4>
-                  <p className="text-[10px] text-slate-400">{activeStory.time}</p>
+                <div className="min-w-0">
+                  <h4 className="text-xs font-bold text-white truncate">{activeStory.name}</h4>
+                  <p className="text-[10px] text-slate-400 font-mono">{activeStory.time}</p>
                 </div>
               </div>
               <button

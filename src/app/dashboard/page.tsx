@@ -188,7 +188,7 @@ export default function DashboardPage() {
       id: "s1",
       name: "Yönetim",
       label: "Duyuru 📌",
-      apt: "Yönetim",
+      apt: "YNT",
       color: "bg-gradient-to-tr from-blue-600 to-indigo-600",
       content: "Asansör periyodik güvenlik denetimi perşembe günü yapılacaktır.",
       time: "2 saat önce",
@@ -325,50 +325,55 @@ export default function DashboardPage() {
       {/* ══════════════════════════════════════════════════════════
           TOP GREETING & BUILDING IDENTITY BAR
       ══════════════════════════════════════════════════════════ */}
+      {/* ══════════════════════════════════════════════════════════
+          TOP GREETING & BUILDING IDENTITY BAR
+      ══════════════════════════════════════════════════════════ */}
       <div className="border-b-2 border-slate-300 dark:border-slate-800 bg-white dark:bg-[#0b101d] sticky top-0 z-30 shadow-xs">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 min-w-0">
             <div className="h-10 w-10 rounded-2xl bg-blue-600 text-white flex items-center justify-center font-black text-sm shadow-sm shrink-0">
               D.{apartmentNo}
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white truncate">
                   {residentName}
                 </h1>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/80 text-blue-700 dark:text-sky-400 border border-blue-200 dark:border-blue-800">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/80 text-blue-700 dark:text-sky-400 border border-blue-200 dark:border-blue-800 shrink-0">
                   Daire {apartmentNo}
                 </span>
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-0.5">
-                <Building2 className="h-3 w-3 text-slate-400" />
-                <span>{siteName}</span>
+              <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-0.5 flex-wrap">
+                <span className="inline-flex items-center gap-1">
+                  <Building2 className="h-3 w-3 text-slate-400 shrink-0" />
+                  <span className="truncate">{siteName}</span>
+                </span>
                 <span>•</span>
-                <span className="text-emerald-700 dark:text-emerald-400 font-semibold flex items-center gap-1">
-                  <ShieldCheck className="h-3 w-3" /> Telefonunuz Saklı (KVKK Korumalı)
+                <span className="text-emerald-700 dark:text-emerald-400 font-semibold flex items-center gap-1 shrink-0">
+                  <ShieldCheck className="h-3 w-3 shrink-0" /> Telefonunuz Saklı (KVKK)
                 </span>
               </p>
             </div>
           </div>
 
           {/* Quick Badges */}
-          <div className="flex items-center gap-2 text-xs">
+          <div className="flex items-center gap-2 text-xs shrink-0 flex-wrap">
             <div className={`px-3 py-1.5 rounded-xl border font-bold flex items-center gap-1.5 ${
               balance > 0 
                 ? "bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-700" 
                 : "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700"
             }`}>
-              <CreditCard className="h-3.5 w-3.5" />
-              <span>{balance > 0 ? `₺${balance.toLocaleString("tr-TR")} Aidat Borcu` : "Aidat Borcu Yok"}</span>
+              <CreditCard className="h-3.5 w-3.5 shrink-0" />
+              <span>{balance > 0 ? `₺${balance.toLocaleString("tr-TR")} Borç` : "Borç Yok"}</span>
             </div>
 
             <Link
               href="/dashboard/topluluk"
-              className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition-all shadow-xs flex items-center gap-1.5"
+              className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition-all shadow-xs flex items-center gap-1.5 shrink-0"
             >
-              <MessagesSquare className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Komşu Sohbeti</span>
+              <MessagesSquare className="h-3.5 w-3.5 shrink-0" />
+              <span>Komşu Sohbeti</span>
             </Link>
           </div>
 
@@ -383,15 +388,15 @@ export default function DashboardPage() {
         <div className="bg-white dark:bg-[#0d1424] rounded-3xl p-4 sm:p-5 border-2 border-slate-300 dark:border-slate-800 shadow-sm transition-colors">
           <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-200 dark:border-slate-800 text-xs">
             <div className="flex items-center gap-2 font-bold text-slate-800 dark:text-slate-200">
-              <Camera className="h-4 w-4 text-blue-600 dark:text-sky-400" />
+              <Camera className="h-4 w-4 text-blue-600 dark:text-sky-400 shrink-0" />
               <span>Komşuluk Hikayeleri (24 Saatlik)</span>
             </div>
-            <span className="text-[11px] text-slate-500 dark:text-slate-400">
+            <span className="text-[11px] text-slate-500 dark:text-slate-400 hidden sm:inline">
               Yalnızca bina sakinlerine açık
             </span>
           </div>
 
-          <div className="flex items-center gap-4 overflow-x-auto scrollbar-none pb-1">
+          <div className="flex items-center gap-3 sm:gap-4 overflow-x-auto scrollbar-none pb-2 pt-1 -mx-1 px-1">
             {stories.map((st) => (
               <div
                 key={st.id}
@@ -399,21 +404,23 @@ export default function DashboardPage() {
                 className="flex flex-col items-center gap-1.5 shrink-0 cursor-pointer group select-none"
               >
                 <div
-                  className={`h-16 w-16 rounded-full p-[2px] transition-transform duration-200 group-hover:scale-105 ${
+                  className={`h-14 w-14 sm:h-16 sm:w-16 rounded-full p-[2px] transition-transform duration-200 group-hover:scale-105 shrink-0 ${
                     st.isUser
                       ? "border-2 border-dashed border-blue-400 dark:border-blue-500 bg-slate-50 dark:bg-slate-900 flex items-center justify-center"
                       : st.color
                   }`}
                 >
-                  <div className="h-full w-full rounded-full bg-white dark:bg-[#0d1424] flex items-center justify-center font-bold text-xs text-slate-800 dark:text-white">
+                  <div className="h-full w-full rounded-full bg-white dark:bg-[#0d1424] flex items-center justify-center font-bold text-xs text-slate-800 dark:text-white overflow-hidden p-1">
                     {st.isUser ? (
-                      <Plus className="h-6 w-6 text-blue-600 dark:text-sky-400" />
+                      <Plus className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600 dark:text-sky-400" />
+                    ) : st.apt === "YNT" || st.apt === "Yönetim" ? (
+                      <Building2 className="h-5 w-5 text-blue-600 dark:text-sky-400" />
                     ) : (
-                      <span>{st.apt}</span>
+                      <span className="truncate max-w-full text-[11px] sm:text-xs">{st.apt}</span>
                     )}
                   </div>
                 </div>
-                <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-sky-300 text-center max-w-[70px] truncate">
+                <span className="text-[10px] sm:text-[11px] font-semibold text-slate-700 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-sky-300 text-center max-w-[68px] sm:max-w-[76px] truncate">
                   {st.label}
                 </span>
               </div>
@@ -424,12 +431,12 @@ export default function DashboardPage() {
         {/* ══════════════════════════════════════════════════════════
             MAIN GRID: SOCIAL FEED (70%) & WIDGETS (30%)
         ══════════════════════════════════════════════════════════ */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-5 sm:gap-6 items-start">
           
           {/* ════════════════════════════════════════════════
               LEFT COLUMN: SOCIAL COMMUNITY FEED (8 COLUMNS)
           ════════════════════════════════════════════════ */}
-          <div className="lg:col-span-8 space-y-5">
+          <div className="col-span-1 md:col-span-7 lg:col-span-8 space-y-5">
             
             {/* Quick Post Box */}
             <div className="bg-white dark:bg-[#0d1424] rounded-3xl p-5 border-2 border-slate-300 dark:border-slate-800 shadow-sm transition-colors">
@@ -675,7 +682,7 @@ export default function DashboardPage() {
           {/* ════════════════════════════════════════════════
               RIGHT COLUMN: BUILDING STATUS & ACTIONS (4 COLUMNS)
           ════════════════════════════════════════════════ */}
-          <div className="lg:col-span-4 space-y-5">
+          <div className="col-span-1 md:col-span-5 lg:col-span-4 space-y-5">
             
             {/* 1. Komşuluk İmecesi & Aktif Oylama Kartı */}
             <div className="bg-white dark:bg-[#0d1424] rounded-3xl p-5 sm:p-6 border-2 border-slate-300 dark:border-slate-800 shadow-sm transition-colors space-y-4">
@@ -816,44 +823,64 @@ export default function DashboardPage() {
           STORY VIEWER MODAL
       ══════════════════════════════════════════════════════════ */}
       {activeStory && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in">
-          <div className="relative w-full max-w-sm bg-slate-900 text-white rounded-3xl overflow-hidden border border-slate-700 shadow-2xl p-6 space-y-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in">
+          <div className="relative w-full max-w-sm sm:max-w-md bg-slate-900 text-white rounded-3xl overflow-hidden border border-slate-700 shadow-2xl p-5 sm:p-6 space-y-4">
+            {/* Story Top Progress Line */}
+            <div className="h-1 w-full bg-slate-800 rounded-full overflow-hidden">
+              <div className="h-full bg-blue-500 w-full animate-pulse" />
+            </div>
+
             {/* Story Top Bar */}
             <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-              <div className="flex items-center gap-2">
-                <div className="h-8 w-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs">
-                  {activeStory.apt}
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="h-10 w-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
+                  {activeStory.apt === "YNT" || activeStory.apt === "Yönetim" ? (
+                    <Building2 className="h-5 w-5 text-white" />
+                  ) : (
+                    <span className="truncate max-w-[32px]">{activeStory.apt}</span>
+                  )}
                 </div>
-                <div>
-                  <h4 className="text-xs font-bold text-white">{activeStory.name}</h4>
-                  <p className="text-[10px] text-slate-400">{activeStory.time}</p>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h4 className="text-xs sm:text-sm font-bold text-white truncate">{activeStory.name}</h4>
+                    {(activeStory.apt === "YNT" || activeStory.apt === "Yönetim") && (
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/30 shrink-0">
+                        Resmi Yönetim
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-[10px] sm:text-[11px] text-slate-400 font-mono mt-0.5">{activeStory.time}</p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setActiveStory(null)}
-                className="p-1 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 cursor-pointer"
+                className="p-1.5 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer shrink-0 ml-2"
+                title="Kapat"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
             {/* Story Body */}
-            <div className="py-6 text-center space-y-3">
-              <span className="text-3xl">☕️</span>
-              <p className="text-sm font-semibold text-slate-100 leading-relaxed">
+            <div className="py-6 sm:py-8 text-center space-y-3 px-2">
+              <div className="inline-flex p-3 rounded-2xl bg-slate-800/80 border border-slate-700/80 text-3xl shadow-inner">
+                ☕️
+              </div>
+              <p className="text-sm sm:text-base font-medium text-slate-100 leading-relaxed max-w-sm mx-auto">
                 {activeStory.content}
               </p>
             </div>
 
             {/* Story Footer Action */}
-            <div className="pt-2 border-t border-slate-800 flex items-center justify-between">
+            <div className="pt-3 border-t border-slate-800 flex items-center justify-between gap-3">
               <button
                 type="button"
                 onClick={() => setActiveStory(null)}
-                className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs"
+                className="w-full py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm transition-all shadow-md active:scale-98 cursor-pointer flex items-center justify-center gap-2"
               >
-                Komşuya Cevap Ver
+                <Send className="h-3.5 w-3.5" />
+                <span>Komşuya Cevap Ver</span>
               </button>
             </div>
           </div>

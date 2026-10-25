@@ -308,17 +308,17 @@ export default function CommunityChatPage() {
   };
 
   return (
-    <div className="flex h-full flex-col bg-slate-50 overflow-hidden">
+    <div className="flex h-full flex-col bg-slate-50 dark:bg-[#070b14] overflow-hidden text-slate-900 dark:text-slate-100 transition-colors">
       {/* ══════ TOP PRIVACY & STATUS BANNER ══════ */}
-      <div className="bg-emerald-50/80 border-b border-emerald-100/80 px-4 py-2 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-2 text-xs font-medium text-emerald-800">
-          <ShieldCheck className="h-4 w-4 text-emerald-600 shrink-0" />
+      <div className="bg-emerald-50/80 dark:bg-emerald-950/40 border-b border-emerald-100/80 dark:border-emerald-800/60 px-4 py-2 flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-2 text-xs font-medium text-emerald-800 dark:text-emerald-300">
+          <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
           <span>
             <strong>KVKK &amp; Gizlilik Korumalı:</strong> Telefon numaranız gizlidir, komşularınız yalnızca dairenizi (
             <span className="font-semibold">{currentApartment ? `Daire ${currentApartment}` : "Daireniz"}</span>) görür.
           </span>
         </div>
-        <div className="hidden md:flex items-center gap-2 text-xs text-slate-500">
+        <div className="hidden md:flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
           <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
           <span>Canlı Komşuluk Ağı</span>
         </div>
@@ -328,22 +328,22 @@ export default function CommunityChatPage() {
       <div className="flex flex-1 min-h-0 overflow-hidden">
         {/* ── LEFT CHANNELS LIST (Desktop & Mobile Drawer) ── */}
         <aside
-          className={`w-full md:w-72 lg:w-80 border-r border-slate-200/80 bg-white flex flex-col shrink-0 ${
+          className={`w-full md:w-72 lg:w-80 border-r border-slate-200/80 dark:border-slate-800 bg-white dark:bg-[#0d1424] flex flex-col shrink-0 ${
             mobileTab === "chat" ? "hidden md:flex" : "flex"
           }`}
         >
-          <div className="p-3.5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+          <div className="p-3.5 border-b border-slate-100 dark:border-slate-800/80 flex items-center justify-between bg-slate-50/50 dark:bg-slate-900/40">
             <div>
-              <h2 className="text-sm font-bold text-slate-800 flex items-center gap-1.5">
-                <Users className="h-4 w-4 text-indigo-600" />
+              <h2 className="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-1.5">
+                <Users className="h-4 w-4 text-blue-600 dark:text-sky-400" />
                 Komşuluk Kanalları
               </h2>
-              <p className="text-[11px] text-slate-500">Konusuna göre ayrılmış gruplar</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">Konusuna göre ayrılmış gruplar</p>
             </div>
             <button
               onClick={() => fetchChannels()}
               title="Yenile"
-              className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors"
+              className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
             >
               <RefreshCw className="h-3.5 w-3.5" />
             </button>
@@ -363,33 +363,33 @@ export default function CommunityChatPage() {
                       setActiveChannelId(ch.id);
                       setMobileTab("chat");
                     }}
-                    className={`w-full text-left p-3 rounded-xl transition-all flex items-start gap-3 ${
+                    className={`w-full text-left p-3 rounded-xl transition-all flex items-start gap-3 cursor-pointer ${
                       isActive
-                        ? "bg-indigo-50 border border-indigo-200/70 text-indigo-950 shadow-xs"
-                        : "hover:bg-slate-50 border border-transparent text-slate-700"
+                        ? "bg-blue-50 dark:bg-blue-950/60 border border-blue-200/70 dark:border-blue-800/80 text-blue-950 dark:text-sky-300 shadow-xs"
+                        : "hover:bg-slate-50 dark:hover:bg-slate-800/60 border border-transparent text-slate-700 dark:text-slate-300"
                     }`}
                   >
                     <div
                       className={`p-2 rounded-lg shrink-0 ${
                         isActive
-                          ? "bg-indigo-600 text-white shadow-xs"
-                          : "bg-slate-100 text-slate-600"
+                          ? "bg-blue-600 text-white shadow-xs"
+                          : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
                       }`}
                     >
                       {getChannelIcon(ch.icon)}
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between">
-                        <span className={`text-xs font-bold truncate ${isActive ? "text-indigo-950" : "text-slate-800"}`}>
+                        <span className={`text-xs font-bold truncate ${isActive ? "text-blue-950 dark:text-white" : "text-slate-800 dark:text-slate-200"}`}>
                           {ch.name}
                         </span>
                         {ch.isAnnouncementOnly && (
-                          <span className="text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded font-semibold shrink-0">
+                          <span className="text-[10px] bg-amber-50 dark:bg-amber-950/80 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/60 px-1.5 py-0.5 rounded font-semibold shrink-0">
                             Resmi
                           </span>
                         )}
                       </div>
-                      <p className="text-[11px] text-slate-500 truncate mt-0.5">
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
                         {ch.description || "Grup mesajlaşma"}
                       </p>
                     </div>
@@ -402,34 +402,34 @@ export default function CommunityChatPage() {
 
         {/* ── RIGHT CHAT STREAM ── */}
         <section
-          className={`flex-1 flex flex-col bg-white min-h-0 overflow-hidden ${
+          className={`flex-1 flex flex-col bg-white dark:bg-[#070b14] min-h-0 overflow-hidden ${
             mobileTab === "channels" ? "hidden md:flex" : "flex"
           }`}
         >
           {/* Chat Header */}
           {activeChannel ? (
-            <div className="px-4 py-3 border-b border-slate-200/80 flex items-center justify-between bg-white shrink-0">
+            <div className="px-4 py-3 border-b border-slate-200/80 dark:border-slate-800 flex items-center justify-between bg-white dark:bg-[#0d1424] shrink-0">
               <div className="flex items-center gap-3 min-w-0">
                 <button
                   onClick={() => setMobileTab("channels")}
-                  className="md:hidden p-1.5 -ml-1 text-slate-600 hover:bg-slate-100 rounded-lg"
+                  className="md:hidden p-1.5 -ml-1 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg cursor-pointer"
                   title="Kanallara Dön"
                 >
                   <ChevronLeft className="h-5 w-5" />
                 </button>
-                <div className="p-2 rounded-lg bg-indigo-50 text-indigo-600 shrink-0">
+                <div className="p-2 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-sky-400 shrink-0 border border-blue-200 dark:border-blue-800/60">
                   {getChannelIcon(activeChannel.icon)}
                 </div>
                 <div className="min-w-0">
-                  <h3 className="text-sm font-bold text-slate-900 truncate flex items-center gap-2">
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white truncate flex items-center gap-2">
                     {activeChannel.name}
                     {activeChannel.isAnnouncementOnly && (
-                      <span className="text-[10px] bg-amber-50 border border-amber-200 text-amber-700 font-bold px-2 py-0.5 rounded-full">
+                      <span className="text-[10px] bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-400 font-bold px-2 py-0.5 rounded-full">
                         Yalnızca Yönetim Yazar
                       </span>
                     )}
                   </h3>
-                  <p className="text-xs text-slate-500 truncate">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
                     {activeChannel.description || "Komşuluk grubu"}
                   </p>
                 </div>
@@ -439,7 +439,7 @@ export default function CommunityChatPage() {
                 {!isReadOnly && (
                   <button
                     onClick={() => setShowPollModal(true)}
-                    className="flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-colors"
+                    className="flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-sky-300 hover:bg-blue-100 dark:hover:bg-blue-900/60 border border-blue-200 dark:border-blue-800 transition-colors cursor-pointer"
                   >
                     <Vote className="h-3.5 w-3.5" />
                     <span className="hidden sm:inline">Anket Başlat</span>
@@ -447,7 +447,7 @@ export default function CommunityChatPage() {
                 )}
                 <button
                   onClick={() => fetchMessages(activeChannelId, false)}
-                  className="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors"
+                  className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
                   title="Yenile"
                 >
                   <RefreshCw className="h-4 w-4" />
@@ -455,24 +455,24 @@ export default function CommunityChatPage() {
               </div>
             </div>
           ) : (
-            <div className="p-4 border-b border-slate-200/80 bg-white">
+            <div className="p-4 border-b border-slate-200/80 dark:border-slate-800 bg-white dark:bg-[#0d1424]">
               <p className="text-xs text-slate-400">Kanal seçilmedi</p>
             </div>
           )}
 
           {/* Messages Feed */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50">
+          <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50 dark:bg-[#070b14]">
             {loadingMessages ? (
               <div className="flex items-center justify-center h-48 text-xs text-slate-400">
                 Mesajlar yükleniyor...
               </div>
             ) : messages.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-64 text-center px-4">
-                <div className="h-12 w-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-3">
+                <div className="h-12 w-12 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-sky-400 flex items-center justify-center mb-3 border border-blue-200 dark:border-blue-800/60">
                   <MessageSquare className="h-6 w-6" />
                 </div>
-                <h4 className="text-sm font-bold text-slate-800">Bu kanalda henüz mesaj yok</h4>
-                <p className="text-xs text-slate-500 max-w-sm mt-1">
+                <h4 className="text-sm font-bold text-slate-800 dark:text-white">Bu kanalda henüz mesaj yok</h4>
+                <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mt-1">
                   İlk mesajı yazarak komşularınızla iletişimi başlatabilirsiniz!
                 </p>
               </div>
@@ -487,14 +487,14 @@ export default function CommunityChatPage() {
                     {/* Sender badge (if not mine) */}
                     {!isMine && (
                       <div className="flex items-center gap-1.5 mb-1 px-1">
-                        <span className="text-xs font-bold text-slate-800">
+                        <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
                           {msg.author.name}
                         </span>
-                        <span className="text-[10px] font-semibold bg-indigo-100/70 text-indigo-700 px-1.5 py-0.2 rounded">
-                          {msg.author.apartmentNo}
+                        <span className="text-[10px] font-semibold bg-blue-50 dark:bg-blue-950/80 text-blue-700 dark:text-sky-400 px-1.5 py-0.2 rounded border border-blue-200 dark:border-blue-800/60">
+                          D.{msg.author.apartmentNo}
                         </span>
                         {msg.author.role === "ADMIN" && (
-                          <span className="text-[10px] font-bold bg-amber-100 text-amber-800 px-1.5 py-0.2 rounded">
+                          <span className="text-[10px] font-bold bg-amber-50 dark:bg-amber-950/80 text-amber-700 dark:text-amber-400 px-1.5 py-0.2 rounded border border-amber-200 dark:border-amber-800/60">
                             Yönetici
                           </span>
                         )}
@@ -505,13 +505,13 @@ export default function CommunityChatPage() {
                     <div
                       className={`relative max-w-[85%] sm:max-w-md md:max-w-lg rounded-2xl p-3.5 shadow-xs ${
                         isMine
-                          ? "bg-indigo-600 text-white rounded-br-xs"
-                          : "bg-white text-slate-800 border border-slate-200/80 rounded-bl-xs"
+                          ? "bg-blue-600 text-white rounded-br-xs"
+                          : "bg-white dark:bg-[#0d1424] text-slate-800 dark:text-slate-200 border border-slate-200/80 dark:border-slate-800 rounded-bl-xs"
                       }`}
                     >
                       {/* Image Attachment */}
                       {msg.imageUrl && (
-                        <div className="mb-2 rounded-xl overflow-hidden max-h-60 bg-black/5">
+                        <div className="mb-2 rounded-xl overflow-hidden max-h-60 bg-black/5 dark:bg-black/20">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={msg.imageUrl}
@@ -522,7 +522,7 @@ export default function CommunityChatPage() {
                       )}
 
                       {/* Text */}
-                      <p className={`text-sm leading-relaxed whitespace-pre-wrap ${isMine ? "text-white" : "text-slate-800"}`}>
+                      <p className={`text-sm leading-relaxed whitespace-pre-wrap ${isMine ? "text-white" : "text-slate-800 dark:text-slate-200"}`}>
                         {msg.content}
                       </p>
 
@@ -531,16 +531,16 @@ export default function CommunityChatPage() {
                         <div
                           className={`mt-3 p-3 rounded-xl border ${
                             isMine
-                              ? "bg-indigo-700/60 border-indigo-500/50 text-white"
-                              : "bg-slate-50 border-slate-200/80 text-slate-900"
+                              ? "bg-blue-700/60 border-blue-500/50 text-white"
+                              : "bg-slate-50 dark:bg-slate-900 border-slate-200/80 dark:border-slate-800 text-slate-900 dark:text-slate-100"
                           }`}
                         >
                           <div className="flex items-center justify-between mb-2">
                             <span className="text-xs font-bold flex items-center gap-1.5">
-                              <Vote className="h-3.5 w-3.5 text-indigo-400" />
+                              <Vote className="h-3.5 w-3.5 text-blue-400" />
                               {msg.poll.question}
                             </span>
-                            <span className="text-[10px] opacity-75 font-medium">
+                            <span className="text-[10px] opacity-75 font-medium font-mono">
                               {msg.poll.totalVotes} oy
                             </span>
                           </div>
@@ -552,14 +552,14 @@ export default function CommunityChatPage() {
                                 <button
                                   key={idx}
                                   onClick={() => handleVote(msg.poll!.id, idx)}
-                                  className={`w-full text-left relative overflow-hidden rounded-lg p-2 text-xs transition-all border ${
+                                  className={`w-full text-left relative overflow-hidden rounded-xl p-2.5 text-xs transition-all border cursor-pointer ${
                                     isVoted
                                       ? isMine
-                                        ? "border-emerald-400 bg-indigo-900/50 font-bold"
-                                        : "border-indigo-500 bg-indigo-50 font-bold text-indigo-900"
+                                        ? "border-emerald-400 bg-blue-900/50 font-bold"
+                                        : "border-blue-500 bg-blue-50 dark:bg-blue-950/60 font-bold text-blue-900 dark:text-white"
                                       : isMine
-                                      ? "border-indigo-500/40 bg-indigo-800/40 hover:bg-indigo-800/60"
-                                      : "border-slate-200 bg-white hover:bg-slate-100"
+                                      ? "border-blue-500/40 bg-blue-800/40 hover:bg-blue-800/60"
+                                      : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/60"
                                   }`}
                                 >
                                   {/* Progress bar fill */}
@@ -568,10 +568,10 @@ export default function CommunityChatPage() {
                                       isVoted
                                         ? isMine
                                           ? "bg-emerald-500/20"
-                                          : "bg-indigo-500/15"
+                                          : "bg-blue-500/20"
                                         : isMine
                                         ? "bg-white/10"
-                                        : "bg-slate-100"
+                                        : "bg-slate-200/50 dark:bg-slate-700/50"
                                     }`}
                                     style={{ width: `${opt.percent}%` }}
                                   />
@@ -580,13 +580,13 @@ export default function CommunityChatPage() {
                                       {isVoted && (
                                         <CheckCircle2
                                           className={`h-3.5 w-3.5 ${
-                                            isMine ? "text-emerald-400" : "text-indigo-600"
+                                            isMine ? "text-emerald-400" : "text-blue-600 dark:text-sky-400"
                                           }`}
                                         />
                                       )}
                                       {opt.text}
                                     </span>
-                                    <span className="font-semibold text-[11px] opacity-80">
+                                    <span className="font-semibold text-[11px] opacity-80 font-mono">
                                       %{opt.percent} ({opt.count})
                                     </span>
                                   </div>
@@ -599,8 +599,8 @@ export default function CommunityChatPage() {
 
                       {/* Footer time & delete */}
                       <div
-                        className={`flex items-center justify-between gap-3 mt-1 text-[10px] ${
-                          isMine ? "text-indigo-200" : "text-slate-400"
+                        className={`flex items-center justify-between gap-3 mt-1 text-[10px] font-mono ${
+                          isMine ? "text-blue-200" : "text-slate-400 dark:text-slate-500"
                         }`}
                       >
                         <span>
@@ -614,8 +614,8 @@ export default function CommunityChatPage() {
                         {msg.canDelete && (
                           <button
                             onClick={() => handleDeleteMessage(msg.id)}
-                            className={`opacity-0 group-hover:opacity-100 transition-opacity p-0.5 hover:text-red-500 ${
-                              isMine ? "text-indigo-200" : "text-slate-400"
+                            className={`opacity-0 group-hover:opacity-100 transition-opacity p-0.5 hover:text-red-500 cursor-pointer ${
+                              isMine ? "text-blue-200" : "text-slate-400"
                             }`}
                             title="Mesajı Sil"
                           >
@@ -632,10 +632,10 @@ export default function CommunityChatPage() {
           </div>
 
           {/* Chat Input Bar */}
-          <div className="p-3 border-t border-slate-200/80 bg-white shrink-0">
+          <div className="p-3 border-t border-slate-200/80 dark:border-slate-800 bg-white dark:bg-[#0d1424] shrink-0">
             {isReadOnly ? (
-              <div className="p-3 rounded-xl bg-amber-50 border border-amber-200/70 flex items-center gap-2 text-xs text-amber-800">
-                <Lock className="h-4 w-4 text-amber-600 shrink-0" />
+              <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200/70 dark:border-amber-800 text-xs text-amber-800 dark:text-amber-300 flex items-center gap-2">
+                <Lock className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0" />
                 <span>
                   Bu kanal yalnızca yönetim resmi duyuruları içindir. Sakinler sadece okuyabilir.
                 </span>
@@ -644,14 +644,14 @@ export default function CommunityChatPage() {
               <form onSubmit={handleSendMessage} className="space-y-2">
                 {/* Image input popup field */}
                 {showImageInput && (
-                  <div className="flex items-center gap-2 p-2 bg-slate-50 rounded-xl border border-slate-200">
+                  <div className="flex items-center gap-2 p-2 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
                     <ImageIcon className="h-4 w-4 text-slate-400 shrink-0" />
                     <input
                       type="url"
                       placeholder="Görsel bağlantı adresi (URL) yapıştırın..."
                       value={imageUrl}
                       onChange={(e) => setImageUrl(e.target.value)}
-                      className="flex-1 bg-transparent text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none"
+                      className="flex-1 bg-transparent text-xs text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none"
                     />
                     <button
                       type="button"
@@ -659,7 +659,7 @@ export default function CommunityChatPage() {
                         setImageUrl("");
                         setShowImageInput(false);
                       }}
-                      className="text-slate-400 hover:text-slate-600 p-1"
+                      className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 cursor-pointer"
                     >
                       <X className="h-3.5 w-3.5" />
                     </button>
@@ -670,10 +670,10 @@ export default function CommunityChatPage() {
                   <button
                     type="button"
                     onClick={() => setShowImageInput(!showImageInput)}
-                    className={`p-2.5 rounded-xl border transition-colors ${
+                    className={`p-2.5 rounded-xl border transition-colors cursor-pointer ${
                       showImageInput || imageUrl
-                        ? "bg-indigo-50 border-indigo-200 text-indigo-600"
-                        : "border-slate-200 text-slate-500 hover:bg-slate-50"
+                        ? "bg-blue-50 dark:bg-blue-950/60 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-sky-400"
+                        : "border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
                     }`}
                     title="Fotoğraf Ekle"
                   >
@@ -683,7 +683,7 @@ export default function CommunityChatPage() {
                   <button
                     type="button"
                     onClick={() => setShowPollModal(true)}
-                    className="p-2.5 rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-indigo-600 transition-colors"
+                    className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-blue-600 dark:hover:text-sky-400 transition-colors cursor-pointer"
                     title="Anket / Oylama Başlat"
                   >
                     <Vote className="h-4 w-4" />
@@ -701,14 +701,14 @@ export default function CommunityChatPage() {
                         }
                       }}
                       placeholder={`#${activeChannel?.name || "Kanala"} mesaj yazın...`}
-                      className="w-full resize-none rounded-xl border border-slate-200/90 bg-slate-50 px-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:outline-none transition-all"
+                      className="w-full resize-none rounded-xl border border-slate-200/90 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none transition-all"
                     />
                   </div>
 
                   <button
                     type="submit"
                     disabled={(!text.trim() && !imageUrl.trim()) || sending}
-                    className="p-2.5 rounded-xl bg-indigo-600 text-white font-bold hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-xs shrink-0"
+                    className="p-2.5 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-xs shrink-0 cursor-pointer"
                   >
                     <Send className="h-4 w-4" />
                   </button>
@@ -721,16 +721,16 @@ export default function CommunityChatPage() {
 
       {/* ══════ MODAL: CREATE POLL ══════ */}
       {showPollModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl border border-slate-100">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <Vote className="h-4 w-4 text-indigo-600" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs">
+          <div className="w-full max-w-md rounded-3xl bg-white dark:bg-[#0d1424] p-6 shadow-2xl border border-slate-200 dark:border-slate-800">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 mb-4">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <Vote className="h-4 w-4 text-blue-600 dark:text-sky-400" />
                 Yeni Komşuluk Anketi / Oylaması
               </h3>
               <button
                 onClick={() => setShowPollModal(false)}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg"
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-lg cursor-pointer"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -738,7 +738,7 @@ export default function CommunityChatPage() {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                   Anket Sorusu / Konu
                 </label>
                 <input
@@ -746,12 +746,12 @@ export default function CommunityChatPage() {
                   placeholder="Örn: Bina dış cephesi hangi renge boyansın?"
                   value={pollQuestion}
                   onChange={(e) => setPollQuestion(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs text-slate-800 focus:border-indigo-500 focus:outline-none"
+                  className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-3 py-2 text-xs text-slate-800 dark:text-white focus:border-blue-500 focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                   Seçenekler
                 </label>
                 <div className="space-y-2">
@@ -766,7 +766,7 @@ export default function CommunityChatPage() {
                           next[idx] = e.target.value;
                           setPollOptions(next);
                         }}
-                        className="flex-1 rounded-xl border border-slate-200 px-3 py-2 text-xs text-slate-800 focus:border-indigo-500 focus:outline-none"
+                        className="flex-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-3 py-2 text-xs text-slate-800 dark:text-white focus:border-blue-500 focus:outline-none"
                       />
                       {pollOptions.length > 2 && (
                         <button
@@ -774,7 +774,7 @@ export default function CommunityChatPage() {
                           onClick={() => {
                             setPollOptions(pollOptions.filter((_, i) => i !== idx));
                           }}
-                          className="p-1.5 text-slate-400 hover:text-red-500 rounded-lg"
+                          className="p-1.5 text-slate-400 hover:text-red-500 rounded-lg cursor-pointer"
                         >
                           <X className="h-3.5 w-3.5" />
                         </button>
@@ -787,7 +787,7 @@ export default function CommunityChatPage() {
                   <button
                     type="button"
                     onClick={() => setPollOptions([...pollOptions, ""])}
-                    className="mt-2 text-xs font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1"
+                    className="mt-2 text-xs font-bold text-blue-600 dark:text-sky-400 hover:underline flex items-center gap-1 cursor-pointer"
                   >
                     <Plus className="h-3.5 w-3.5" /> Seçenek Ekle
                   </button>
@@ -798,7 +798,7 @@ export default function CommunityChatPage() {
                 <button
                   type="button"
                   onClick={() => setShowPollModal(false)}
-                  className="px-4 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50"
+                  className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
                 >
                   İptal
                 </button>
@@ -806,7 +806,7 @@ export default function CommunityChatPage() {
                   type="button"
                   onClick={handleCreatePoll}
                   disabled={sending}
-                  className="px-4 py-2 rounded-xl bg-indigo-600 text-xs font-bold text-white hover:bg-indigo-700 disabled:opacity-50 shadow-xs"
+                  className="px-4 py-2 rounded-xl bg-blue-600 text-xs font-bold text-white hover:bg-blue-700 disabled:opacity-50 shadow-xs cursor-pointer"
                 >
                   {sending ? "Oluşturuluyor..." : "Anketi Başlat"}
                 </button>
