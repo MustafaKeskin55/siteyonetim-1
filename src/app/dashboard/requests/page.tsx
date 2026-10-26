@@ -2,8 +2,9 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Wrench, PlusCircle, Clock, CheckCircle2, AlertCircle, XCircle, X, ArrowLeft, Send, Camera, ImageIcon, Eye, ExternalLink } from "lucide-react";
+import { Wrench, PlusCircle, Clock, CheckCircle2, AlertCircle, XCircle, X, ArrowLeft, Send, Camera, ImageIcon, Eye, ExternalLink, Maximize2, Download } from "lucide-react";
 import { useAlert } from "@/components/ModalProvider";
+import { openImageSafely, downloadImageSafely } from "@/lib/request-ui";
 
 interface RequestItem {
   id: string;
@@ -23,6 +24,7 @@ export default function ResidentRequestsPage() {
   const showAlert = useAlert();
   const [requests, setRequests] = React.useState<RequestItem[]>([]);
   const [detailRequest, setDetailRequest] = React.useState<RequestItem | null>(null);
+  const [previewImageUrl, setPreviewImageUrl] = React.useState<string | null>(null);
   const [showForm, setShowForm] = React.useState(false);
   const [title, setTitle] = React.useState("");
   const [category, setCategory] = React.useState("Arıza");
@@ -512,22 +514,41 @@ export default function ResidentRequestsPage() {
                   <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
                     <ImageIcon className="h-4 w-4 text-blue-600 dark:text-sky-400" /> Eklediğiniz Fotoğraf
                   </h4>
-                  <a
-                    href={detailRequest.imageUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs font-bold text-blue-600 dark:text-sky-400 hover:underline flex items-center gap-1"
-                  >
-                    Tam Boyutta Aç <ExternalLink className="h-3 w-3" />
-                  </a>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setPreviewImageUrl(detailRequest.imageUrl!)}
+                      className="text-xs font-bold text-blue-600 dark:text-sky-400 hover:text-blue-700 dark:hover:text-sky-300 flex items-center gap-1 cursor-pointer transition-colors"
+                    >
+                      <Maximize2 className="h-3.5 w-3.5" />
+                      <span>Tam Boyutta Büyüt</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => openImageSafely(detailRequest.imageUrl!)}
+                      className="text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 flex items-center gap-1 cursor-pointer transition-colors"
+                      title="Yeni Sekmede Aç"
+                    >
+                      <ExternalLink className="h-3 w-3" />
+                      <span>Yeni Sekme</span>
+                    </button>
+                  </div>
                 </div>
-                <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-black/5 dark:bg-black/30 p-2 text-center">
+                <div
+                  className="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-black/5 dark:bg-black/30 p-2 text-center group/img cursor-pointer relative"
+                  onClick={() => setPreviewImageUrl(detailRequest.imageUrl!)}
+                  title="Tam boyutta büyütmek için tıklayın"
+                >
                   <img
                     src={detailRequest.imageUrl}
                     alt="Arıza görseli"
-                    className="max-h-96 w-auto mx-auto rounded-xl object-contain shadow-sm cursor-pointer hover:opacity-95 transition"
-                    onClick={() => window.open(detailRequest.imageUrl!, "_blank")}
+                    className="max-h-96 w-auto mx-auto rounded-xl object-contain shadow-sm group-hover/img:scale-[1.01] transition-transform"
                   />
+                  <div className="absolute inset-2 rounded-xl bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/80 text-white text-xs font-bold shadow-lg">
+                      <Maximize2 className="h-4 w-4" /> Büyütmek İçin Tıkla
+                    </span>
+                  </div>
                 </div>
               </div>
             )}
@@ -540,7 +561,13 @@ export default function ResidentRequestsPage() {
                 </p>
                 <p className="text-sm text-emerald-950 dark:text-emerald-100">{detailRequest.resolutionNote}</p>
                 {detailRequest.resolutionImageUrl && (
-                  <img src={detailRequest.resolutionImageUrl} alt="Çözüm görseli" className="mt-2.5 max-h-48 rounded-xl object-cover border border-emerald-300 dark:border-emerald-700" />
+                  <img
+                    src={detailRequest.resolutionImageUrl}
+                    alt="Çözüm görseli"
+                    onClick={() => setPreviewImageUrl(detailRequest.resolutionImageUrl!)}
+                    className="mt-2.5 max-h-48 rounded-xl object-cover border border-emerald-300 dark:border-emerald-700 cursor-pointer hover:opacity-95"
+                    title="Büyütmek için tıklayın"
+                  />
                 )}
               </div>
             )}
@@ -552,7 +579,13 @@ export default function ResidentRequestsPage() {
                 </p>
                 <p className="text-sm text-rose-950 dark:text-rose-100">{detailRequest.rejectedNote}</p>
                 {detailRequest.rejectedImageUrl && (
-                  <img src={detailRequest.rejectedImageUrl} alt="Red görseli" className="mt-2.5 max-h-48 rounded-xl object-cover border border-rose-300 dark:border-rose-700" />
+                  <img
+                    src={detailRequest.rejectedImageUrl}
+                    alt="Red görseli"
+                    onClick={() => setPreviewImageUrl(detailRequest.rejectedImageUrl!)}
+                    className="mt-2.5 max-h-48 rounded-xl object-cover border border-rose-300 dark:border-rose-700 cursor-pointer hover:opacity-95"
+                    title="Büyütmek için tıklayın"
+                  />
                 )}
               </div>
             )}
@@ -567,6 +600,60 @@ export default function ResidentRequestsPage() {
                 Kapat
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ══════════ FULLSCREEN RESİM ÖNİZLEME (LIGHTBOX) ══════════ */}
+      {previewImageUrl && (
+        <div className="fixed inset-0 z-[100000] flex flex-col items-center justify-between p-4 bg-black/92 backdrop-blur-md">
+          <div className="w-full flex items-center justify-between max-w-5xl pt-2 px-2">
+            <span className="text-xs font-semibold text-white/70">Fotoğraf Önizleme</span>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => downloadImageSafely(previewImageUrl, "ariza-gorseli.jpg")}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition cursor-pointer"
+              >
+                <Download className="h-3.5 w-3.5" />
+                <span>İndir</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => openImageSafely(previewImageUrl)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition cursor-pointer"
+              >
+                <ExternalLink className="h-3.5 w-3.5" />
+                <span>Yeni Sekmede Aç</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setPreviewImageUrl(null)}
+                className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition cursor-pointer"
+                title="Kapat"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+          </div>
+
+          <div className="flex-1 w-full max-w-5xl flex items-center justify-center p-2 min-h-0" onClick={() => setPreviewImageUrl(null)}>
+            <img
+              src={previewImageUrl}
+              alt="Büyük boy görsel"
+              onClick={(e) => e.stopPropagation()}
+              className="max-h-[82vh] max-w-full object-contain rounded-2xl shadow-2xl border border-white/15"
+            />
+          </div>
+
+          <div className="pb-2 text-center">
+            <button
+              type="button"
+              onClick={() => setPreviewImageUrl(null)}
+              className="px-6 py-2 rounded-full bg-white/15 hover:bg-white/25 text-white text-xs font-bold transition cursor-pointer"
+            >
+              Önizlemeyi Kapat
+            </button>
           </div>
         </div>
       )}

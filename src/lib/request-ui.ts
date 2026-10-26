@@ -69,3 +69,46 @@ export function uiStatusToDb(s: string): "OPEN" | "IN_PROGRESS" | "RESOLVED" | "
   if (s === "Reddedildi") return "REJECTED";
   return "OPEN";
 }
+
+/**
+ * Modern tarayıcılarda data: URL'lerinin yeni sekmede engellenmesini
+ * (about:blank#blocked hatasını) önlemek için Blob URL'ye dönüştürerek açar.
+ */
+export function openImageSafely(url: string) {
+  if (typeof window === "undefined" || !url) return;
+  try {
+    if (url.startsWith("data:")) {
+      const parts = url.split(",");
+      const mime = parts[0].match(/:(.*?);/)?.[1] || "image/jpeg";
+      const bstr = atob(parts[1]);
+      let n = bstr.length;
+      const u8arr = new Uint8Array(n);
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      const blob = new Blob([u8arr], { type: mime });
+      const blobUrl = URL.createObjectURL(blob);
+      window.open(blobUrl, "_blank");
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 120000);
+      return;
+    }
+  } catch (err) {
+    console.error("openImageSafely error:", err);
+  }
+  window.open(url, "_blank");
+}
+
+export function downloadImageSafely(url: string, filename = "ariza-gorseli.jpg") {
+  if (typeof window === "undefined" || !url) return;
+  try {
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  } catch (err) {
+    console.error("downloadImageSafely error:", err);
+  }
+}
+
