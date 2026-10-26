@@ -294,13 +294,13 @@ export default function ResidentNotificationsPage() {
                     </h3>
                   </div>
 
-                  <div className="flex items-center gap-2 text-xs text-slate-400 dark:text-zinc-500">
+                  <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
                     <Clock className="h-3.5 w-3.5" />
                     <span>{formatTimeAgo(item.createdAt)}</span>
                   </div>
                 </div>
 
-                <p className="text-xs text-slate-600 dark:text-zinc-400 leading-relaxed whitespace-pre-wrap">
+                <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">
                   {item.body}
                 </p>
 
@@ -312,7 +312,7 @@ export default function ResidentNotificationsPage() {
                       onClick={() => {
                         if (!item.read) markSingleRead(item.id);
                       }}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition shadow-xs"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
                     >
                       <span>İlgili Sayfaya Git</span>
                       <ExternalLink className="h-3 w-3" />

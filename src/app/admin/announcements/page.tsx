@@ -182,45 +182,45 @@ export default function AnnouncementsPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="sm:col-span-2">
-                <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-1.5">Duyuru Başlığı</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">Duyuru Başlığı</label>
                 <input 
                   type="text" 
                   required 
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 py-3 px-4 focus:ring-2 focus:ring-rose-500 outline-none text-zinc-950 dark:text-zinc-50"
+                  className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#090e1b] py-3 px-4 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 outline-none text-slate-900 dark:text-white text-sm transition-all"
                   placeholder="Örn: Asansör Bakımı" 
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-1.5">Kategori</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">Kategori</label>
                 <select 
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 py-3 px-4 focus:ring-2 focus:ring-rose-500 outline-none text-zinc-950 dark:text-zinc-50"
+                  className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#090e1b] py-3 px-4 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 outline-none text-slate-900 dark:text-white text-sm transition-all cursor-pointer"
                 >
-                  <option value="Genel">Genel / Duyuru</option>
-                  <option value="Mali">Mali / Aidat</option>
-                  <option value="Teknik">Teknik / Bakım</option>
+                  <option value="Genel" className="bg-white dark:bg-slate-900">Genel / Duyuru</option>
+                  <option value="Mali" className="bg-white dark:bg-slate-900">Mali / Aidat</option>
+                  <option value="Teknik" className="bg-white dark:bg-slate-900">Teknik / Bakım</option>
                 </select>
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-1.5">Açıklama</label>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">Açıklama</label>
               <textarea 
                 required 
                 rows={5} 
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                className="w-full rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 py-3 px-4 focus:ring-2 focus:ring-rose-500 outline-none resize-none text-zinc-950 dark:text-zinc-50"
-                placeholder="Duyuru metnini buraya yazın..."
+                className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#090e1b] py-3 px-4 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 outline-none resize-none text-slate-900 dark:text-white text-sm transition-all"
+                placeholder="Duyuru metnini buraya yazın..." 
               />
             </div>
 
             {/* Çoklu Görsel Yükleme */}
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-1.5">
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
                 Duyuru Görselleri ({images.length}/3)
               </label>
 
@@ -231,12 +231,12 @@ export default function AnnouncementsPage() {
                       <img 
                         src={img} 
                         alt={`Görsel ${idx + 1}`} 
-                        className="w-full h-32 object-cover rounded-2xl border border-zinc-200 dark:border-zinc-800"
+                        className="w-full h-32 object-cover rounded-2xl border border-slate-200 dark:border-slate-700"
                       />
                       <button
                         type="button"
                         onClick={() => removeImage(idx)}
-                        className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100"
+                        className="absolute top-2 right-2 p-1 bg-rose-600 text-white rounded-full hover:bg-rose-700 transition-colors opacity-0 group-hover:opacity-100 cursor-pointer shadow-md"
                       >
                         <X className="h-3.5 w-3.5" />
                       </button>
@@ -248,15 +248,15 @@ export default function AnnouncementsPage() {
               {images.length < 3 && (
                 <div 
                   onClick={() => fileRef.current?.click()}
-                  className="border-2 border-dashed border-zinc-200 dark:border-zinc-700 rounded-2xl p-6 text-center cursor-pointer hover:border-rose-300 dark:hover:border-rose-700 transition-colors"
+                  className="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-blue-400 dark:hover:border-blue-600 rounded-2xl p-6 text-center cursor-pointer transition-colors bg-slate-50/50 dark:bg-[#090e1b]/50"
                 >
                   {uploading ? (
-                    <p className="text-sm text-zinc-500">Yükleniyor...</p>
+                    <p className="text-sm font-semibold text-slate-600 dark:text-slate-400">Yükleniyor...</p>
                   ) : (
                     <>
-                      <ImageIcon className="h-6 w-6 mx-auto mb-2 text-zinc-300 dark:text-zinc-600" />
-                      <p className="text-sm text-zinc-500 dark:text-zinc-400">Görsel eklemek için tıklayın</p>
-                      <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-1">JPG, PNG - Max 2MB - En fazla 3 görsel</p>
+                      <ImageIcon className="h-6 w-6 mx-auto mb-2 text-slate-400 dark:text-slate-500" />
+                      <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">Görsel eklemek için tıklayın</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">JPG, PNG - Max 2MB - En fazla 3 görsel</p>
                     </>
                   )}
                 </div>
@@ -275,7 +275,7 @@ export default function AnnouncementsPage() {
               <button 
                 type="button" 
                 onClick={() => setShowForm(false)}
-                className="px-6 py-3 rounded-2xl text-sm font-bold text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                className="px-6 py-2.5 rounded-2xl text-sm font-bold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
               >
                 İptal
               </button>

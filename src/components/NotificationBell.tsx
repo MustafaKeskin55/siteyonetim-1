@@ -271,7 +271,7 @@ export function NotificationBell({
                 <p className="text-sm font-bold text-slate-700 dark:text-zinc-300">
                   Henüz bildiriminiz yok
                 </p>
-                <p className="text-xs text-slate-400 dark:text-zinc-500 mt-1">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                   Yeni duyuru veya aidat eklendiğinde burada görebilirsiniz.
                 </p>
               </div>
@@ -282,12 +282,12 @@ export function NotificationBell({
                   onClick={() => handleClickNotification(item)}
                   className={`group relative flex items-start gap-3 p-3.5 transition-all cursor-pointer ${
                     !item.read
-                      ? "bg-indigo-50/40 dark:bg-indigo-950/20 hover:bg-indigo-50/70 dark:hover:bg-indigo-950/30"
-                      : "hover:bg-slate-50 dark:hover:bg-zinc-800/40"
+                      ? "bg-blue-50/50 dark:bg-blue-950/20 hover:bg-blue-50/80 dark:hover:bg-blue-950/30"
+                      : "hover:bg-slate-50 dark:hover:bg-slate-800/40"
                   }`}
                 >
                   {/* İkon */}
-                  <div className="mt-0.5 p-2 rounded-xl bg-white dark:bg-zinc-800 shadow-xs border border-slate-100 dark:border-zinc-700/60 shrink-0">
+                  <div className="mt-0.5 p-2 rounded-xl bg-white dark:bg-[#0d1424] shadow-xs border border-slate-100 dark:border-slate-800 shrink-0">
                     {getNotificationIcon(item.type)}
                   </div>
 
@@ -297,21 +297,21 @@ export function NotificationBell({
                       <p
                         className={`text-xs font-bold truncate ${
                           !item.read
-                            ? "text-slate-900 dark:text-zinc-100"
-                            : "text-slate-700 dark:text-zinc-300"
+                            ? "text-slate-900 dark:text-white"
+                            : "text-slate-700 dark:text-slate-300"
                         }`}
                       >
                         {item.title}
                       </p>
                       <div className="flex items-center gap-1.5 shrink-0">
                         {item.createdAt && (
-                          <span className="text-[10px] text-slate-400 dark:text-zinc-500 flex items-center gap-0.5">
+                          <span className="text-[10px] text-slate-500 dark:text-slate-400 flex items-center gap-0.5">
                             <Clock className="h-2.5 w-2.5" />
                             {formatTimeAgo(item.createdAt)}
                           </span>
                         )}
                         {!item.read && (
-                          <span className="w-2 h-2 rounded-full bg-indigo-600 dark:bg-indigo-400 shrink-0" />
+                          <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400 shrink-0" />
                         )}
                       </div>
                     </div>
