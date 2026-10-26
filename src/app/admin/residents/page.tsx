@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import * as React from "react";
-import { Search, ArrowRight, RefreshCw, Plus, CreditCard, X, CheckCircle, Check, Clock, UserCheck, KeyRound, Copy, CheckCheck } from "lucide-react";
+import { Search, ArrowRight, RefreshCw, Plus, CreditCard, X, CheckCircle, Check, Clock, UserCheck, KeyRound, Copy, CheckCheck, Users } from "lucide-react";
 import { useAlert } from "@/components/ModalProvider";
 
 type Resident = {
@@ -381,22 +381,22 @@ export default function ResidentsPage() {
       )}
 
       {/* Filters */}
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200/60 dark:border-zinc-800/80 p-5 rounded-3xl shadow-sm grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+      <div className="bg-white dark:bg-[#0d1424] border border-slate-200/80 dark:border-slate-800 p-5 rounded-3xl shadow-xs grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
         <div className="relative md:col-span-2">
           <input
             type="text"
             placeholder="İsim, e-posta veya daire ara…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 py-3 pl-10 pr-4 text-sm focus:ring-2 focus:ring-indigo-500 outline-none text-zinc-950 dark:text-zinc-50"
+            className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#111a2e] py-3 pl-10 pr-4 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-400 transition-all"
           />
-          <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-zinc-400" />
+          <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
         </div>
         <div>
           <select
             value={selectedBlok}
             onChange={(e) => setSelectedBlok(e.target.value)}
-            className="w-full rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 py-3 px-4 text-sm focus:ring-2 focus:ring-indigo-500 outline-none text-zinc-950 dark:text-zinc-50 appearance-none"
+            className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#111a2e] py-3 px-4 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-slate-900 dark:text-white cursor-pointer transition-all"
           >
             <option value="Hepsi">Tüm bloklar</option>
             {[...new Set(residents.map((r) => r.blok).filter(Boolean))].map((b) => (
@@ -408,7 +408,7 @@ export default function ResidentsPage() {
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="w-full rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 py-3 px-4 text-sm focus:ring-2 focus:ring-indigo-500 outline-none text-zinc-950 dark:text-zinc-50 appearance-none font-medium"
+            className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#111a2e] py-3 px-4 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-slate-900 dark:text-white cursor-pointer transition-all font-semibold"
           >
             <option value="Hepsi">Tüm durumlar</option>
             <option value="Onay Bekliyor">⚠️ Onay Bekleyenler {pendingCount > 0 ? `(${pendingCount})` : ""}</option>
@@ -419,17 +419,17 @@ export default function ResidentsPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200/60 dark:border-zinc-800/80 rounded-3xl overflow-hidden shadow-sm">
+      <div className="bg-white dark:bg-[#0d1424] border border-slate-200/80 dark:border-slate-800 rounded-3xl overflow-hidden shadow-xs">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm whitespace-nowrap">
-            <thead className="bg-zinc-50 dark:bg-zinc-950/50 border-b border-zinc-200/60 dark:border-zinc-800/80 text-zinc-500 font-semibold">
+            <thead className="bg-slate-50 dark:bg-[#111a2e] border-b border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 font-bold uppercase tracking-wider text-xs">
               <tr>
                 <th className="px-6 py-4 w-10">
                   <input
                     type="checkbox"
                     checked={selectedUsers.size === filteredResidents.length && filteredResidents.length > 0}
                     onChange={toggleAll}
-                    className="rounded border-zinc-300 dark:border-zinc-600 text-indigo-600 focus:ring-indigo-500"
+                    className="rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500"
                   />
                 </th>
                 <th className="px-6 py-4">Sakin</th>
@@ -439,49 +439,60 @@ export default function ResidentsPage() {
                 <th className="px-6 py-4 text-right">İşlem</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/60">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-zinc-400">
-                    Yükleniyor…
+                  <td colSpan={6} className="px-6 py-14 text-center text-slate-400">
+                    <div className="flex flex-col items-center justify-center gap-2">
+                      <RefreshCw className="h-6 w-6 animate-spin text-blue-500" />
+                      <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Sakin listesi yükleniyor…</span>
+                    </div>
                   </td>
                 </tr>
               ) : filteredResidents.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-10 text-center text-zinc-500">
-                    Gösterilecek sakin kullanıcı yok veya filtrelere takıldı.
+                  <td colSpan={6} className="px-6 py-14 text-center">
+                    <div className="flex flex-col items-center justify-center max-w-sm mx-auto">
+                      <div className="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-900/50 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-3">
+                        <Users className="h-6 w-6" />
+                      </div>
+                      <p className="text-base font-bold text-slate-900 dark:text-white">Gösterilecek Sakin Bulunamadı</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                        Arama kriterlerinize uygun sakin bulunamadı veya henüz bir sakin kaydı eklenmedi.
+                      </p>
+                    </div>
                   </td>
                 </tr>
               ) : (
                 filteredResidents.map((res) => (
-                  <tr key={res.id} className="hover:bg-zinc-50/30 dark:hover:bg-zinc-800/30 transition-colors">
+                  <tr key={res.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors">
                     <td className="px-6 py-4">
                       <input
                         type="checkbox"
                         checked={selectedUsers.has(res.id)}
                         onChange={() => toggleUser(res.id)}
-                        className="rounded border-zinc-300 dark:border-zinc-600 text-indigo-600 focus:ring-indigo-500"
+                        className="rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500"
                       />
                     </td>
-                    <td className="px-6 py-4 font-bold text-zinc-900 dark:text-zinc-100">
+                    <td className="px-6 py-4 font-bold text-slate-900 dark:text-white">
                       <div className="flex items-center gap-3">
-                        <div className="h-9 w-9 rounded-full bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/40 text-indigo-600 dark:text-indigo-300 flex items-center justify-center font-bold text-xs uppercase">
+                        <div className="h-9 w-9 rounded-full bg-blue-50 dark:bg-blue-950/50 border border-blue-100 dark:border-blue-900/40 text-blue-600 dark:text-sky-300 flex items-center justify-center font-bold text-xs uppercase">
                           {res.name.split(" ").map((n) => n[0]).join("").slice(0, 2)}
                         </div>
                         <div>
                           <span>{res.name}</span>
                           {res.emailOrPhone && (
-                            <span className="block text-[11px] font-normal text-zinc-500">{res.emailOrPhone}</span>
+                            <span className="block text-[11px] font-normal text-slate-500 dark:text-slate-400">{res.emailOrPhone}</span>
                           )}
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-zinc-600 dark:text-zinc-400 font-semibold">
+                    <td className="px-6 py-4 text-slate-700 dark:text-slate-300 font-semibold">
                       {res.blok} · {res.daire}
                     </td>
                     <td className="px-6 py-4 text-right font-black">
                       {res.status === "PENDING" ? (
-                        <span className="text-zinc-400 text-xs font-normal">—</span>
+                        <span className="text-slate-400 text-xs font-normal">—</span>
                       ) : res.borc > 0 ? (
                         <span className="text-rose-600 dark:text-rose-400">{res.borc.toLocaleString("tr-TR")} ₺</span>
                       ) : (
@@ -546,14 +557,14 @@ export default function ResidentsPage() {
 
         {/* Toplu aidat butonu */}
         {selectedUsers.size > 0 && (
-          <div className="px-6 py-4 border-t border-zinc-200/60 dark:border-zinc-800/80 bg-indigo-50/50 dark:bg-indigo-950/20 flex items-center justify-between">
-            <span className="text-sm font-semibold text-indigo-700 dark:text-indigo-300">
+          <div className="px-6 py-4 border-t border-slate-200/80 dark:border-slate-800 bg-blue-50/50 dark:bg-[#111a2e] flex items-center justify-between">
+            <span className="text-sm font-semibold text-blue-700 dark:text-sky-300">
               {selectedUsers.size} sakin seçildi
             </span>
             <button
               type="button"
               onClick={() => openModal()}
-              className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 px-4 py-2 text-sm font-bold text-white shadow-md"
+              className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 px-4 py-2 text-sm font-bold text-white shadow-md cursor-pointer"
             >
               <Plus className="h-4 w-4" />
               Seçilenlere Aidat Oluştur
@@ -566,17 +577,17 @@ export default function ResidentsPage() {
       {modalOpen && (
         <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => !submitting && setModalOpen(false)} />
-          <div className="relative w-full max-w-lg bg-white dark:bg-zinc-900 rounded-t-3xl sm:rounded-3xl shadow-2xl p-6 space-y-5 max-h-[85vh] overflow-y-auto">
+          <div className="relative w-full max-w-lg bg-white dark:bg-[#0d1424] border border-slate-200/80 dark:border-slate-800 rounded-t-3xl sm:rounded-3xl shadow-2xl p-6 space-y-5 max-h-[85vh] overflow-y-auto">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-black text-zinc-900 dark:text-zinc-50">
+              <h3 className="text-lg font-black text-slate-900 dark:text-white">
                 {bulkMode ? `${selectedUsers.size} Sakine Aidat Oluştur` : "Aidat Oluştur"}
               </h3>
               <button
                 type="button"
                 onClick={() => !submitting && setModalOpen(false)}
-                className="p-2 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
               >
-                <X className="h-5 w-5 text-zinc-400" />
+                <X className="h-5 w-5 text-slate-400" />
               </button>
             </div>
 
@@ -588,10 +599,10 @@ export default function ResidentsPage() {
                   return (
                     <span
                       key={uid}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 text-xs font-bold"
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-sky-300 text-xs font-bold border border-blue-200/80 dark:border-blue-900/50"
                     >
                       {r?.name || uid.slice(0, 8)}
-                      <button type="button" onClick={() => toggleUser(uid)} className="hover:text-red-500">
+                      <button type="button" onClick={() => toggleUser(uid)} className="hover:text-red-500 cursor-pointer">
                         <X className="h-3 w-3" />
                       </button>
                     </span>
@@ -602,7 +613,7 @@ export default function ResidentsPage() {
 
             {/* Tutar */}
             <div>
-              <label className="block text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">Tutar (₺)</label>
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Tutar (₺)</label>
               <input
                 type="number"
                 min="1"
@@ -610,17 +621,17 @@ export default function ResidentsPage() {
                 placeholder="Örn: 500"
                 value={form.amount}
                 onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))}
-                className="w-full rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 py-3 px-4 text-sm focus:ring-2 focus:ring-indigo-500 outline-none text-zinc-950 dark:text-zinc-50"
+                className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#111a2e] py-3 px-4 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-slate-900 dark:text-white placeholder:text-slate-400 transition"
               />
             </div>
 
             {/* Dönem */}
             <div>
-              <label className="block text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">Dönem</label>
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Dönem</label>
               <select
                 value={form.period}
                 onChange={(e) => setForm((f) => ({ ...f, period: e.target.value }))}
-                className="w-full rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/50 py-3 px-4 text-sm focus:ring-2 focus:ring-indigo-500 outline-none text-zinc-950 dark:text-zinc-50 appearance-none"
+                className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#111a2e] py-3 px-4 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-slate-900 dark:text-white cursor-pointer transition"
               >
                 {PERIOD_OPTIONS.map((p) => (
                   <option key={p} value={p}>{p}</option>
@@ -630,17 +641,17 @@ export default function ResidentsPage() {
 
             {/* Tür */}
             <div>
-              <label className="block text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-1.5">Tür</label>
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1.5">Tür</label>
               <div className="flex flex-wrap gap-2">
                 {PAYMENT_TYPES.map((t) => (
                   <button
                     key={t}
                     type="button"
                     onClick={() => setForm((f) => ({ ...f, type: t }))}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors ${
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
                       form.type === t
-                        ? "bg-indigo-600 text-white"
-                        : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700"
+                        ? "bg-blue-600 text-white"
+                        : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
                     }`}
                   >
                     {t}
@@ -650,12 +661,12 @@ export default function ResidentsPage() {
             </div>
 
             {/* Durum */}
-            <div className="flex items-center gap-3 p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50">
+            <div className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 dark:bg-[#111a2e] border border-slate-200/80 dark:border-slate-800">
               <button
                 type="button"
                 onClick={() => setForm((f) => ({ ...f, markPaid: !f.markPaid }))}
-                className={`relative h-6 w-11 rounded-full transition-colors ${
-                  form.markPaid ? "bg-emerald-500" : "bg-zinc-300 dark:bg-zinc-600"
+                className={`relative h-6 w-11 rounded-full transition-colors cursor-pointer ${
+                  form.markPaid ? "bg-emerald-500" : "bg-slate-300 dark:bg-slate-600"
                 }`}
               >
                 <span

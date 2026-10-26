@@ -237,34 +237,34 @@ export default function AdminResidentsAccountsPage() {
       </div>
 
       <section className="rounded-3xl bg-white dark:bg-zinc-900/60 border border-rose-100 dark:border-zinc-800 p-6 shadow-sm">
-        <h2 className="font-bold text-zinc-900 dark:text-zinc-50 mb-4">
+        <h2 className="font-bold text-slate-900 dark:text-white mb-4">
           {tab === "admins" ? "Yeni yönetici" : "Yeni sakin"}
         </h2>
         <form onSubmit={create} className="grid gap-4 sm:grid-cols-2">
           <div className="sm:col-span-2">
-            <label className="text-xs font-bold text-zinc-500 uppercase tracking-wide">Ad soyad</label>
+            <label className="text-xs font-bold text-slate-500 dark:text-slate-300 uppercase tracking-wide">Ad soyad</label>
             <input
-              className="mt-1 w-full rounded-2xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950 px-4 py-3"
+              className="mt-1 w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#111a2e] px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-blue-500 transition"
               value={nuName}
               onChange={(e) => setNuName(e.target.value)}
               required
             />
           </div>
           <div>
-            <label className="text-xs font-bold text-zinc-500 uppercase tracking-wide">E‑posta veya telefon</label>
+            <label className="text-xs font-bold text-slate-500 dark:text-slate-300 uppercase tracking-wide">E‑posta veya telefon</label>
             <input
-              className="mt-1 w-full rounded-2xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950 px-4 py-3"
+              className="mt-1 w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#111a2e] px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-blue-500 transition"
               value={nuLogin}
               onChange={(e) => setNuLogin(e.target.value)}
               required
             />
           </div>
           <div>
-            <label className="text-xs font-bold text-zinc-500 uppercase tracking-wide">Şifre</label>
+            <label className="text-xs font-bold text-slate-500 dark:text-slate-300 uppercase tracking-wide">Şifre</label>
             <div className="relative">
               <input
                 type={showNuPass ? "text" : "password"}
-                className="mt-1 w-full rounded-2xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950 pl-4 pr-11 py-3 text-sm focus:bg-white dark:focus:bg-zinc-900 transition outline-none"
+                className="mt-1 w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#111a2e] pl-4 pr-11 py-3 text-sm text-slate-900 dark:text-white focus:bg-white dark:focus:bg-[#090e1b] transition outline-none"
                 value={nuPass}
                 onChange={(e) => setNuPass(e.target.value)}
                 required
@@ -273,7 +273,7 @@ export default function AdminResidentsAccountsPage() {
               <button
                 type="button"
                 onClick={() => setShowNuPass(!showNuPass)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors focus:outline-none"
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors focus:outline-none"
                 tabIndex={-1}
                 aria-label={showNuPass ? "Şifreyi gizle" : "Şifreyi göster"}
                 title={showNuPass ? "Şifreyi gizle" : "Şifreyi göster"}
@@ -284,9 +284,9 @@ export default function AdminResidentsAccountsPage() {
           </div>
           {tab === "residents" && (
             <div className="sm:col-span-2">
-              <label className="text-xs font-bold text-zinc-500 uppercase tracking-wide">Daire (isteğe bağlı)</label>
+              <label className="text-xs font-bold text-slate-500 dark:text-slate-300 uppercase tracking-wide">Daire (isteğe bağlı)</label>
               <input
-                className="mt-1 w-full rounded-2xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950 px-4 py-3"
+                className="mt-1 w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#111a2e] px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-blue-500 transition"
                 value={nuApt}
                 onChange={(e) => setNuApt(e.target.value)}
                 placeholder="Örn: 5"
@@ -296,7 +296,7 @@ export default function AdminResidentsAccountsPage() {
           <div className="sm:col-span-2">
             <button
               type="submit"
-              className="px-6 py-3 rounded-2xl bg-rose-600 text-white text-sm font-bold hover:bg-rose-500 shadow-md shadow-rose-600/10"
+              className="px-6 py-3 rounded-2xl bg-blue-600 text-white text-sm font-bold hover:bg-blue-500 shadow-md shadow-blue-600/10 transition cursor-pointer"
             >
               {tab === "admins" ? "Yönetici ekle" : "Sakin ekle"}
             </button>
@@ -304,30 +304,30 @@ export default function AdminResidentsAccountsPage() {
         </form>
       </section>
 
-      <section className="rounded-3xl bg-white dark:bg-zinc-900/60 border border-rose-100 dark:border-zinc-800 overflow-hidden shadow-sm">
-        <div className="p-6 border-b border-zinc-100 dark:border-zinc-800">
-          <h2 className="font-bold text-zinc-900 dark:text-zinc-50">
+      <section className="rounded-3xl bg-white dark:bg-[#0d1424] border border-slate-200/80 dark:border-slate-800 overflow-hidden shadow-xs">
+        <div className="p-6 border-b border-slate-100 dark:border-slate-800">
+          <h2 className="font-bold text-slate-900 dark:text-white">
             {tab === "admins" ? "Yönetici kurulu" : "Kayıtlı sakinler"}
           </h2>
-          <p className="text-xs text-zinc-500 mt-1">{loading ? "Yükleniyor…" : `${visible.length} hesap`}</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{loading ? "Yükleniyor…" : `${visible.length} hesap`}</p>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <thead className="bg-zinc-50 dark:bg-zinc-950">
-              <tr className="text-xs uppercase text-zinc-500 border-b border-zinc-100 dark:border-zinc-800">
+            <thead className="bg-slate-50 dark:bg-[#111a2e]">
+              <tr className="text-xs uppercase text-slate-700 dark:text-slate-200 font-bold border-b border-slate-200 dark:border-slate-800">
                 <th className="py-3 px-4 font-semibold">İsim</th>
                 <th className="py-3 px-4 font-semibold">Oturum</th>
                 {tab === "residents" && <th className="py-3 px-4 font-semibold">Daire</th>}
                 <th className="py-3 px-4 font-semibold text-right">İşlem</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {visible.map((u) => (
                 <tr
                   key={u.id}
-                  className="border-b border-zinc-50 dark:border-zinc-900 hover:bg-rose-50/30 dark:hover:bg-zinc-800/40"
+                  className="hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors"
                 >
-                  <td className="py-3 px-4 font-medium text-zinc-900 dark:text-zinc-50">
+                  <td className="py-3 px-4 font-medium text-slate-900 dark:text-white">
                     {u.name}
                     {u.id === selfId && (
                       <span className="ml-2 text-[10px] font-bold text-rose-600">(siz)</span>

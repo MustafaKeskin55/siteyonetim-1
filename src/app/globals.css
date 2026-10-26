@@ -91,6 +91,94 @@ html:not(.dark) .shadow-xl {
   box-shadow: 0 10px 25px -3px rgba(15, 23, 42, 0.1), 0 4px 10px -2px rgba(15, 23, 42, 0.05);
 }
 
+/* ═══════════════ DARK MODE TACTILE CONTRAST & ANTI-SLOP SYSTEM ═══════════════ */
+/* Koyu renk üstüne koyu renk boğulmasını önleyen, kristal netliğinde kontrast standartları */
+
+/* Kart ve Panel Kenarlıkları: Siyah delik görünümünü engelle, belirgin ve net çerçeve ver */
+html.dark [class*="border-slate-800"],
+html.dark [class*="border-zinc-800"],
+html.dark [class*="border-slate-900"],
+html.dark [class*="border-zinc-900"] {
+  border-color: #202b42 !important; /* Slate-800: net, canlı sınır */
+}
+
+html.dark [class*="border-slate-700"],
+html.dark [class*="border-zinc-700"] {
+  border-color: #334366 !important; /* Slate-700 */
+}
+
+/* Bölücüler ve Divider Çizgileri */
+html.dark [class*="divide-slate-"] > :not([hidden]) ~ :not([hidden]),
+html.dark [class*="divide-zinc-"] > :not([hidden]) ~ :not([hidden]) {
+  border-color: #1e293b !important;
+}
+
+/* Koyu Mod Form Elemanları (Input, Select, Textarea) - Asla zifiri karanlık kuyuya gömülmez */
+html.dark input:not([type="checkbox"]):not([type="radio"]),
+html.dark select,
+html.dark textarea {
+  background-color: #0f172a !important;
+  border-color: #27354f !important;
+  color: #f8fafc !important;
+}
+
+html.dark input:not([type="checkbox"]):not([type="radio"]):focus,
+html.dark select:focus,
+html.dark textarea:focus {
+  background-color: #111e38 !important;
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25) !important;
+}
+
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+  color: #94a3b8 !important; /* Slate-400: rahatça okunabilir açık ton */
+}
+
+/* Tablo Başlıkları (thead) - Koyu modda silikleşmeyi önle, editoryal netlik kat */
+html.dark thead,
+html.dark thead tr {
+  background-color: #111a2e !important;
+  border-color: #1e293b !important;
+}
+
+html.dark thead th {
+  color: #e2e8f0 !important; /* Slate-200: tertemiz, yüksek kontrastlı başlık */
+  font-weight: 700 !important;
+  border-color: #1e293b !important;
+}
+
+html.dark tbody tr {
+  border-color: #1e293b !important;
+}
+
+html.dark tbody tr:hover {
+  background-color: rgba(30, 41, 59, 0.45) !important;
+}
+
+/* Koyu modda okunaksız kalan gri metinleri ferahlat */
+html.dark .text-zinc-500,
+html.dark .text-slate-500,
+html.dark .text-gray-500 {
+  color: #94a3b8 !important; /* Slate-400: rahatça okunabilen kontrast */
+}
+
+html.dark .text-zinc-400,
+html.dark .text-slate-400,
+html.dark .text-gray-400 {
+  color: #cbd5e1 !important; /* Slate-300 */
+}
+
+/* Çamurlu zinc-900 ve zinc-950 arka planlarını asil, aydınlık lacivert-slate yüzeye dönüştür */
+html.dark [class*="bg-zinc-900"] {
+  background-color: #0d1424 !important;
+}
+
+html.dark [class*="bg-zinc-950"] {
+  background-color: #090e1b !important;
+}
+
+
 /* ═══════════════ PWA NATIVE FEEL ═══════════════ */
 
 /* Standalone modda (uygulama gibi açıldığında) safe area padding */
