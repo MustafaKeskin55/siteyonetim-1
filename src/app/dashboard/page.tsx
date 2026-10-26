@@ -404,67 +404,59 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 dark:bg-[#070b14] text-slate-900 dark:text-slate-100 transition-colors">
-      
-      {/* ══════════════════════════════════════════════════════════
-          TOP GREETING & BUILDING IDENTITY BAR
-      ══════════════════════════════════════════════════════════ */}
-      {/* ══════════════════════════════════════════════════════════
-          TOP GREETING & BUILDING IDENTITY BAR
-      ══════════════════════════════════════════════════════════ */}
-      <div className="border-b-2 border-slate-300 dark:border-slate-800 bg-white dark:bg-[#0b101d] sticky top-0 z-30 shadow-xs">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="h-10 w-10 rounded-2xl bg-blue-600 text-white flex items-center justify-center font-black text-sm shadow-sm shrink-0">
-              D.{apartmentNo}
+    <div className="text-slate-900 dark:text-slate-100 transition-colors">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-6 pb-20">
+
+        {/* ══════════════════════════════════════════════════════════
+            TOP GREETING & RESIDENT IDENTITY CARD
+        ══════════════════════════════════════════════════════════ */}
+        <div className="bg-white dark:bg-[#0d1424] rounded-3xl p-5 sm:p-6 border-2 border-slate-300 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors">
+          <div className="flex items-center gap-3.5 min-w-0">
+            <div className="h-12 w-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-black text-sm shadow-sm shrink-0">
+              {apartmentNo ? `D.${apartmentNo}` : "YNT"}
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white truncate">
+                <h1 className="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white truncate">
                   {residentName}
                 </h1>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/80 text-blue-700 dark:text-sky-400 border border-blue-200 dark:border-blue-800 shrink-0">
-                  Daire {apartmentNo}
+                <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/80 text-blue-700 dark:text-sky-400 border border-blue-200 dark:border-blue-800 shrink-0">
+                  {apartmentNo ? `Daire ${apartmentNo}` : "Site Yönetimi"}
                 </span>
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-0.5 flex-wrap">
-                <span className="inline-flex items-center gap-1">
-                  <Building2 className="h-3 w-3 text-slate-400 shrink-0" />
+              <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2 mt-1 flex-wrap">
+                <span className="inline-flex items-center gap-1 font-medium">
+                  <Building2 className="h-3.5 w-3.5 text-slate-400 shrink-0" />
                   <span className="truncate">{siteName}</span>
                 </span>
                 <span>•</span>
                 <span className="text-emerald-700 dark:text-emerald-400 font-semibold flex items-center gap-1 shrink-0">
-                  <ShieldCheck className="h-3 w-3 shrink-0" /> Telefonunuz Saklı (KVKK)
+                  <ShieldCheck className="h-3.5 w-3.5 shrink-0" /> Telefonunuz Saklı (KVKK Korumalı)
                 </span>
               </p>
             </div>
           </div>
 
           {/* Quick Badges */}
-          <div className="flex items-center gap-2 text-xs shrink-0 flex-wrap">
-            <div className={`px-3 py-1.5 rounded-xl border font-bold flex items-center gap-1.5 ${
+          <div className="flex items-center gap-2.5 text-xs shrink-0 flex-wrap">
+            <div className={`px-3.5 py-2 rounded-xl border font-bold flex items-center gap-1.5 ${
               balance > 0 
                 ? "bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-700" 
                 : "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700"
             }`}>
               <CreditCard className="h-3.5 w-3.5 shrink-0" />
-              <span>{balance > 0 ? `₺${balance.toLocaleString("tr-TR")} Borç` : "Borç Yok"}</span>
+              <span>{balance > 0 ? `₺${balance.toLocaleString("tr-TR")} Borç` : "Aidat Borcu Yok"}</span>
             </div>
 
             <Link
               href="/dashboard/topluluk"
-              className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition-all shadow-xs flex items-center gap-1.5 shrink-0"
+              className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition-all shadow-xs flex items-center gap-1.5 shrink-0 cursor-pointer"
             >
               <MessagesSquare className="h-3.5 w-3.5 shrink-0" />
               <span>Komşu Sohbeti</span>
             </Link>
           </div>
-
         </div>
-      </div>
-
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-6 pb-20">
 
         {/* ══════════════════════════════════════════════════════════
             1. LIVE STORIES CAROUSEL (SOSYAL HİKAYELER)

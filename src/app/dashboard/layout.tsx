@@ -16,6 +16,7 @@ import {
   Bell,
   Vote,
   ChevronLeft,
+  ShieldCheck,
 } from "lucide-react";
 import { SiteFrozenBarrier } from "@/components/SiteFrozenBarrier";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -30,6 +31,7 @@ export default function DashboardLayout({
   const [collapsed, setCollapsed] = React.useState(false);
   const [asideName, setAsideName] = React.useState("Sakin");
   const [asideMeta, setAsideMeta] = React.useState("");
+  const [userRole, setUserRole] = React.useState<string | null>(null);
   const [sitePlan, setSitePlan] = React.useState<{
     isFrozen?: boolean;
     planName?: string;
@@ -49,10 +51,16 @@ export default function DashboardLayout({
     try {
       const raw = localStorage.getItem("user");
       if (raw) {
-        const u = JSON.parse(raw) as { name?: string; apartmentNo?: string | null };
+        const u = JSON.parse(raw) as { name?: string; apartmentNo?: string | null; role?: string };
         if (typeof u.name === "string" && u.name.trim()) setAsideName(u.name.trim());
+        const role = typeof u.role === "string" ? u.role : null;
+        setUserRole(role);
         const apt = typeof u.apartmentNo === "string" ? u.apartmentNo.trim() : "";
-        setAsideMeta(apt ? `Daire ${apt}` : "Kayıtlı sakin");
+        if (role === "ADMIN" || role === "SUPER_ADMIN") {
+          setAsideMeta(apt ? `Daire ${apt} (Yönetici)` : "Site Yöneticisi");
+        } else {
+          setAsideMeta(apt ? `Daire ${apt}` : "Kayıtlı sakin");
+        }
       } else {
         const demoUser = {
           id: "demo-sakin-1",
@@ -88,7 +96,7 @@ export default function DashboardLayout({
 
       {/* ══════ DESKTOP SIDEBAR (MATCHING ADMIN PANEL 1:1) ══════ */}
       <aside
-        className={`hidden lg:flex flex-col shrink-0 h-full transition-all duration-300 ease-in-out relative ${
+        className={`hidden lg:flex flex-col shrink-0 h-full transition-all duration-300 ease-in-out relative z-20 ${
           collapsed ? "w-[72px]" : "w-[260px]"
         } bg-white dark:bg-[#090e1b] border-r border-slate-200/80 dark:border-slate-800`}
       >
@@ -102,25 +110,6 @@ export default function DashboardLayout({
             </div>
           )}
         </div>
-
-        {/* User Card */}
-        {collapsed ? (
-          <div className="py-2.5 border-b border-slate-100 dark:border-slate-800/80 flex justify-center shrink-0" title={`${asideName} (${asideMeta})`}>
-            <div className="h-8 w-8 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-sky-400 flex items-center justify-center border border-blue-200 dark:border-blue-900/40 text-xs font-bold shrink-0">
-              {asideName.charAt(0).toUpperCase()}
-            </div>
-          </div>
-        ) : (
-          <div className="px-3.5 py-2.5 mx-3 my-2 rounded-xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/80 flex items-center gap-2.5 shrink-0">
-            <div className="h-8 w-8 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-sky-400 flex items-center justify-center border border-blue-200 dark:border-blue-900/40 text-xs font-bold shrink-0">
-              {asideName.charAt(0).toUpperCase()}
-            </div>
-            <div className="min-w-0">
-              <p className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">{asideName}</p>
-              <p className="text-[11px] font-semibold text-blue-600 dark:text-sky-400 truncate">{asideMeta}</p>
-            </div>
-          </div>
-        )}
 
         {/* Nav Links */}
         <nav className="flex-1 overflow-y-auto py-3 px-3 space-y-1">
@@ -146,8 +135,41 @@ export default function DashboardLayout({
           })}
         </nav>
 
-        {/* Bottom Actions */}
-        <div className="border-t border-slate-100 dark:border-slate-800 p-3 space-y-1 shrink-0">
+        {/* Bottom Actions & User Profile */}
+        <div className="border-t border-slate-100 dark:border-slate-800 p-3 space-y-2 shrink-0">
+          {/* User Profile Card */}
+          <div
+            className={`flex items-center gap-2.5 px-2.5 py-2 rounded-xl bg-slate-50/70 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/80 ${
+              collapsed ? "justify-center" : ""
+            }`}
+            title={`${asideName} (${asideMeta})`}
+          >
+            <div className="h-8 w-8 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-sky-400 flex items-center justify-center border border-blue-200 dark:border-blue-900/40 text-xs font-bold shrink-0">
+              {asideName.charAt(0).toUpperCase()}
+            </div>
+            {!collapsed && (
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">{asideName}</p>
+                <p className="text-[11px] font-semibold text-blue-600 dark:text-sky-400 truncate">{asideMeta}</p>
+              </div>
+            )}
+          </div>
+
+          {/* Quick Switch to Admin Panel if User is Manager/Admin */}
+          {userRole && (userRole === "ADMIN" || userRole === "SUPER_ADMIN") && (
+            <Link
+              href="/admin"
+              className={`flex items-center gap-2.5 px-3 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs shadow-xs transition-all ${
+                collapsed ? "justify-center" : ""
+              }`}
+              title="Yönetim Paneline Geç"
+            >
+              <ShieldCheck className="h-4 w-4 shrink-0" />
+              {!collapsed && <span>Yönetim Paneli &rarr;</span>}
+            </Link>
+          )}
+
+          {/* Logout Button */}
           <button
             type="button"
             onClick={async () => {
@@ -155,21 +177,21 @@ export default function DashboardLayout({
               localStorage.removeItem("user");
               localStorage.removeItem("token");
               window.dispatchEvent(new Event("auth-state-change"));
-              router.push("/");
+              window.location.href = "/";
             }}
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-500 dark:text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors w-full cursor-pointer ${collapsed ? "justify-center" : ""}`}
+            className={`flex items-center gap-3 px-3 py-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors w-full cursor-pointer ${collapsed ? "justify-center" : ""}`}
             title={collapsed ? "Çıkış Yap" : undefined}
           >
-            <LogOut className="h-5 w-5 shrink-0" />
-            {!collapsed && <span className="text-sm font-semibold">Çıkış Yap</span>}
+            <LogOut className="h-4.5 w-4.5 shrink-0" />
+            {!collapsed && <span className="text-xs font-semibold">Çıkış Yap</span>}
           </button>
         </div>
 
-        {/* Collapse toggle button on right edge */}
+        {/* Floating Collapse Toggle Button on Right Edge */}
         <button
           type="button"
           onClick={() => setCollapsed((v) => !v)}
-          className="absolute -right-3 top-20 z-10 hidden lg:flex h-6 w-6 items-center justify-center rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white shadow-xs hover:scale-110 transition-all cursor-pointer"
+          className="absolute -right-3 top-20 z-30 hidden lg:flex h-6 w-6 items-center justify-center rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white shadow-md hover:scale-110 transition-all cursor-pointer"
           aria-label={collapsed ? "Genişlet" : "Daralt"}
         >
           <ChevronLeft className={`h-3.5 w-3.5 transition-transform duration-200 ${collapsed ? "rotate-180" : ""}`} />
@@ -187,6 +209,15 @@ export default function DashboardLayout({
               <span className="h-2 w-2 rounded-full bg-blue-600 animate-pulse" />
               {asideName} &bull; {asideMeta}
             </span>
+            {userRole && (userRole === "ADMIN" || userRole === "SUPER_ADMIN") && (
+              <Link
+                href="/admin"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
+              >
+                <ShieldCheck className="h-3.5 w-3.5" />
+                <span>Yönetici Paneline Geç &rarr;</span>
+              </Link>
+            )}
           </div>
           <div className="flex items-center gap-3">
             <ThemeToggle />
@@ -207,6 +238,14 @@ export default function DashboardLayout({
             <span className="text-sm font-bold text-slate-900 dark:text-white truncate">Sakin Paneli</span>
           </div>
           <div className="flex items-center gap-2 shrink-0">
+            {userRole && (userRole === "ADMIN" || userRole === "SUPER_ADMIN") && (
+              <Link
+                href="/admin"
+                className="px-2.5 py-1 rounded-lg bg-blue-600 text-white text-[11px] font-bold"
+              >
+                Yönetim
+              </Link>
+            )}
             <ThemeToggle />
             <NotificationBell role="USER" align="right" />
             <button
@@ -214,7 +253,7 @@ export default function DashboardLayout({
               onClick={async () => {
                 try { await fetch("/api/auth/logout", { method: "POST", credentials: "include" }); } catch {}
                 localStorage.removeItem("user");
-                router.push("/");
+                window.location.href = "/";
               }}
               className="p-1.5 rounded-xl text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer"
               title="Çıkış Yap"

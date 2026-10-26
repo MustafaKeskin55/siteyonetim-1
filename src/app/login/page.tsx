@@ -54,9 +54,9 @@ export default function LoginPage() {
               return;
             }
             if (data.user.role === "SUPER_ADMIN" || data.user.role === "ADMIN") {
-              router.push("/admin");
+              window.location.href = "/admin";
             } else {
-              router.push("/dashboard");
+              window.location.href = "/dashboard";
             }
             return;
           }
@@ -151,12 +151,9 @@ export default function LoginPage() {
         return;
       }
 
-      if (ok.user.role === "SUPER_ADMIN" || ok.user.role === "ADMIN") {
-        router.push("/admin");
-      } else {
-        router.push("/dashboard");
-      }
-      setLoading(false);
+      const targetUrl =
+        ok.user.role === "SUPER_ADMIN" || ok.user.role === "ADMIN" ? "/admin" : "/dashboard";
+      window.location.href = targetUrl;
     } catch (error) {
       const isNetwork = error instanceof TypeError && /fetch|network|Failed to fetch/i.test(error.message);
       const base = getBrowserApiBase();
