@@ -80,15 +80,18 @@ type PostBody = {
 
 export async function POST(request: Request) {
   const session = await getSession();
-  if (!session || session.role !== "USER") return forbidden();
+  if (!session) return forbidden();
+  if (session.role !== "USER" && session.role !== "ADMIN" && session.role !== "SUPER_ADMIN") {
+    return forbidden();
+  }
 
   const d = await acquireDatabase();
   if (!d.ok) return await databaseUnavailable();
 
+  if (!session.siteId) return forbiddenScope();
+
   const featureCheck = await requireFeature(d.db, session.siteId, "requests");
   if (featureCheck) return featureCheck;
-
-  if (!session.siteId) return forbiddenScope();
 
   let raw: PostBody;
   try {
@@ -128,13 +131,14 @@ export async function POST(request: Request) {
     const row = await d.db.select().from(residentRequests).where(eq(residentRequests.id, id)).limit(1);
     const mapped = row[0] ? dbRequestToClient(row[0]) : null;
 
-    // Site yöneticisine bildirim gönder
+    // Site yöneticisine bildirim gönder (kendi oluşturmadıysa)
     try {
       const admins = await d.db
         .select({ id: users.id })
         .from(users)
         .where(and(eq(users.siteId, session.siteId), eq(users.role, "ADMIN")));
       for (const admin of admins) {
+        if (admin.id === session.id) continue;
         await createNotification(d.db, {
           userId: admin.id,
           title: `Yeni Talep: ${subject}`,

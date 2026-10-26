@@ -48,24 +48,58 @@ export default function ResidentRequestsPage() {
     void reload();
   }, []);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 3 * 1024 * 1024) {
-      void showAlert({ message: "Fotoğraf en fazla 3MB olabilir.", variant: "error" });
+    if (file.size > 8 * 1024 * 1024) {
+      void showAlert({ message: "Fotoğraf en fazla 8MB olabilir.", variant: "error" });
       return;
     }
     setUploadingImage(true);
-    const reader = new FileReader();
-    reader.onload = () => {
-      setImageUrl(reader.result as string);
+    try {
+      // Otomatik olarak görseli optimize et (maks 1200px, hafif JPEG)
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const img = new Image();
+        img.src = ev.target?.result as string;
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          let width = img.width;
+          let height = img.height;
+          const maxDim = 1200;
+          if (width > maxDim || height > maxDim) {
+            if (width > height) {
+              height = Math.round((height * maxDim) / width);
+              width = maxDim;
+            } else {
+              width = Math.round((width * maxDim) / height);
+              height = maxDim;
+            }
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, width, height);
+            setImageUrl(canvas.toDataURL("image/jpeg", 0.8));
+          } else {
+            setImageUrl(img.src);
+          }
+          setUploadingImage(false);
+        };
+        img.onerror = () => {
+          setImageUrl(ev.target?.result as string);
+          setUploadingImage(false);
+        };
+      };
+      reader.onerror = () => {
+        setUploadingImage(false);
+        void showAlert({ message: "Görsel okunamadı.", variant: "error" });
+      };
+      reader.readAsDataURL(file);
+    } catch {
       setUploadingImage(false);
-    };
-    reader.onerror = () => {
-      setUploadingImage(false);
-      void showAlert({ message: "Görsel okunamadı.", variant: "error" });
-    };
-    reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -85,8 +119,13 @@ export default function ResidentRequestsPage() {
           imageUrl: imageUrl || null,
         }),
       });
+      const data = (await res.json().catch(() => null)) as { error?: string; success?: boolean } | null;
       if (!res.ok) {
-        await showAlert({ message: "Talep gönderilemedi.", variant: "error" });
+        await showAlert({
+          title: "Hata",
+          message: data?.error || "Talep gönderilemedi. Lütfen bilgilerinizi kontrol edin.",
+          variant: "error",
+        });
         return;
       }
 
@@ -97,6 +136,8 @@ export default function ResidentRequestsPage() {
       setShowForm(false);
       await reload();
       await showAlert({ message: "Talebiniz yönetime başarıyla iletildi.", variant: "success" });
+    } catch {
+      await showAlert({ title: "Hata", message: "Sunucuya bağlanırken bir sorun oluştu.", variant: "error" });
     } finally {
       setSubmitting(false);
     }
