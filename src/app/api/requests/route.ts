@@ -33,14 +33,34 @@ export async function GET(request: Request) {
   try {
     const order = desc(residentRequests.createdAt);
 
+    const selectFields = {
+      id: residentRequests.id,
+      userId: residentRequests.userId,
+      siteId: residentRequests.siteId,
+      subject: residentRequests.subject,
+      description: residentRequests.description,
+      category: residentRequests.category,
+      imageUrl: residentRequests.imageUrl,
+      status: residentRequests.status,
+      resolutionNote: residentRequests.resolutionNote,
+      resolutionImageUrl: residentRequests.resolutionImageUrl,
+      rejectedNote: residentRequests.rejectedNote,
+      rejectedImageUrl: residentRequests.rejectedImageUrl,
+      createdAt: residentRequests.createdAt,
+      userName: users.name,
+      userEmailOrPhone: users.emailOrPhone,
+      apartmentNo: users.apartmentNo,
+    };
+
     if (session.role === "SUPER_ADMIN") {
       const sid = siteHint?.trim();
       if (!sid) {
         return NextResponse.json([]);
       }
       const rows = await d.db
-        .select()
+        .select(selectFields)
         .from(residentRequests)
+        .leftJoin(users, eq(residentRequests.userId, users.id))
         .where(eq(residentRequests.siteId, sid))
         .orderBy(order);
       return NextResponse.json(rows.map(dbRequestToClient) satisfies ClientRequestItem[]);
@@ -49,8 +69,9 @@ export async function GET(request: Request) {
     if (session.role === "ADMIN") {
       if (!session.siteId) return forbiddenScope();
       const rows = await d.db
-        .select()
+        .select(selectFields)
         .from(residentRequests)
+        .leftJoin(users, eq(residentRequests.userId, users.id))
         .where(eq(residentRequests.siteId, session.siteId))
         .orderBy(order);
       return NextResponse.json(rows.map(dbRequestToClient));
@@ -58,8 +79,9 @@ export async function GET(request: Request) {
 
     if (session.role === "USER") {
       const rows = await d.db
-        .select()
+        .select(selectFields)
         .from(residentRequests)
+        .leftJoin(users, eq(residentRequests.userId, users.id))
         .where(eq(residentRequests.userId, session.id))
         .orderBy(order);
       return NextResponse.json(rows.map(dbRequestToClient));

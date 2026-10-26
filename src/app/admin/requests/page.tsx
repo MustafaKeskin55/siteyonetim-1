@@ -1,7 +1,21 @@
 "use client";
 
 import * as React from "react";
-import { Wrench, Clock, AlertCircle, CheckCircle2, XCircle, Search, X, ImageIcon } from "lucide-react";
+import {
+  Wrench,
+  Clock,
+  AlertCircle,
+  CheckCircle2,
+  XCircle,
+  Search,
+  X,
+  ImageIcon,
+  User,
+  Home,
+  Phone,
+  Eye,
+  ExternalLink,
+} from "lucide-react";
 import { useAlert } from "@/components/ModalProvider";
 
 interface RequestItem {
@@ -16,6 +30,9 @@ interface RequestItem {
   resolutionImageUrl?: string | null;
   rejectedNote?: string | null;
   rejectedImageUrl?: string | null;
+  userName?: string | null;
+  userPhone?: string | null;
+  apartmentNo?: string | null;
 }
 
 export default function AdminRequestsPage() {
@@ -25,7 +42,10 @@ export default function AdminRequestsPage() {
   const [filterStatus, setFilterStatus] = React.useState("Hepsi");
   const [loadErr, setLoadErr] = React.useState("");
 
-  // Modal state
+  // Detail modal state
+  const [detailRequest, setDetailRequest] = React.useState<RequestItem | null>(null);
+
+  // Status note modal state
   const [modalOpen, setModalOpen] = React.useState(false);
   const [modalType, setModalType] = React.useState<"Çözüldü" | "Reddedildi">("Çözüldü");
   const [modalRequestId, setModalRequestId] = React.useState("");
@@ -138,8 +158,12 @@ export default function AdminRequestsPage() {
     }
   };
 
-  const filtered = requests.filter(r => {
-    const matchSearch = r.title.toLowerCase().includes(search.toLowerCase()) || r.id.toLowerCase().includes(search.toLowerCase());
+  const filtered = requests.filter((r) => {
+    const matchSearch =
+      r.title.toLowerCase().includes(search.toLowerCase()) ||
+      r.id.toLowerCase().includes(search.toLowerCase()) ||
+      (r.userName && r.userName.toLowerCase().includes(search.toLowerCase())) ||
+      (r.apartmentNo && r.apartmentNo.includes(search));
     const matchStatus = filterStatus === "Hepsi" || r.status === filterStatus;
     return matchSearch && matchStatus;
   });
@@ -150,7 +174,7 @@ export default function AdminRequestsPage() {
       {/* Header */}
       <div>
         <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">Arıza &amp; Talepler</h2>
-        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Sakinlerden gelen bildirimleri takip edin, çözüm veya red notu ekleyin.</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Sakinlerden gelen bildirimleri takip edin, detayı inceleyin, çözüm veya red notu ekleyin.</p>
         {loadErr && <p className="text-sm text-rose-600 dark:text-rose-400 mt-2 font-semibold">{loadErr}</p>}
       </div>
 
@@ -159,7 +183,7 @@ export default function AdminRequestsPage() {
         <div className="relative md:col-span-2">
           <input 
             type="text" 
-            placeholder="Talep adı veya ID ara..." 
+            placeholder="Talep başlığı, sakin adı veya daire no ara..." 
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#090e1b] py-3 pl-10 pr-4 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 outline-none text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-all"
@@ -195,37 +219,32 @@ export default function AdminRequestsPage() {
           filtered.map((req) => (
             <div 
               key={req.id} 
-              className="bg-white dark:bg-[#0d1424] border border-slate-200/80 dark:border-slate-800 rounded-3xl overflow-hidden shadow-xs hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-200"
+              onClick={() => setDetailRequest(req)}
+              className="bg-white dark:bg-[#0d1424] border border-slate-200/80 dark:border-slate-800 rounded-3xl overflow-hidden shadow-xs hover:border-blue-500/60 dark:hover:border-blue-600 transition-all duration-200 cursor-pointer group"
             >
-              {/* Resolution/Rejection Note */}
+              {/* Resolution/Rejection Note Banner */}
               {req.status === "Çözüldü" && req.resolutionNote && (
-                <div className="px-6 py-3.5 bg-emerald-50 dark:bg-emerald-950/30 border-b border-emerald-100 dark:border-emerald-900/40">
-                  <p className="text-xs font-bold text-emerald-800 dark:text-emerald-300 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                <div className="px-6 py-3 bg-emerald-50 dark:bg-emerald-950/30 border-b border-emerald-100 dark:border-emerald-900/40">
+                  <p className="text-xs font-bold text-emerald-800 dark:text-emerald-300 uppercase tracking-wider mb-0.5 flex items-center gap-1.5">
                     <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
                     Çözüm Notu
                   </p>
-                  <p className="text-sm text-emerald-950 dark:text-emerald-200 leading-relaxed">{req.resolutionNote}</p>
-                  {req.resolutionImageUrl && (
-                    <img src={req.resolutionImageUrl} alt="Çözüm görseli" className="mt-2.5 max-h-36 rounded-xl object-cover border border-emerald-200 dark:border-emerald-800" />
-                  )}
+                  <p className="text-sm text-emerald-950 dark:text-emerald-200 line-clamp-1">{req.resolutionNote}</p>
                 </div>
               )}
               {req.status === "Reddedildi" && req.rejectedNote && (
-                <div className="px-6 py-3.5 bg-rose-50 dark:bg-rose-950/30 border-b border-rose-100 dark:border-rose-900/40">
-                  <p className="text-xs font-bold text-rose-800 dark:text-rose-300 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                <div className="px-6 py-3 bg-rose-50 dark:bg-rose-950/30 border-b border-rose-100 dark:border-rose-900/40">
+                  <p className="text-xs font-bold text-rose-800 dark:text-rose-300 uppercase tracking-wider mb-0.5 flex items-center gap-1.5">
                     <XCircle className="h-3.5 w-3.5 text-rose-600 dark:text-rose-400" />
                     Red Nedeni
                   </p>
-                  <p className="text-sm text-rose-950 dark:text-rose-200 leading-relaxed">{req.rejectedNote}</p>
-                  {req.rejectedImageUrl && (
-                    <img src={req.rejectedImageUrl} alt="Red görseli" className="mt-2.5 max-h-36 rounded-xl object-cover border border-rose-200 dark:border-rose-800" />
-                  )}
+                  <p className="text-sm text-rose-950 dark:text-rose-200 line-clamp-1">{req.rejectedNote}</p>
                 </div>
               )}
 
               <div className="p-6 flex flex-col md:flex-row justify-between gap-6">
                 <div className="flex gap-4">
-                  <div className="bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 p-3.5 rounded-2xl shrink-0 border border-blue-100 dark:border-blue-900/30 h-fit">
+                  <div className="bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 p-3.5 rounded-2xl shrink-0 border border-blue-100 dark:border-blue-900/30 h-fit group-hover:scale-105 transition-transform">
                     <Wrench className="h-6 w-6" />
                   </div>
                   <div>
@@ -234,25 +253,30 @@ export default function AdminRequestsPage() {
                       <span className="text-[10px] px-2.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold uppercase tracking-wider">
                         {req.category}
                       </span>
+                      {req.userName && (
+                        <span className="inline-flex items-center gap-1 text-[11px] font-bold text-blue-700 dark:text-sky-300 bg-blue-50 dark:bg-blue-950/50 border border-blue-200/80 dark:border-blue-900/40 px-2.5 py-0.5 rounded-full">
+                          <User className="h-3 w-3" />
+                          {req.userName}
+                          {req.apartmentNo ? ` (D. ${req.apartmentNo})` : ""}
+                        </span>
+                      )}
                       <span className="text-xs text-slate-500 dark:text-slate-400">{req.date}</span>
                     </div>
-                    <h4 className="font-extrabold text-lg text-slate-900 dark:text-white mt-1.5">{req.title}</h4>
-                    <p className="text-slate-600 dark:text-slate-300 text-sm mt-1 leading-relaxed max-w-xl">{req.description}</p>
 
-                    {/* Sakin Tarafından Eklenen Arıza Görseli */}
+                    <h4 className="font-extrabold text-lg text-slate-900 dark:text-white mt-1.5 group-hover:text-blue-600 dark:group-hover:text-sky-400 transition-colors">
+                      {req.title}
+                    </h4>
+                    <p className="text-slate-600 dark:text-slate-300 text-sm mt-1 leading-relaxed max-w-xl line-clamp-2">
+                      {req.description}
+                    </p>
+
+                    {/* Sakin Tarafından Eklenen Arıza Görseli Önizleme */}
                     {req.imageUrl && (
-                      <div className="mt-3.5">
-                        <p className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                      <div className="mt-3">
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300">
                           <ImageIcon className="h-3.5 w-3.5 text-blue-600 dark:text-sky-400" />
-                          Sakinin Eklediği Arıza Görseli:
-                        </p>
-                        <img
-                          src={req.imageUrl}
-                          alt="Arıza görseli"
-                          className="max-h-48 rounded-2xl object-cover border border-slate-200 dark:border-slate-800 shadow-xs cursor-pointer hover:opacity-95 transition"
-                          onClick={() => window.open(req.imageUrl!, "_blank")}
-                          title="Büyük boyutta açmak için tıklayın"
-                        />
+                          <span>Fotoğraf Eklendi (Büyütmek için tıklayın)</span>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -266,10 +290,25 @@ export default function AdminRequestsPage() {
                   </div>
                   
                   <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDetailRequest(req);
+                      }}
+                      className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-blue-600 dark:text-sky-400 bg-blue-50/70 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/50 border border-blue-200/70 dark:border-blue-900/40 rounded-xl transition cursor-pointer"
+                    >
+                      <Eye className="h-3.5 w-3.5" />
+                      <span>Detay</span>
+                    </button>
+
                     {req.status !== "Bekliyor" && (
                       <button 
                         type="button"
-                        onClick={() => void updateStatus(req.id, "Bekliyor")}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          void updateStatus(req.id, "Bekliyor");
+                        }}
                         className="px-2.5 py-1.5 text-xs font-bold rounded-xl border border-amber-300 text-amber-800 bg-amber-50 hover:bg-amber-100 dark:border-amber-700/60 dark:text-amber-300 dark:bg-amber-950/40 dark:hover:bg-amber-900/50 transition-colors cursor-pointer"
                       >
                         Beklet
@@ -278,7 +317,10 @@ export default function AdminRequestsPage() {
                     {req.status !== "İşlemde" && (
                       <button 
                         type="button"
-                        onClick={() => void updateStatus(req.id, "İşlemde")}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          void updateStatus(req.id, "İşlemde");
+                        }}
                         className="px-2.5 py-1.5 text-xs font-bold rounded-xl border border-blue-300 text-blue-800 bg-blue-50 hover:bg-blue-100 dark:border-blue-700/60 dark:text-blue-300 dark:bg-blue-950/40 dark:hover:bg-blue-900/50 transition-colors cursor-pointer"
                       >
                         İşleme Al
@@ -287,7 +329,10 @@ export default function AdminRequestsPage() {
                     {req.status !== "Çözüldü" && (
                       <button 
                         type="button"
-                        onClick={() => openModal(req.id, "Çözüldü")}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openModal(req.id, "Çözüldü");
+                        }}
                         className="px-2.5 py-1.5 text-xs font-bold rounded-xl border border-emerald-300 text-emerald-800 bg-emerald-50 hover:bg-emerald-100 dark:border-emerald-700/60 dark:text-emerald-300 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/50 transition-colors cursor-pointer"
                       >
                         Çözüldü
@@ -296,7 +341,10 @@ export default function AdminRequestsPage() {
                     {req.status !== "Reddedildi" && (
                       <button 
                         type="button"
-                        onClick={() => openModal(req.id, "Reddedildi")}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openModal(req.id, "Reddedildi");
+                        }}
                         className="px-2.5 py-1.5 text-xs font-bold rounded-xl border border-rose-300 text-rose-800 bg-rose-50 hover:bg-rose-100 dark:border-rose-700/60 dark:text-rose-300 dark:bg-rose-950/40 dark:hover:bg-rose-900/50 transition-colors cursor-pointer"
                       >
                         Reddet
@@ -310,7 +358,200 @@ export default function AdminRequestsPage() {
         )}
       </div>
 
-      {/* Resolution/Rejection Modal */}
+      {/* ══════════ TALEP DETAY MODALI ══════════ */}
+      {detailRequest && (
+        <div className="fixed inset-0 z-[9998] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setDetailRequest(null)} />
+          <div className="relative w-full max-w-2xl bg-white dark:bg-[#0d1424] border border-slate-200/80 dark:border-slate-800 rounded-3xl shadow-2xl p-6 sm:p-8 max-h-[90vh] overflow-y-auto space-y-6 text-slate-900 dark:text-slate-100 transition-colors">
+            
+            {/* Modal Header */}
+            <div className="flex items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+              <div>
+                <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                  <span className="font-mono text-xs font-bold text-slate-500 dark:text-slate-400">ID: {detailRequest.id}</span>
+                  <span className="text-[10px] px-2.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold uppercase tracking-wider">
+                    {detailRequest.category}
+                  </span>
+                  <div className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold ${getStatusStyles(detailRequest.status)}`}>
+                    {getStatusIcon(detailRequest.status)}
+                    <span>{detailRequest.status}</span>
+                  </div>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">{detailRequest.title}</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Bildirim Tarihi: {detailRequest.date}</p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setDetailRequest(null)}
+                className="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer shrink-0"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Sakin / Daire Bilgisi Kartı */}
+            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#090e1b] border border-slate-200/80 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-2xl bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-sky-400 flex items-center justify-center font-bold text-base shrink-0 border border-blue-200/60 dark:border-blue-900/40">
+                  <User className="h-5 w-5" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-slate-900 dark:text-white">
+                    {detailRequest.userName || "Site Sakini"}
+                  </h4>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-0.5">
+                    <Home className="h-3.5 w-3.5 text-slate-400" />
+                    <span>{detailRequest.apartmentNo ? `Daire No: ${detailRequest.apartmentNo}` : "Daire No Belirtilmemiş"}</span>
+                  </p>
+                </div>
+              </div>
+
+              {detailRequest.userPhone && (
+                <div className="flex items-center gap-2">
+                  <a
+                    href={`tel:${detailRequest.userPhone}`}
+                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-xs font-bold hover:bg-emerald-100 transition shadow-xs"
+                    title="Doğrudan Ara"
+                  >
+                    <Phone className="h-3.5 w-3.5" />
+                    <span>{detailRequest.userPhone}</span>
+                  </a>
+                </div>
+              )}
+            </div>
+
+            {/* Açıklama */}
+            <div>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
+                Talep &amp; Arıza Açıklaması
+              </h4>
+              <div className="p-4 rounded-2xl bg-slate-50/70 dark:bg-[#090e1b]/70 border border-slate-200/80 dark:border-slate-800 text-sm text-slate-800 dark:text-slate-200 leading-relaxed whitespace-pre-wrap">
+                {detailRequest.description}
+              </div>
+            </div>
+
+            {/* Sakinin Eklediği Fotoğraf */}
+            {detailRequest.imageUrl && (
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                    <ImageIcon className="h-4 w-4 text-blue-600 dark:text-sky-400" /> Sakinin Eklediği Arıza Görseli
+                  </h4>
+                  <a
+                    href={detailRequest.imageUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs font-bold text-blue-600 dark:text-sky-400 hover:underline flex items-center gap-1"
+                  >
+                    Tam Boyutta Aç <ExternalLink className="h-3 w-3" />
+                  </a>
+                </div>
+                <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-black/5 dark:bg-black/30 p-2 text-center">
+                  <img
+                    src={detailRequest.imageUrl}
+                    alt="Arıza görseli"
+                    className="max-h-96 w-auto mx-auto rounded-xl object-contain shadow-sm cursor-pointer hover:opacity-95 transition"
+                    onClick={() => window.open(detailRequest.imageUrl!, "_blank")}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Çözüm / Red Notu */}
+            {detailRequest.status === "Çözüldü" && detailRequest.resolutionNote && (
+              <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/40">
+                <p className="text-xs font-bold text-emerald-800 dark:text-emerald-300 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" /> Yönetim Çözüm Notu
+                </p>
+                <p className="text-sm text-emerald-950 dark:text-emerald-100">{detailRequest.resolutionNote}</p>
+                {detailRequest.resolutionImageUrl && (
+                  <img src={detailRequest.resolutionImageUrl} alt="Çözüm görseli" className="mt-2.5 max-h-48 rounded-xl object-cover border border-emerald-300 dark:border-emerald-700" />
+                )}
+              </div>
+            )}
+
+            {detailRequest.status === "Reddedildi" && detailRequest.rejectedNote && (
+              <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800/40">
+                <p className="text-xs font-bold text-rose-800 dark:text-rose-300 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                  <XCircle className="h-4 w-4 text-rose-600 dark:text-rose-400" /> Yönetim Red Nedeni
+                </p>
+                <p className="text-sm text-rose-950 dark:text-rose-100">{detailRequest.rejectedNote}</p>
+                {detailRequest.rejectedImageUrl && (
+                  <img src={detailRequest.rejectedImageUrl} alt="Red görseli" className="mt-2.5 max-h-48 rounded-xl object-cover border border-rose-300 dark:border-rose-700" />
+                )}
+              </div>
+            )}
+
+            {/* Modal Footer & Actions */}
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Durumu Değiştir:</span>
+                {detailRequest.status !== "Bekliyor" && (
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      await updateStatus(detailRequest.id, "Bekliyor");
+                      setDetailRequest({ ...detailRequest, status: "Bekliyor" });
+                    }}
+                    className="px-3 py-1.5 text-xs font-bold rounded-xl border border-amber-300 text-amber-800 bg-amber-50 hover:bg-amber-100 dark:border-amber-700/60 dark:text-amber-300 dark:bg-amber-950/40 cursor-pointer"
+                  >
+                    Beklet
+                  </button>
+                )}
+                {detailRequest.status !== "İşlemde" && (
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      await updateStatus(detailRequest.id, "İşlemde");
+                      setDetailRequest({ ...detailRequest, status: "İşlemde" });
+                    }}
+                    className="px-3 py-1.5 text-xs font-bold rounded-xl border border-blue-300 text-blue-800 bg-blue-50 hover:bg-blue-100 dark:border-blue-700/60 dark:text-blue-300 dark:bg-blue-950/40 cursor-pointer"
+                  >
+                    İşleme Al
+                  </button>
+                )}
+                {detailRequest.status !== "Çözüldü" && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const reqId = detailRequest.id;
+                      setDetailRequest(null);
+                      openModal(reqId, "Çözüldü");
+                    }}
+                    className="px-3 py-1.5 text-xs font-bold rounded-xl border border-emerald-300 text-emerald-800 bg-emerald-50 hover:bg-emerald-100 dark:border-emerald-700/60 dark:text-emerald-300 dark:bg-emerald-950/40 cursor-pointer"
+                  >
+                    Çözüldü
+                  </button>
+                )}
+                {detailRequest.status !== "Reddedildi" && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const reqId = detailRequest.id;
+                      setDetailRequest(null);
+                      openModal(reqId, "Reddedildi");
+                    }}
+                    className="px-3 py-1.5 text-xs font-bold rounded-xl border border-rose-300 text-rose-800 bg-rose-50 hover:bg-rose-100 dark:border-rose-700/60 dark:text-rose-300 dark:bg-rose-950/40 cursor-pointer"
+                  >
+                    Reddet
+                  </button>
+                )}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setDetailRequest(null)}
+                className="px-5 py-2 rounded-2xl text-sm font-bold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+              >
+                Kapat
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ══════════ DURUM NOTU & GÖRSELİ MODALI (Çözüldü/Reddedildi) ══════════ */}
       {modalOpen && (
         <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setModalOpen(false)} />

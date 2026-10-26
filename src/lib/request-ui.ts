@@ -12,6 +12,9 @@ export type ClientRequestItem = {
   resolutionImageUrl?: string | null;
   rejectedNote?: string | null;
   rejectedImageUrl?: string | null;
+  userName?: string | null;
+  userPhone?: string | null;
+  apartmentNo?: string | null;
 };
 
 export function dbRequestToClient(row: {
@@ -26,6 +29,9 @@ export function dbRequestToClient(row: {
   rejectedNote?: string | null;
   rejectedImageUrl?: string | null;
   createdAt: string | null;
+  userName?: string | null;
+  userEmailOrPhone?: string | null;
+  apartmentNo?: string | null;
 }): ClientRequestItem {
   return {
     id: row.id,
@@ -34,7 +40,13 @@ export function dbRequestToClient(row: {
     description: row.description,
     imageUrl: row.imageUrl ?? null,
     date: row.createdAt
-      ? new Date(row.createdAt).toLocaleDateString("tr-TR")
+      ? new Date(row.createdAt).toLocaleDateString("tr-TR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        })
       : new Date().toLocaleDateString("tr-TR"),
     status:
       row.status === "IN_PROGRESS" ? "İşlemde"
@@ -45,6 +57,9 @@ export function dbRequestToClient(row: {
     resolutionImageUrl: row.resolutionImageUrl ?? null,
     rejectedNote: row.rejectedNote ?? null,
     rejectedImageUrl: row.rejectedImageUrl ?? null,
+    userName: row.userName ?? null,
+    userPhone: row.userEmailOrPhone ?? null,
+    apartmentNo: row.apartmentNo ?? null,
   };
 }
 

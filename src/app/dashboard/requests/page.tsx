@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Wrench, PlusCircle, Clock, CheckCircle2, AlertCircle, XCircle, X, ArrowLeft, Send, Camera, ImageIcon } from "lucide-react";
+import { Wrench, PlusCircle, Clock, CheckCircle2, AlertCircle, XCircle, X, ArrowLeft, Send, Camera, ImageIcon, Eye, ExternalLink } from "lucide-react";
 import { useAlert } from "@/components/ModalProvider";
 
 interface RequestItem {
@@ -22,6 +22,7 @@ interface RequestItem {
 export default function ResidentRequestsPage() {
   const showAlert = useAlert();
   const [requests, setRequests] = React.useState<RequestItem[]>([]);
+  const [detailRequest, setDetailRequest] = React.useState<RequestItem | null>(null);
   const [showForm, setShowForm] = React.useState(false);
   const [title, setTitle] = React.useState("");
   const [category, setCategory] = React.useState("Arıza");
@@ -382,7 +383,8 @@ export default function ResidentRequestsPage() {
           requests.map((req) => (
             <div 
               key={req.id} 
-              className="bg-white dark:bg-[#0d1424] border border-slate-200/80 dark:border-slate-800 rounded-3xl overflow-hidden shadow-xs hover:border-blue-300 dark:hover:border-blue-700/60 transition-all duration-200"
+              onClick={() => setDetailRequest(req)}
+              className="bg-white dark:bg-[#0d1424] border border-slate-200/80 dark:border-slate-800 rounded-3xl overflow-hidden shadow-xs hover:border-blue-300 dark:hover:border-blue-700/60 transition-all duration-200 cursor-pointer group"
             >
               {/* Resolution Note */}
               {req.status === "Çözüldü" && req.resolutionNote && (
@@ -425,28 +427,32 @@ export default function ResidentRequestsPage() {
                       </span>
                       <span className="text-xs text-slate-500 dark:text-slate-400">{req.date}</span>
                     </div>
-                    <h3 className="font-extrabold text-lg text-slate-900 dark:text-white mt-1.5">{req.title}</h3>
-                    <p className="text-slate-600 dark:text-slate-300 text-sm mt-1 leading-relaxed">{req.description}</p>
+                    <h3 className="font-extrabold text-lg text-slate-900 dark:text-white mt-1.5 group-hover:text-blue-600 dark:group-hover:text-sky-400 transition-colors">{req.title}</h3>
+                    <p className="text-slate-600 dark:text-slate-300 text-sm mt-1 leading-relaxed line-clamp-2">{req.description}</p>
 
                     {/* Arıza Fotoğrafı */}
                     {req.imageUrl && (
-                      <div className="mt-3.5">
-                        <p className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                      <div className="mt-3">
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300">
                           <ImageIcon className="h-3.5 w-3.5 text-blue-600 dark:text-sky-400" />
-                          Arıza Görseli:
-                        </p>
-                        <img
-                          src={req.imageUrl}
-                          alt="Arıza fotoğrafı"
-                          className="max-h-48 rounded-2xl object-cover border border-slate-200 dark:border-slate-800 shadow-xs cursor-pointer hover:opacity-95 transition"
-                          onClick={() => window.open(req.imageUrl!, "_blank")}
-                          title="Büyük boyutta açmak için tıklayın"
-                        />
+                          <span>Fotoğraf Eklendi (Detay için tıklayın)</span>
+                        </div>
                       </div>
                     )}
                   </div>
                 </div>
-                <div className="sm:self-center shrink-0">
+                <div className="sm:self-center shrink-0 flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setDetailRequest(req);
+                    }}
+                    className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-blue-600 dark:text-sky-400 bg-blue-50/70 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/50 border border-blue-200/70 dark:border-blue-900/40 rounded-xl transition cursor-pointer"
+                  >
+                    <Eye className="h-3.5 w-3.5" />
+                    <span>Detay</span>
+                  </button>
                   <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ${getStatusStyles(req.status)}`}>
                     {getStatusIcon(req.status)}
                     <span>{req.status}</span>
@@ -457,6 +463,113 @@ export default function ResidentRequestsPage() {
           ))
         )}
       </div>
+
+      {/* ══════════ TALEP DETAY MODALI ══════════ */}
+      {detailRequest && (
+        <div className="fixed inset-0 z-[9998] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setDetailRequest(null)} />
+          <div className="relative w-full max-w-2xl bg-white dark:bg-[#0d1424] border border-slate-200/80 dark:border-slate-800 rounded-3xl shadow-2xl p-6 sm:p-8 max-h-[90vh] overflow-y-auto space-y-6 text-slate-900 dark:text-slate-100 transition-colors">
+            {/* Header */}
+            <div className="flex items-start justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+              <div>
+                <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                  <span className="font-mono text-xs font-bold text-slate-500 dark:text-slate-400">ID: {detailRequest.id}</span>
+                  <span className="text-[10px] px-2.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold uppercase tracking-wider">
+                    {detailRequest.category}
+                  </span>
+                  <div className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold ${getStatusStyles(detailRequest.status)}`}>
+                    {getStatusIcon(detailRequest.status)}
+                    <span>{detailRequest.status}</span>
+                  </div>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">{detailRequest.title}</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Bildirim Tarihi: {detailRequest.date}</p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setDetailRequest(null)}
+                className="p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer shrink-0"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Açıklama */}
+            <div>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
+                Talep &amp; Arıza Açıklaması
+              </h4>
+              <div className="p-4 rounded-2xl bg-slate-50/70 dark:bg-[#090e1b]/70 border border-slate-200/80 dark:border-slate-800 text-sm text-slate-800 dark:text-slate-200 leading-relaxed whitespace-pre-wrap">
+                {detailRequest.description}
+              </div>
+            </div>
+
+            {/* Sakinin Eklediği Fotoğraf */}
+            {detailRequest.imageUrl && (
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                    <ImageIcon className="h-4 w-4 text-blue-600 dark:text-sky-400" /> Eklediğiniz Fotoğraf
+                  </h4>
+                  <a
+                    href={detailRequest.imageUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs font-bold text-blue-600 dark:text-sky-400 hover:underline flex items-center gap-1"
+                  >
+                    Tam Boyutta Aç <ExternalLink className="h-3 w-3" />
+                  </a>
+                </div>
+                <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-black/5 dark:bg-black/30 p-2 text-center">
+                  <img
+                    src={detailRequest.imageUrl}
+                    alt="Arıza görseli"
+                    className="max-h-96 w-auto mx-auto rounded-xl object-contain shadow-sm cursor-pointer hover:opacity-95 transition"
+                    onClick={() => window.open(detailRequest.imageUrl!, "_blank")}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Çözüm / Red Notu */}
+            {detailRequest.status === "Çözüldü" && detailRequest.resolutionNote && (
+              <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/40">
+                <p className="text-xs font-bold text-emerald-800 dark:text-emerald-300 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" /> Yönetim Çözüm Notu
+                </p>
+                <p className="text-sm text-emerald-950 dark:text-emerald-100">{detailRequest.resolutionNote}</p>
+                {detailRequest.resolutionImageUrl && (
+                  <img src={detailRequest.resolutionImageUrl} alt="Çözüm görseli" className="mt-2.5 max-h-48 rounded-xl object-cover border border-emerald-300 dark:border-emerald-700" />
+                )}
+              </div>
+            )}
+
+            {detailRequest.status === "Reddedildi" && detailRequest.rejectedNote && (
+              <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800/40">
+                <p className="text-xs font-bold text-rose-800 dark:text-rose-300 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                  <XCircle className="h-4 w-4 text-rose-600 dark:text-rose-400" /> Yönetim Red Nedeni
+                </p>
+                <p className="text-sm text-rose-950 dark:text-rose-100">{detailRequest.rejectedNote}</p>
+                {detailRequest.rejectedImageUrl && (
+                  <img src={detailRequest.rejectedImageUrl} alt="Red görseli" className="mt-2.5 max-h-48 rounded-xl object-cover border border-rose-300 dark:border-rose-700" />
+                )}
+              </div>
+            )}
+
+            {/* Footer */}
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setDetailRequest(null)}
+                className="px-6 py-2.5 rounded-2xl text-sm font-bold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+              >
+                Kapat
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
