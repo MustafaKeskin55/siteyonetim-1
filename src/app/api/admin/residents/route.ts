@@ -25,11 +25,12 @@ export async function GET() {
         name: users.name,
         emailOrPhone: users.emailOrPhone,
         apartmentNo: users.apartmentNo,
+        role: users.role,
         status: users.status,
         createdAt: users.createdAt,
       })
       .from(users)
-      .where(and(eq(users.siteId, session.siteId), eq(users.role, "USER")));
+      .where(and(eq(users.siteId, session.siteId), inArray(users.role, ["USER", "ADMIN"])));
 
     if (usr.length === 0) return NextResponse.json([]);
 
@@ -53,10 +54,11 @@ export async function GET() {
       return {
         id: u.id,
         name: u.name,
+        role: u.role,
         emailOrPhone: u.emailOrPhone,
         status: u.status || "APPROVED",
         blok: "—",
-        daire: u.apartmentNo?.trim() ? u.apartmentNo : "—",
+        daire: u.apartmentNo?.trim() ? u.apartmentNo : (u.role === "ADMIN" ? "Yön." : "—"),
         borc,
         durum: u.status === "PENDING" ? "Onay Bekliyor" : borc > 0 ? "Borçlu" : "Düzenli",
         createdAt: u.createdAt,

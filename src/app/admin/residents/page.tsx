@@ -13,6 +13,7 @@ type Resident = {
   daire: string;
   borc: number;
   durum: string;
+  role?: string;
   status?: "PENDING" | "APPROVED" | "REJECTED";
   createdAt?: string | null;
 };
@@ -511,7 +512,14 @@ export default function ResidentsPage() {
                           {res.name.split(" ").map((n) => n[0]).join("").slice(0, 2)}
                         </div>
                         <div>
-                          <span>{res.name}</span>
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span>{res.name}</span>
+                            {res.role === "ADMIN" && (
+                              <span className="text-[10px] font-bold text-blue-700 dark:text-sky-300 bg-blue-50 dark:bg-blue-950/60 border border-blue-200/80 dark:border-blue-900/50 px-2 py-0.5 rounded-full">
+                                Yönetici
+                              </span>
+                            )}
+                          </div>
                           {res.emailOrPhone && (
                             <span className="block text-[11px] font-normal text-slate-500 dark:text-slate-400">{res.emailOrPhone}</span>
                           )}
@@ -713,7 +721,7 @@ export default function ResidentsPage() {
                     <option value="" disabled>Lütfen bir sakin seçin...</option>
                     {approvedResidents.map((r) => (
                       <option key={r.id} value={r.id}>
-                        {r.name} {r.blok ? `(${r.blok} Blok` : ""}{r.daire ? ` · D.${r.daire})` : r.blok ? ")" : ""} {r.emailOrPhone ? `— ${r.emailOrPhone}` : ""}
+                        {r.name} {r.role === "ADMIN" ? "(Yönetici) " : ""}{r.blok ? `(${r.blok} Blok` : ""}{r.daire ? ` · D.${r.daire})` : r.blok ? ")" : ""} {r.emailOrPhone ? `— ${r.emailOrPhone}` : ""}
                       </option>
                     ))}
                   </select>
@@ -759,7 +767,14 @@ export default function ResidentsPage() {
                             onChange={() => toggleUser(r.id)}
                             className="rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500"
                           />
-                          <span className="text-xs font-bold text-slate-900 dark:text-white">{r.name}</span>
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className="text-xs font-bold text-slate-900 dark:text-white">{r.name}</span>
+                            {r.role === "ADMIN" && (
+                              <span className="text-[9px] font-bold text-blue-700 dark:text-sky-300 bg-blue-50 dark:bg-blue-950/60 border border-blue-200/80 dark:border-blue-900/50 px-1.5 py-0.2 rounded">
+                                Yönetici
+                              </span>
+                            )}
+                          </div>
                         </div>
                         <span className="text-[11px] text-slate-500 dark:text-slate-400">
                           {r.blok ? `${r.blok} Blok · ` : ""}D.{r.daire || "—"}
