@@ -61,7 +61,10 @@ export default function ResidentsPage() {
     markPaid: false,
   });
 
-  // Toplu seçim
+  // Toplu / Bireysel seçim
+  type TargetMode = "all" | "single" | "custom";
+  const [targetMode, setTargetMode] = React.useState<TargetMode>("all");
+  const [selectedSingleUserId, setSelectedSingleUserId] = React.useState<string>("");
   const [selectedUsers, setSelectedUsers] = React.useState<Set<string>>(new Set());
   const [bulkMode, setBulkMode] = React.useState(false);
 
@@ -163,17 +166,27 @@ export default function ResidentsPage() {
     return matchSearch && matchBlok && matchStatus;
   });
 
+  const approvedResidents = React.useMemo(() => residents.filter((r) => r.status !== "PENDING"), [residents]);
+
   function openModal(userId?: string) {
+    const approved = residents.filter((r) => r.status !== "PENDING");
     if (userId) {
+      setTargetMode("single");
+      setSelectedSingleUserId(userId);
       setBulkMode(false);
       setSelectedUsers(new Set([userId]));
       setForm((f) => ({ ...f, userId, amount: "" }));
     } else if (selectedUsers.size > 0) {
+      setTargetMode("custom");
       setBulkMode(true);
       setForm((f) => ({ ...f, userId: "", amount: "" }));
     } else {
+      setTargetMode("all");
       setBulkMode(true);
-      setSelectedUsers(new Set(filteredResidents.filter((r) => r.status !== "PENDING").map((r) => r.id)));
+      setSelectedUsers(new Set(approved.map((r) => r.id)));
+      if (approved.length > 0) {
+        setSelectedSingleUserId(approved[0].id);
+      }
       setForm((f) => ({ ...f, userId: "", amount: "" }));
     }
     setModalOpen(true);
@@ -207,10 +220,29 @@ export default function ResidentsPage() {
       return;
     }
 
-    const targets = bulkMode ? [...selectedUsers] : [form.userId];
-    if (targets.length === 0) {
-      await showAlert({ message: "En az bir sakin seçin.", variant: "error" });
-      return;
+    let targets: string[] = [];
+    if (targetMode === "all") {
+      targets = approvedResidents.map((r) => r.id);
+      if (targets.length === 0) {
+        await showAlert({
+          title: "Kayıtlı Sakin Yok",
+          message: "Sitede henüz kayıtlı veya onaylanmış sakin bulunmuyor. Önce sakin ekleyin veya başvuruları onaylayın.",
+          variant: "error",
+        });
+        return;
+      }
+    } else if (targetMode === "single") {
+      if (!selectedSingleUserId) {
+        await showAlert({ message: "Lütfen bir sakin seçin.", variant: "error" });
+        return;
+      }
+      targets = [selectedSingleUserId];
+    } else {
+      targets = [...selectedUsers];
+      if (targets.length === 0) {
+        await showAlert({ message: "Lütfen en az bir sakin seçin.", variant: "error" });
+        return;
+      }
     }
 
     setSubmitting(true);
@@ -249,12 +281,11 @@ export default function ResidentsPage() {
       });
     } else {
       await showAlert({
-        title: "Kısmi Başarı",
-        message: `${successCount} başarılı, ${failCount} başarısız.`,
-        variant: failCount > 0 ? "warning" : "success",
+        title: "İşlem Tamamlandı",
+        message: `${successCount} başarılı, ${failCount} başarısız işlem gerçekleşti.`,
+        variant: "warning",
       });
     }
-
     setSelectedUsers(new Set());
     await reload();
   }
@@ -578,10 +609,19 @@ export default function ResidentsPage() {
         <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => !submitting && setModalOpen(false)} />
           <div className="relative w-full max-w-lg bg-white dark:bg-[#0d1424] border border-slate-200/80 dark:border-slate-800 rounded-t-3xl sm:rounded-3xl shadow-2xl p-6 space-y-5 max-h-[85vh] overflow-y-auto">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-black text-slate-900 dark:text-white">
-                {bulkMode ? `${selectedUsers.size} Sakine Aidat Oluştur` : "Aidat Oluştur"}
-              </h3>
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <div>
+                <h3 className="text-lg font-black text-slate-900 dark:text-white">
+                  {targetMode === "all"
+                    ? "Tüm Sakinlere Aidat Oluştur"
+                    : targetMode === "single"
+                    ? "Bireysel Aidat Oluştur"
+                    : `${selectedUsers.size} Sakine Aidat Oluştur`}
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                  Toplu veya tekil olarak aidat borçlandırması tanımlayın
+                </p>
+              </div>
               <button
                 type="button"
                 onClick={() => !submitting && setModalOpen(false)}
@@ -591,23 +631,143 @@ export default function ResidentsPage() {
               </button>
             </div>
 
-            {/* Seçili sakinler (toplu modda) */}
-            {bulkMode && selectedUsers.size > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {[...selectedUsers].map((uid) => {
-                  const r = residents.find((x) => x.id === uid);
-                  return (
-                    <span
-                      key={uid}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-sky-300 text-xs font-bold border border-blue-200/80 dark:border-blue-900/50"
+            {/* Hedef Seçimi (Bireysel veya Toplu) */}
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
+                Kime Uygulanacak?
+              </label>
+              <div className="grid grid-cols-3 gap-1.5 p-1 rounded-2xl bg-slate-100 dark:bg-[#111a2e] border border-slate-200 dark:border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setTargetMode("all")}
+                  className={`py-2 px-2 text-center rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    targetMode === "all"
+                      ? "bg-white dark:bg-blue-600 text-blue-600 dark:text-white shadow-xs"
+                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                  }`}
+                >
+                  Tüm Sakinler ({approvedResidents.length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTargetMode("single");
+                    if (!selectedSingleUserId && approvedResidents.length > 0) {
+                      setSelectedSingleUserId(approvedResidents[0].id);
+                    }
+                  }}
+                  className={`py-2 px-2 text-center rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    targetMode === "single"
+                      ? "bg-white dark:bg-blue-600 text-blue-600 dark:text-white shadow-xs"
+                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                  }`}
+                >
+                  Bireysel (Tek)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTargetMode("custom")}
+                  className={`py-2 px-2 text-center rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    targetMode === "custom"
+                      ? "bg-white dark:bg-blue-600 text-blue-600 dark:text-white shadow-xs"
+                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                  }`}
+                >
+                  Özel Seçim ({selectedUsers.size})
+                </button>
+              </div>
+            </div>
+
+            {/* Modlara Göre Sakin Seçici */}
+            {targetMode === "all" && (
+              <div className="p-3.5 rounded-2xl bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-900/40 flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-sky-300 flex items-center justify-center font-bold text-xs shrink-0">
+                    <Users className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-blue-900 dark:text-sky-200">Tüm Onaylı Sakinler</p>
+                    <p className="text-[11px] text-blue-700/80 dark:text-sky-300/80">
+                      {approvedResidents.length > 0
+                        ? `Sitedeki ${approvedResidents.length} aktif sakinin tamamına toplu aidat eklenecektir.`
+                        : "Sitede henüz kayıtlı veya onaylı sakin bulunmuyor."}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {targetMode === "single" && (
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+                  Sakin Seçin
+                </label>
+                {approvedResidents.length === 0 ? (
+                  <p className="text-xs text-rose-500 font-medium">Sitede henüz kayıtlı sakin bulunmuyor.</p>
+                ) : (
+                  <select
+                    value={selectedSingleUserId}
+                    onChange={(e) => setSelectedSingleUserId(e.target.value)}
+                    className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#111a2e] py-3 px-4 text-sm font-semibold focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-slate-900 dark:text-white cursor-pointer transition"
+                  >
+                    <option value="" disabled>Lütfen bir sakin seçin...</option>
+                    {approvedResidents.map((r) => (
+                      <option key={r.id} value={r.id}>
+                        {r.name} {r.blok ? `(${r.blok} Blok` : ""}{r.daire ? ` · D.${r.daire})` : r.blok ? ")" : ""} {r.emailOrPhone ? `— ${r.emailOrPhone}` : ""}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </div>
+            )}
+
+            {targetMode === "custom" && (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                    Sakinleri İşaretleyin ({selectedUsers.size}/{approvedResidents.length} Seçili)
+                  </label>
+                  <div className="flex gap-2 text-xs">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedUsers(new Set(approvedResidents.map((r) => r.id)))}
+                      className="text-blue-600 dark:text-sky-400 font-bold hover:underline cursor-pointer"
                     >
-                      {r?.name || uid.slice(0, 8)}
-                      <button type="button" onClick={() => toggleUser(uid)} className="hover:text-red-500 cursor-pointer">
-                        <X className="h-3 w-3" />
-                      </button>
-                    </span>
-                  );
-                })}
+                      Tümünü Seç
+                    </button>
+                    <span className="text-slate-300 dark:text-slate-700">|</span>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedUsers(new Set())}
+                      className="text-slate-500 hover:underline cursor-pointer"
+                    >
+                      Temizle
+                    </button>
+                  </div>
+                </div>
+                
+                <div className="max-h-40 overflow-y-auto rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-[#111a2e]/50 p-2 divide-y divide-slate-100 dark:divide-slate-800/60">
+                  {approvedResidents.length === 0 ? (
+                    <p className="text-xs text-center py-4 text-slate-400">Kayıtlı sakin bulunamadı.</p>
+                  ) : (
+                    approvedResidents.map((r) => (
+                      <label key={r.id} className="flex items-center justify-between p-2 hover:bg-slate-100/70 dark:hover:bg-slate-800/50 rounded-xl cursor-pointer transition">
+                        <div className="flex items-center gap-2.5">
+                          <input
+                            type="checkbox"
+                            checked={selectedUsers.has(r.id)}
+                            onChange={() => toggleUser(r.id)}
+                            className="rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500"
+                          />
+                          <span className="text-xs font-bold text-slate-900 dark:text-white">{r.name}</span>
+                        </div>
+                        <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                          {r.blok ? `${r.blok} Blok · ` : ""}D.{r.daire || "—"}
+                        </span>
+                      </label>
+                    ))
+                  )}
+                </div>
               </div>
             )}
 
@@ -690,14 +850,18 @@ export default function ResidentsPage() {
               type="button"
               disabled={submitting}
               onClick={handleSubmit}
-              className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-lg shadow-emerald-600/25 disabled:opacity-60 transition-all"
+              className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-lg shadow-emerald-600/25 disabled:opacity-60 transition-all cursor-pointer"
             >
               {submitting ? (
                 <>Oluşturuluyor…</>
               ) : (
                 <>
                   <CheckCircle className="h-4 w-4" />
-                  {bulkMode ? `${selectedUsers.size} Sakine Aidat Oluştur` : "Aidat Oluştur"}
+                  {targetMode === "all"
+                    ? `Tüm Sakinlere (${approvedResidents.length}) Aidat Oluştur`
+                    : targetMode === "single"
+                    ? "Seçili Sakine Aidat Oluştur"
+                    : `${selectedUsers.size} Sakine Aidat Oluştur`}
                 </>
               )}
             </button>
