@@ -75,6 +75,7 @@ type PostBody = {
   title?: unknown;
   category?: unknown;
   description?: unknown;
+  imageUrl?: unknown;
 };
 
 export async function POST(request: Request) {
@@ -100,6 +101,8 @@ export async function POST(request: Request) {
   const description = typeof raw.description === "string" ? raw.description.trim() : "";
   const category =
     typeof raw.category === "string" && raw.category.trim().length > 0 ? raw.category.trim() : "Genel";
+  const imageUrl =
+    typeof raw.imageUrl === "string" && raw.imageUrl.trim().length > 0 ? raw.imageUrl.trim() : null;
 
   if (!subject || !description) {
     return NextResponse.json({ error: "Başlık ve açıklama gereklidir." }, { status: 400 });
@@ -118,6 +121,7 @@ export async function POST(request: Request) {
       subject,
       description,
       category,
+      imageUrl,
       status: "OPEN",
     });
 

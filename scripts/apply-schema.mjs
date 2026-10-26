@@ -36,6 +36,11 @@ try {
 } catch {
   // Column already exists
 }
+try {
+  sqlite.exec("ALTER TABLE requests ADD COLUMN image_url text");
+} catch {
+  // Column already exists
+}
 
 sqlite.close();
 

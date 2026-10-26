@@ -9,6 +9,7 @@ interface RequestItem {
   title: string;
   category: string;
   description: string;
+  imageUrl?: string | null;
   date: string;
   status: "Bekliyor" | "İşlemde" | "Çözüldü" | "Reddedildi";
   resolutionNote?: string | null;
@@ -237,6 +238,23 @@ export default function AdminRequestsPage() {
                     </div>
                     <h4 className="font-extrabold text-lg text-slate-900 dark:text-white mt-1.5">{req.title}</h4>
                     <p className="text-slate-600 dark:text-slate-300 text-sm mt-1 leading-relaxed max-w-xl">{req.description}</p>
+
+                    {/* Sakin Tarafından Eklenen Arıza Görseli */}
+                    {req.imageUrl && (
+                      <div className="mt-3.5">
+                        <p className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                          <ImageIcon className="h-3.5 w-3.5 text-blue-600 dark:text-sky-400" />
+                          Sakinin Eklediği Arıza Görseli:
+                        </p>
+                        <img
+                          src={req.imageUrl}
+                          alt="Arıza görseli"
+                          className="max-h-48 rounded-2xl object-cover border border-slate-200 dark:border-slate-800 shadow-xs cursor-pointer hover:opacity-95 transition"
+                          onClick={() => window.open(req.imageUrl!, "_blank")}
+                          title="Büyük boyutta açmak için tıklayın"
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
 

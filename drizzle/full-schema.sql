@@ -114,6 +114,7 @@ CREATE TABLE IF NOT EXISTS `requests` (
   `subject` text NOT NULL,
   `description` text NOT NULL,
   `category` text,
+  `image_url` text,
   `status` text NOT NULL DEFAULT 'OPEN',
   `resolution_note` text,
   `resolution_image_url` text,

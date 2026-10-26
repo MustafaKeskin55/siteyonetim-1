@@ -5,6 +5,7 @@ export type ClientRequestItem = {
   title: string;
   category: string;
   description: string;
+  imageUrl?: string | null;
   date: string;
   status: "Bekliyor" | "İşlemde" | "Çözüldü" | "Reddedildi";
   resolutionNote?: string | null;
@@ -18,6 +19,7 @@ export function dbRequestToClient(row: {
   subject: string;
   description: string;
   category: string | null;
+  imageUrl?: string | null;
   status: string;
   resolutionNote?: string | null;
   resolutionImageUrl?: string | null;
@@ -30,6 +32,7 @@ export function dbRequestToClient(row: {
     title: row.subject,
     category: row.category?.trim() || "Genel",
     description: row.description,
+    imageUrl: row.imageUrl ?? null,
     date: row.createdAt
       ? new Date(row.createdAt).toLocaleDateString("tr-TR")
       : new Date().toLocaleDateString("tr-TR"),

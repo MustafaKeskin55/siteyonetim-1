@@ -292,9 +292,26 @@ export default function AdminCommunityPage() {
 
   const [newPostText, setNewPostText] = React.useState("");
   const [newPostImageUrl, setNewPostImageUrl] = React.useState("");
-  const [showImageInput, setShowImageInput] = React.useState(false);
   const [commentInputs, setCommentInputs] = React.useState<Record<string, string>>({});
   const [activeReactionPostId, setActiveReactionPostId] = React.useState<string | null>(null);
+  const postFileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const handlePostImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 3 * 1024 * 1024) {
+      showAlert({ title: "Uyarı", message: "Fotoğraf en fazla 3MB olabilir.", variant: "error" });
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      setNewPostImageUrl(reader.result as string);
+    };
+    reader.onerror = () => {
+      showAlert({ title: "Hata", message: "Görsel yüklenemedi.", variant: "error" });
+    };
+    reader.readAsDataURL(file);
+  };
 
   // ══════════════════════════════════════════════════════════
   // CANLI İLETİŞİM STATE (KANALLAR & ÖZEL MESAJLAR - DM)
@@ -588,7 +605,7 @@ export default function AdminCommunityPage() {
     setPosts([newPost, ...posts]);
     setNewPostText("");
     setNewPostImageUrl("");
-    setShowImageInput(false);
+    if (postFileInputRef.current) postFileInputRef.current.value = "";
     showAlert({ title: "Paylaşıldı", message: "Resmi gönderi komşuluk akışında yayınlandı.", variant: "success" });
   };
 
@@ -742,24 +759,23 @@ export default function AdminCommunityPage() {
                         placeholder="Bina sakinleriyle bir duyuru veya komşuluk fotoğrafı paylaşın..."
                         className="w-full text-xs sm:text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-3 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-500/20 resize-none transition-all text-slate-900 dark:text-white"
                       />
-                      {showImageInput && (
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="url"
-                            placeholder="Fotoğraf görsel URL'si yapıştırın (https://...)"
-                            value={newPostImageUrl}
-                            onChange={(e) => setNewPostImageUrl(e.target.value)}
-                            className="flex-1 text-xs px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      {newPostImageUrl && (
+                        <div className="relative inline-block mt-2">
+                          <img
+                            src={newPostImageUrl}
+                            alt="Yüklenecek görsel"
+                            className="max-h-36 rounded-xl object-cover border border-slate-200 dark:border-slate-800 shadow-xs"
                           />
                           <button
                             type="button"
                             onClick={() => {
                               setNewPostImageUrl("");
-                              setShowImageInput(false);
+                              if (postFileInputRef.current) postFileInputRef.current.value = "";
                             }}
-                            className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 px-2 py-1 cursor-pointer"
+                            className="absolute -top-1.5 -right-1.5 p-1 bg-rose-600 text-white rounded-full hover:bg-rose-700 transition shadow-md cursor-pointer"
+                            title="Fotoğrafı Kaldır"
                           >
-                            İptal
+                            <X className="h-3.5 w-3.5" />
                           </button>
                         </div>
                       )}
@@ -770,12 +786,19 @@ export default function AdminCommunityPage() {
                   <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800">
                     <button
                       type="button"
-                      onClick={() => setShowImageInput(!showImageInput)}
+                      onClick={() => postFileInputRef.current?.click()}
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-sky-400 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold transition-colors cursor-pointer"
                     >
                       <Camera className="h-4 w-4 text-blue-600 dark:text-sky-400" />
-                      <span>{showImageInput ? "Görsel Alanını Kapat" : "Fotoğraf Ekle"}</span>
+                      <span>{newPostImageUrl ? "Fotoğrafı Değiştir" : "Fotoğraf Yükle"}</span>
                     </button>
+                    <input
+                      ref={postFileInputRef}
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/gif"
+                      onChange={handlePostImageUpload}
+                      className="hidden"
+                    />
 
                     <button
                       type="submit"

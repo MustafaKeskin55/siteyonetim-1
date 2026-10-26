@@ -88,8 +88,25 @@ export default function CommunityChatPage() {
   const [sending, setSending] = React.useState(false);
   const [text, setText] = React.useState("");
   const [imageUrl, setImageUrl] = React.useState("");
-  const [showImageInput, setShowImageInput] = React.useState(false);
   const [showPollModal, setShowPollModal] = React.useState(false);
+  const chatFileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleChatImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 3 * 1024 * 1024) {
+      showAlert({ title: "Uyarı", message: "Görsel en fazla 3MB olabilir.", variant: "error" });
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      setImageUrl(reader.result as string);
+    };
+    reader.onerror = () => {
+      showAlert({ title: "Hata", message: "Görsel yüklenemedi.", variant: "error" });
+    };
+    reader.readAsDataURL(file);
+  };
 
   // Poll Form State
   const [pollQuestion, setPollQuestion] = React.useState("");
@@ -205,7 +222,7 @@ export default function CommunityChatPage() {
       }
       setText("");
       setImageUrl("");
-      setShowImageInput(false);
+      if (chatFileInputRef.current) chatFileInputRef.current.value = "";
       await fetchMessages(activeChannelId, false);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Mesaj gönderilemedi";
@@ -642,24 +659,22 @@ export default function CommunityChatPage() {
               </div>
             ) : (
               <form onSubmit={handleSendMessage} className="space-y-2">
-                {/* Image input popup field */}
-                {showImageInput && (
-                  <div className="flex items-center gap-2 p-2 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
-                    <ImageIcon className="h-4 w-4 text-slate-400 shrink-0" />
-                    <input
-                      type="url"
-                      placeholder="Görsel bağlantı adresi (URL) yapıştırın..."
-                      value={imageUrl}
-                      onChange={(e) => setImageUrl(e.target.value)}
-                      className="flex-1 bg-transparent text-xs text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none"
+                {/* Image preview thumbnail */}
+                {imageUrl && (
+                  <div className="relative inline-block p-1 bg-slate-50 dark:bg-[#090e1b] rounded-2xl border border-slate-200 dark:border-slate-800">
+                    <img
+                      src={imageUrl}
+                      alt="Seçilen fotoğraf"
+                      className="h-20 max-w-xs object-cover rounded-xl border border-slate-300 dark:border-slate-700"
                     />
                     <button
                       type="button"
                       onClick={() => {
                         setImageUrl("");
-                        setShowImageInput(false);
+                        if (chatFileInputRef.current) chatFileInputRef.current.value = "";
                       }}
-                      className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 cursor-pointer"
+                      className="absolute -top-1.5 -right-1.5 p-1 bg-rose-600 text-white rounded-full hover:bg-rose-700 transition shadow-md cursor-pointer"
+                      title="Görseli Kaldır"
                     >
                       <X className="h-3.5 w-3.5" />
                     </button>
@@ -669,16 +684,23 @@ export default function CommunityChatPage() {
                 <div className="flex items-end gap-2">
                   <button
                     type="button"
-                    onClick={() => setShowImageInput(!showImageInput)}
+                    onClick={() => chatFileInputRef.current?.click()}
                     className={`p-2.5 rounded-xl border transition-colors cursor-pointer ${
-                      showImageInput || imageUrl
+                      imageUrl
                         ? "bg-blue-50 dark:bg-blue-950/60 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-sky-400"
                         : "border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
                     }`}
-                    title="Fotoğraf Ekle"
+                    title="Fotoğraf Yükle"
                   >
                     <ImageIcon className="h-4 w-4" />
                   </button>
+                  <input
+                    ref={chatFileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    onChange={handleChatImageUpload}
+                    className="hidden"
+                  />
 
                   <button
                     type="button"

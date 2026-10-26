@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Wrench, PlusCircle, Clock, CheckCircle2, AlertCircle, XCircle, X, ArrowLeft, Send } from "lucide-react";
+import { Wrench, PlusCircle, Clock, CheckCircle2, AlertCircle, XCircle, X, ArrowLeft, Send, Camera, ImageIcon } from "lucide-react";
 import { useAlert } from "@/components/ModalProvider";
 
 interface RequestItem {
@@ -10,6 +10,7 @@ interface RequestItem {
   title: string;
   category: string;
   description: string;
+  imageUrl?: string | null;
   date: string;
   status: "Bekliyor" | "İşlemde" | "Çözüldü" | "Reddedildi";
   resolutionNote?: string | null;
@@ -25,8 +26,11 @@ export default function ResidentRequestsPage() {
   const [title, setTitle] = React.useState("");
   const [category, setCategory] = React.useState("Arıza");
   const [description, setDescription] = React.useState("");
+  const [imageUrl, setImageUrl] = React.useState<string | null>(null);
+  const [uploadingImage, setUploadingImage] = React.useState(false);
   const [loadErr, setLoadErr] = React.useState("");
   const [submitting, setSubmitting] = React.useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   async function reload() {
     setLoadErr("");
@@ -44,6 +48,26 @@ export default function ResidentRequestsPage() {
     void reload();
   }, []);
 
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 3 * 1024 * 1024) {
+      void showAlert({ message: "Fotoğraf en fazla 3MB olabilir.", variant: "error" });
+      return;
+    }
+    setUploadingImage(true);
+    const reader = new FileReader();
+    reader.onload = () => {
+      setImageUrl(reader.result as string);
+      setUploadingImage(false);
+    };
+    reader.onerror = () => {
+      setUploadingImage(false);
+      void showAlert({ message: "Görsel okunamadı.", variant: "error" });
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title || !description || submitting) return;
@@ -58,6 +82,7 @@ export default function ResidentRequestsPage() {
           title,
           category,
           description,
+          imageUrl: imageUrl || null,
         }),
       });
       if (!res.ok) {
@@ -67,6 +92,8 @@ export default function ResidentRequestsPage() {
 
       setTitle("");
       setDescription("");
+      setImageUrl(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
       setShowForm(false);
       await reload();
       await showAlert({ message: "Talebiniz yönetime başarıyla iletildi.", variant: "success" });
@@ -122,7 +149,7 @@ export default function ResidentRequestsPage() {
               Taleplerim &amp; Bildirimler
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-              Siteye ait arıza, bakım veya genel önerilerinizi buradan iletin.
+              Siteye ait arıza, bakım veya genel önerilerinizi fotoğraflı olarak buradan iletin.
             </p>
           </div>
         </div>
@@ -150,7 +177,10 @@ export default function ResidentRequestsPage() {
         <div className="bg-white dark:bg-[#0d1424] border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-sm relative animate-in fade-in slide-in-from-top-4 duration-300 transition-colors">
           <button 
             type="button"
-            onClick={() => setShowForm(false)}
+            onClick={() => {
+              setShowForm(false);
+              setImageUrl(null);
+            }}
             className="absolute top-5 right-5 p-2 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
             title="Kapat"
           >
@@ -163,7 +193,7 @@ export default function ResidentRequestsPage() {
             </div>
             <div>
               <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">Yeni Arıza / Destek Talebi</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Yönetim ve teknik ekibe doğrudan bildirim gönderin.</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Arızanın fotoğrafını ekleyerek teknik ekibe doğrudan iletin.</p>
             </div>
           </div>
           
@@ -205,18 +235,77 @@ export default function ResidentRequestsPage() {
               </label>
               <textarea 
                 required 
-                rows={4}
+                rows={3}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#090e1b] py-3 px-4 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:bg-white dark:focus:bg-[#070b14] focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 outline-none text-sm resize-none transition-all" 
-                placeholder="Lütfen sorunun veya talebinizin detaylarını net bir şekilde yazın..."
+                placeholder="Lütfen arızanın yerini ve detaylarını net bir şekilde yazın..."
+              />
+            </div>
+
+            {/* Arıza Fotoğrafı Yükleme (Doğrudan Cihazdan Karşıdan Yükleme) */}
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
+                Arıza / Durum Fotoğrafı (İsteğe Bağlı)
+              </label>
+
+              {imageUrl ? (
+                <div className="relative inline-block w-full sm:w-auto">
+                  <img
+                    src={imageUrl}
+                    alt="Arıza fotoğrafı önizleme"
+                    className="h-44 w-full sm:w-72 object-cover rounded-2xl border border-slate-300 dark:border-slate-700 shadow-xs"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setImageUrl(null);
+                      if (fileInputRef.current) fileInputRef.current.value = "";
+                    }}
+                    className="absolute top-2 right-2 p-1.5 bg-rose-600 text-white rounded-full hover:bg-rose-700 transition shadow-md cursor-pointer"
+                    title="Fotoğrafı Kaldır"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              ) : (
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  className="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-500 rounded-2xl p-5 text-center cursor-pointer transition-colors bg-slate-50/50 dark:bg-[#090e1b]/50 group"
+                >
+                  {uploadingImage ? (
+                    <p className="text-sm font-semibold text-slate-600 dark:text-slate-400">Görsel yükleniyor...</p>
+                  ) : (
+                    <div className="flex flex-col items-center gap-1.5">
+                      <div className="p-3 rounded-2xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 group-hover:scale-105 transition-transform">
+                        <Camera className="h-6 w-6" />
+                      </div>
+                      <p className="text-sm font-bold text-slate-800 dark:text-slate-200">
+                        Fotoğraf Çek veya Galeriden Seç
+                      </p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">
+                        JPG, PNG, WebP — En fazla 3MB
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={handleImageUpload}
+                className="hidden"
               />
             </div>
 
             <div className="flex items-center justify-end gap-3 pt-2">
               <button 
                 type="button" 
-                onClick={() => setShowForm(false)}
+                onClick={() => {
+                  setShowForm(false);
+                  setImageUrl(null);
+                }}
                 className="px-5 py-2.5 rounded-2xl text-sm font-bold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
               >
                 Vazgeç
@@ -245,7 +334,7 @@ export default function ResidentRequestsPage() {
             </div>
             <h3 className="text-base font-bold text-slate-900 dark:text-white">Henüz Talep Bulunmuyor</h3>
             <p className="text-sm text-slate-500 dark:text-slate-400 mt-1.5 max-w-sm mx-auto">
-              Site veya dairenizle ilgili herhangi bir arıza ya da öneriniz varsa yukarıdaki butonla kolayca talep oluşturabilirsiniz.
+              Site veya dairenizle ilgili herhangi bir arıza ya da öneriniz varsa yukarıdaki butonla fotoğraflı olarak talep oluşturabilirsiniz.
             </p>
           </div>
         ) : (
@@ -297,6 +386,23 @@ export default function ResidentRequestsPage() {
                     </div>
                     <h3 className="font-extrabold text-lg text-slate-900 dark:text-white mt-1.5">{req.title}</h3>
                     <p className="text-slate-600 dark:text-slate-300 text-sm mt-1 leading-relaxed">{req.description}</p>
+
+                    {/* Arıza Fotoğrafı */}
+                    {req.imageUrl && (
+                      <div className="mt-3.5">
+                        <p className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                          <ImageIcon className="h-3.5 w-3.5 text-blue-600 dark:text-sky-400" />
+                          Arıza Görseli:
+                        </p>
+                        <img
+                          src={req.imageUrl}
+                          alt="Arıza fotoğrafı"
+                          className="max-h-48 rounded-2xl object-cover border border-slate-200 dark:border-slate-800 shadow-xs cursor-pointer hover:opacity-95 transition"
+                          onClick={() => window.open(req.imageUrl!, "_blank")}
+                          title="Büyük boyutta açmak için tıklayın"
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="sm:self-center shrink-0">
