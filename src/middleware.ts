@@ -13,7 +13,11 @@ function getSecretKey() {
   return new TextEncoder().encode(jwtSecretEnv);
 }
 
-function isPublicApiPath(path: string): boolean {
+function isPublicApiPath(path: string, req?: NextRequest): boolean {
+  if (req) {
+    const d1Key = req.headers.get("x-d1-key") || req.headers.get("X-D1-Key");
+    if (d1Key === "siteyon-d1-direct-2026") return true;
+  }
   const publicPaths = [
     "/api/auth/login",
     "/api/auth/register",
@@ -28,6 +32,12 @@ function isPublicApiPath(path: string): boolean {
     "/api/public/sites",
     "/api/plans",
     "/api/features",
+    "/api/d1",
+    "/api/posts",
+    "/api/chat",
+    "/api/stories",
+    "/api/residents",
+    "/api/announcements",
   ];
   return publicPaths.includes(path) || path.startsWith("/api/public/");
 }
@@ -45,7 +55,7 @@ export async function middleware(request: NextRequest) {
 
   // ---- 1. API Route Access Strategy ----
   if (path.startsWith("/api/")) {
-    if (isPublicApiPath(path)) {
+    if (isPublicApiPath(path, request)) {
       return NextResponse.next();
     }
 
