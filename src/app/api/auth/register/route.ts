@@ -19,6 +19,8 @@ function generateSafeId(): string {
 type RegisterBody = {
   name?: unknown;
   emailOrPhone?: unknown;
+  email?: unknown;
+  phone?: unknown;
   password?: unknown;
   siteId?: unknown;
   inviteCode?: unknown;
@@ -32,7 +34,11 @@ export async function POST(request: Request) {
   try {
     const raw = (await request.json()) as RegisterBody;
     const name = typeof raw.name === "string" ? raw.name.trim() : "";
-    const emailOrPhone = typeof raw.emailOrPhone === "string" ? raw.emailOrPhone.trim().toLowerCase() : "";
+    const emailOrPhone = (
+      (typeof raw.emailOrPhone === "string" ? raw.emailOrPhone : "") ||
+      (typeof raw.email === "string" ? raw.email : "") ||
+      (typeof raw.phone === "string" ? raw.phone : "")
+    ).trim().toLowerCase();
     const password = typeof raw.password === "string" ? raw.password : "";
     let siteId = typeof raw.siteId === "string" ? raw.siteId.trim() : "";
     const inviteCodeRaw = typeof raw.inviteCode === "string" ? raw.inviteCode.trim() : "";

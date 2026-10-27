@@ -12,7 +12,7 @@ import { notifyAuthChange } from "@/lib/use-session";
 export default function LoginPage() {
   const router = useRouter();
   const [loading, setLoading] = React.useState(false);
-  const [usernameOrPhone, setUsernameOrPhone] = React.useState("");
+  const [emailOrPhone, setEmailOrPhone] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [showPassword, setShowPassword] = React.useState(false);
   const [errorMsg, setErrorMsg] = React.useState("");
@@ -83,7 +83,7 @@ export default function LoginPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!usernameOrPhone || !password) {
+    if (!emailOrPhone || !password) {
       setErrorMsg("Lütfen tüm alanları doldurun.");
       setIsPendingNotice(false);
       return;
@@ -99,7 +99,7 @@ export default function LoginPage() {
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          usernameOrPhone: usernameOrPhone.replace(/\s+/g, ""),
+          emailOrPhone: emailOrPhone.replace(/\s+/g, ""),
           password,
         }),
       });
@@ -226,15 +226,15 @@ export default function LoginPage() {
           <div className="space-y-3.5">
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
-                Kullanıcı Adı, E-Posta veya Telefon
+                E-Posta Adresi veya Telefon Numarası
               </label>
               <input
                 type="text"
                 required
-                value={usernameOrPhone}
-                onChange={(e) => setUsernameOrPhone(e.target.value)}
+                value={emailOrPhone}
+                onChange={(e) => setEmailOrPhone(e.target.value)}
                 className="w-full rounded-xl border-2 border-slate-300 dark:border-slate-700 py-3 px-4 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-sky-900/50 focus:border-blue-600 dark:focus:border-sky-400 outline-none bg-white dark:bg-slate-900 text-sm transition-all shadow-xs"
-                placeholder="ornek@domain.com veya telefon no"
+                placeholder="ornek@domain.com veya 05XX..."
               />
             </div>
             <div>

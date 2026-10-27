@@ -10,19 +10,31 @@ import type { PlatformDatabase } from "@/db/platform";
 import { createNotification } from "@/lib/notify";
 
 type LoginBody = {
+  emailOrPhone?: unknown;
+  email?: unknown;
+  phone?: unknown;
   usernameOrPhone?: unknown;
+  username?: unknown;
   password?: unknown;
 };
 
 export async function POST(request: Request) {
   try {
     const raw = (await request.json()) as LoginBody;
-    const usernameOrPhone =
-      typeof raw.usernameOrPhone === "string" ? raw.usernameOrPhone.trim() : "";
+    const identifier = (
+      (typeof raw.emailOrPhone === "string" ? raw.emailOrPhone : "") ||
+      (typeof raw.email === "string" ? raw.email : "") ||
+      (typeof raw.phone === "string" ? raw.phone : "") ||
+      (typeof raw.usernameOrPhone === "string" ? raw.usernameOrPhone : "") ||
+      (typeof raw.username === "string" ? raw.username : "")
+    ).trim();
     const password = typeof raw.password === "string" ? raw.password : "";
 
-    if (!usernameOrPhone || !password) {
-      return NextResponse.json({ error: "Lütfen kullanıcı adı ve şifre girin." }, { status: 400 });
+    if (!identifier || !password) {
+      return NextResponse.json(
+        { error: "Lütfen e-posta veya telefon numarası ve şifrenizi girin." },
+        { status: 400 }
+      );
     }
 
     let db: PlatformDatabase;
@@ -32,7 +44,7 @@ export async function POST(request: Request) {
       return await databaseUnavailable();
     }
 
-    const cleanIdentifier = usernameOrPhone.trim().toLowerCase();
+    const cleanIdentifier = identifier.toLowerCase();
 
     const loginColumns = {
       id: users.id,
@@ -52,7 +64,7 @@ export async function POST(request: Request) {
       .where(
         or(
           eq(users.emailOrPhone, cleanIdentifier),
-          eq(users.emailOrPhone, usernameOrPhone.trim())
+          eq(users.emailOrPhone, identifier)
         )
       )
       .limit(1);
@@ -60,13 +72,13 @@ export async function POST(request: Request) {
     const user = userList[0];
 
     if (!user) {
-      return NextResponse.json({ error: "Hatalı e-posta/telefon veya şifre." }, { status: 401 });
+      return NextResponse.json({ error: "Hatalı e-posta / telefon veya şifre." }, { status: 401 });
     }
 
     const isValidPassword = await bcrypt.compare(password, user.passwordHash);
 
     if (!isValidPassword) {
-      return NextResponse.json({ error: "Hatalı e-posta/telefon veya şifre." }, { status: 401 });
+      return NextResponse.json({ error: "Hatalı e-posta / telefon veya şifre." }, { status: 401 });
     }
 
     // Yöneticiler her zaman doğrudan onaylıdır; sakinler PENDING ise bilgilendirilir
